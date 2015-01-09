@@ -11,6 +11,7 @@ import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
@@ -48,7 +49,8 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<InteractionEvidence> iterateAll() {
-        return new IntactQueryResultIterator<InteractionEvidence>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<InteractionEvidence>((InteractionEvidenceService) ApplicationContextProvider.getBean("interactionEvidenceService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -63,7 +65,8 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<InteractionEvidence> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<InteractionEvidence>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<InteractionEvidence>((InteractionEvidenceService) ApplicationContextProvider.getBean("interactionEvidenceService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -78,7 +81,8 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<InteractionEvidence> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<InteractionEvidence>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<InteractionEvidence>((InteractionEvidenceService) ApplicationContextProvider.getBean("interactionEvidenceService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -90,7 +94,8 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<InteractionEvidence> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<InteractionEvidence>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<InteractionEvidence>((InteractionEvidenceService) ApplicationContextProvider.getBean("interactionEvidenceService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

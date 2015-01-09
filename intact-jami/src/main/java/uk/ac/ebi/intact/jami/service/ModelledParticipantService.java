@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.*;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
@@ -46,7 +47,8 @@ public class ModelledParticipantService implements IntactService<ModelledPartici
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledParticipant> iterateAll() {
-        return new IntactQueryResultIterator<ModelledParticipant>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledParticipant>((ModelledParticipantService) ApplicationContextProvider.getBean("modelledParticipantService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -61,7 +63,8 @@ public class ModelledParticipantService implements IntactService<ModelledPartici
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledParticipant> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<ModelledParticipant>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledParticipant>((ModelledParticipantService) ApplicationContextProvider.getBean("modelledParticipantService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -76,7 +79,8 @@ public class ModelledParticipantService implements IntactService<ModelledPartici
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledParticipant> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ModelledParticipant>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledParticipant>((ModelledParticipantService) ApplicationContextProvider.getBean("modelledParticipantService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -88,7 +92,8 @@ public class ModelledParticipantService implements IntactService<ModelledPartici
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledParticipant> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ModelledParticipant>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledParticipant>((ModelledParticipantService) ApplicationContextProvider.getBean("modelledParticipantService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

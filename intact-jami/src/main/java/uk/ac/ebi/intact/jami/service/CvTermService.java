@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.CvTerm;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -43,7 +44,8 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<CvTerm> iterateAll() {
-        return new IntactQueryResultIterator<CvTerm>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<CvTerm>((CvTermService) ApplicationContextProvider.getBean("cvTermService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -58,7 +60,8 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<CvTerm> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<CvTerm>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<CvTerm>((CvTermService) ApplicationContextProvider.getBean("cvTermService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -73,7 +76,8 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<CvTerm> iterateAll(boolean loadLazyCollections) {
-        return  new IntactQueryResultIterator<CvTerm>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<CvTerm>((CvTermService) ApplicationContextProvider.getBean("cvTermService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -85,7 +89,8 @@ public class CvTermService implements IntactService<CvTerm>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<CvTerm> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<CvTerm>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<CvTerm>((CvTermService) ApplicationContextProvider.getBean("cvTermService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

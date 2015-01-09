@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.FeatureEvidence;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
@@ -47,7 +48,8 @@ public class FeatureEvidenceService implements IntactService<FeatureEvidence> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<FeatureEvidence> iterateAll() {
-        return new IntactQueryResultIterator<FeatureEvidence>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<FeatureEvidence>((FeatureEvidenceService) ApplicationContextProvider.getBean("featureEvidenceService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -62,7 +64,8 @@ public class FeatureEvidenceService implements IntactService<FeatureEvidence> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<FeatureEvidence> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<FeatureEvidence>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<FeatureEvidence>((FeatureEvidenceService) ApplicationContextProvider.getBean("featureEvidenceService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -77,7 +80,8 @@ public class FeatureEvidenceService implements IntactService<FeatureEvidence> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<FeatureEvidence> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<FeatureEvidence>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<FeatureEvidence>((FeatureEvidenceService) ApplicationContextProvider.getBean("featureEvidenceService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -89,7 +93,8 @@ public class FeatureEvidenceService implements IntactService<FeatureEvidence> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<FeatureEvidence> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<FeatureEvidence>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<FeatureEvidence>((FeatureEvidenceService) ApplicationContextProvider.getBean("featureEvidenceService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.ModelledInteraction;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
@@ -44,7 +45,8 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledInteraction> iterateAll() {
-        return new IntactQueryResultIterator<ModelledInteraction>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledInteraction>((ModelledInteractionService) ApplicationContextProvider.getBean("modelledInteractionService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -59,7 +61,8 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledInteraction> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<ModelledInteraction>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledInteraction>((ModelledInteractionService) ApplicationContextProvider.getBean("modelledInteractionService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -74,7 +77,8 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledInteraction> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ModelledInteraction>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledInteraction>((ModelledInteractionService) ApplicationContextProvider.getBean("modelledInteractionService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -86,7 +90,8 @@ public class ModelledInteractionService implements IntactService<ModelledInterac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledInteraction> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ModelledInteraction>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledInteraction>((ModelledInteractionService) ApplicationContextProvider.getBean("modelledInteractionService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

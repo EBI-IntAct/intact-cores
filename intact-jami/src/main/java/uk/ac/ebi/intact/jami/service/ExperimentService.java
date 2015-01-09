@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
@@ -48,7 +49,8 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Experiment> iterateAll() {
-        return new IntactQueryResultIterator<Experiment>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Experiment>((ExperimentService) ApplicationContextProvider.getBean("experimentService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -63,7 +65,8 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Experiment> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<Experiment>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Experiment>((ExperimentService) ApplicationContextProvider.getBean("experimentService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -78,7 +81,8 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Experiment> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<Experiment>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Experiment>((ExperimentService) ApplicationContextProvider.getBean("experimentService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -90,7 +94,8 @@ public class ExperimentService implements IntactService<Experiment>{
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Experiment> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<Experiment>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Experiment>((ExperimentService) ApplicationContextProvider.getBean("experimentService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.model.Publication;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
@@ -40,7 +42,8 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Publication> iterateAll() {
-        return new IntactQueryResultIterator<Publication>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Publication>((PublicationService) ApplicationContextProvider.getBean("publicationService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -55,7 +58,8 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Publication> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<Publication>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Publication>((PublicationService) ApplicationContextProvider.getBean("publicationService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -70,7 +74,8 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Publication> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<Publication>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Publication>((PublicationService) ApplicationContextProvider.getBean("publicationService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -82,7 +87,8 @@ public class PublicationService extends AbstractReleasableLifeCycleService<Intac
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<Publication> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<Publication>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<Publication>((PublicationService) ApplicationContextProvider.getBean("publicationService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.ParticipantEvidence;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
@@ -47,7 +48,8 @@ public class ParticipantEvidenceService implements IntactService<ParticipantEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ParticipantEvidence> iterateAll() {
-        return new IntactQueryResultIterator<ParticipantEvidence>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ParticipantEvidence>((ParticipantEvidenceService) ApplicationContextProvider.getBean("participantEvidenceService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -62,7 +64,8 @@ public class ParticipantEvidenceService implements IntactService<ParticipantEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ParticipantEvidence> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<ParticipantEvidence>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ParticipantEvidence>((ParticipantEvidenceService) ApplicationContextProvider.getBean("participantEvidenceService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -77,7 +80,8 @@ public class ParticipantEvidenceService implements IntactService<ParticipantEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ParticipantEvidence> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ParticipantEvidence>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ParticipantEvidence>((ParticipantEvidenceService) ApplicationContextProvider.getBean("participantEvidenceService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -89,7 +93,8 @@ public class ParticipantEvidenceService implements IntactService<ParticipantEvid
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ParticipantEvidence> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ParticipantEvidence>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ParticipantEvidence>((ParticipantEvidenceService) ApplicationContextProvider.getBean("participantEvidenceService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)

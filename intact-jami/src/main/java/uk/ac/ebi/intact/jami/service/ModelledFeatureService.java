@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.ModelledFeature;
 import psidev.psi.mi.jami.model.ModelledParticipant;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.dao.IntactDao;
 import uk.ac.ebi.intact.jami.interceptor.IntactTransactionSynchronization;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledFeature;
@@ -47,7 +48,8 @@ public class ModelledFeatureService implements IntactService<ModelledFeature> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledFeature> iterateAll() {
-        return new IntactQueryResultIterator<ModelledFeature>(this);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledFeature>((ModelledFeatureService) ApplicationContextProvider.getBean("modelledFeatureService"));
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -62,7 +64,8 @@ public class ModelledFeatureService implements IntactService<ModelledFeature> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledFeature> iterateAll(String queryCount, String query, Map<String, Object> parameters) {
-        return new IntactQueryResultIterator<ModelledFeature>(this, query, queryCount, parameters);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledFeature>((ModelledFeatureService) ApplicationContextProvider.getBean("modelledFeatureService"), query, queryCount, parameters);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -77,7 +80,8 @@ public class ModelledFeatureService implements IntactService<ModelledFeature> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledFeature> iterateAll(boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ModelledFeature>(this, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledFeature>((ModelledFeatureService) ApplicationContextProvider.getBean("modelledFeatureService"), loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
@@ -89,7 +93,8 @@ public class ModelledFeatureService implements IntactService<ModelledFeature> {
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
     public Iterator<ModelledFeature> iterateAll(String countQuery, String query, Map<String, Object> parameters, boolean loadLazyCollections) {
-        return new IntactQueryResultIterator<ModelledFeature>(this, query, countQuery, parameters, loadLazyCollections);
+        // use proxy and not this for transactional annotations to work
+        return new IntactQueryResultIterator<ModelledFeature>((ModelledFeatureService) ApplicationContextProvider.getBean("modelledFeatureService"), query, countQuery, parameters, loadLazyCollections);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, value = "jamiTransactionManager", readOnly = true)
