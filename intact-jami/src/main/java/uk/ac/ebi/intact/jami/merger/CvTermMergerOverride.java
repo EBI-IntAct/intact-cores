@@ -41,6 +41,11 @@ public class CvTermMergerOverride extends IntactDbMergerOverride<CvTerm, IntactC
     }
 
     @Override
+    public void setCvTermEnricherListener(CvTermEnricherListener<CvTerm> listener) {
+
+    }
+
+    @Override
     public IntactCvTerm merge(IntactCvTerm obj1, IntactCvTerm obj2) {
         // obj2 is mergedCv
         IntactCvTerm mergedCv = super.merge(obj1, obj2);

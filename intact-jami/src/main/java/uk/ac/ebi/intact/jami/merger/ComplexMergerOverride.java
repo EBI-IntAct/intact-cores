@@ -57,12 +57,42 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
         return null;
     }
 
+    @Override
+    public void setListener(InteractorEnricherListener<Complex> listener) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> enricher) {
+
+    }
+
+    @Override
+    public void setOrganismEnricher(OrganismEnricher enricher) {
+
+    }
+
     public InteractionEnricherListener<Complex> getInteractionEnricherListener() {
         return null;
     }
 
+    @Override
+    public void setParticipantEnricher(ParticipantEnricher enricher) {
+
+    }
+
+    @Override
+    public void setInteractionEnricherListener(InteractionEnricherListener<Complex> listener) {
+
+    }
+
     public SourceEnricher getSourceEnricher() {
         return null;
+    }
+
+    @Override
+    public void setSourceEnricher(SourceEnricher enricher) {
+
     }
 
     @Override

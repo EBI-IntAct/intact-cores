@@ -52,6 +52,26 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
     }
 
     @Override
+    public void setOrganismEnricher(OrganismEnricher organismEnricher) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> cvEnricher) {
+
+    }
+
+    @Override
+    public void setPublicationEnricher(PublicationEnricher publicationEnricher) {
+
+    }
+
+    @Override
+    public void setExperimentEnricherListener(ExperimentEnricherListener listener) {
+
+    }
+
+    @Override
     public IntactExperiment merge(IntactExperiment exp1, IntactExperiment exp2) {
         // reset parent to source parent
         exp2.setPublication(exp1.getPublication());

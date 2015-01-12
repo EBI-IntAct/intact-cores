@@ -38,6 +38,10 @@ public class InteractionEvidenceMergerEnrichOnly extends IntactDbMergerEnrichOnl
         return getBasicEnricher().getExperimentEnricher();
     }
 
+    @Override
+    public void setExperimentEnricher(ExperimentEnricher enricher) {
+
+    }
 
 
     @Override
@@ -58,6 +62,21 @@ public class InteractionEvidenceMergerEnrichOnly extends IntactDbMergerEnrichOnl
 
     public InteractionEnricherListener<InteractionEvidence> getInteractionEnricherListener() {
         return null;
+    }
+
+    @Override
+    public void setParticipantEnricher(ParticipantEnricher enricher) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> enricher) {
+
+    }
+
+    @Override
+    public void setInteractionEnricherListener(InteractionEnricherListener<InteractionEvidence> listener) {
+
     }
 }
 

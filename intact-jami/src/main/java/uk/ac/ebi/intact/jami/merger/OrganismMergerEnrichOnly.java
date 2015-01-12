@@ -41,4 +41,14 @@ public class OrganismMergerEnrichOnly extends IntactDbMergerEnrichOnly<Organism,
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
         return null;
     }
+
+    @Override
+    public void setOrganismEnricherListener(OrganismEnricherListener listener) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> enricher) {
+
+    }
 }

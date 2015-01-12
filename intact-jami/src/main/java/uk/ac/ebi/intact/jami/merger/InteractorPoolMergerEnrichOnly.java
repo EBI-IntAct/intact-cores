@@ -38,5 +38,15 @@ implements InteractorPoolEnricher{
     public Comparator<Interactor> getInteractorComparator() {
         return getBasicEnricher().getInteractorComparator();
     }
+
+    @Override
+    public void setInteractorEnricher(CompositeInteractorEnricher enricher) {
+
+    }
+
+    @Override
+    public void setInteractorComparator(Comparator<Interactor> comparator) {
+
+    }
 }
 

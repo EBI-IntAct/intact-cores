@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.enricher.FeatureEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.impl.CompositeInteractorEnricher;
 import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEnricher;
+import psidev.psi.mi.jami.enricher.listener.EntityEnricherListener;
 import psidev.psi.mi.jami.enricher.listener.ParticipantEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Feature;
@@ -51,11 +52,31 @@ public class ParticipantMergerEnrichOnly<E extends Participant, I extends Abstra
         return null;
     }
 
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> enricher) {
+
+    }
+
     public FeatureEnricher getFeatureEnricher() {
         return null;
     }
 
     public ParticipantEnricherListener getParticipantEnricherListener() {
         return null;
+    }
+
+    @Override
+    public void setInteractorEnricher(CompositeInteractorEnricher interactorEnricher) {
+
+    }
+
+    @Override
+    public void setFeatureEnricher(FeatureEnricher<F> enricher) {
+
+    }
+
+    @Override
+    public void setParticipantEnricherListener(EntityEnricherListener listener) {
+
     }
 }

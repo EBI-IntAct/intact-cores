@@ -39,6 +39,11 @@ public class ParticipantEvidenceMergerEnrichOnly<E extends ParticipantEvidence, 
     }
 
     @Override
+    public void setOrganismEnricher(OrganismEnricher enricher) {
+
+    }
+
+    @Override
     public I merge(I exp1, I exp2) {
 
         // reset parent

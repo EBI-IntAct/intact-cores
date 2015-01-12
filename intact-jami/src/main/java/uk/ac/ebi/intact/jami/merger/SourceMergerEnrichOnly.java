@@ -29,6 +29,11 @@ public class SourceMergerEnrichOnly extends IntactDbMergerEnrichOnly<Source, Int
     }
 
     @Override
+    public void setPublicationEnricher(PublicationEnricher enricher) {
+
+    }
+
+    @Override
     protected SourceEnricher getBasicEnricher() {
         return (SourceEnricher)super.getBasicEnricher();
     }
@@ -39,5 +44,10 @@ public class SourceMergerEnrichOnly extends IntactDbMergerEnrichOnly<Source, Int
 
     public CvTermEnricherListener<Source> getCvTermEnricherListener() {
         return null;
+    }
+
+    @Override
+    public void setCvTermEnricherListener(CvTermEnricherListener<Source> listener) {
+
     }
 }

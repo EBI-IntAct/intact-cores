@@ -45,8 +45,18 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
         return null;
     }
 
+    @Override
+    public void setPublicationEnricherListener(PublicationEnricherListener listener) {
+
+    }
+
     public SourceEnricher getSourceEnricher() {
         return null;
+    }
+
+    @Override
+    public void setSourceEnricher(SourceEnricher enricher) {
+
     }
 
     @Override

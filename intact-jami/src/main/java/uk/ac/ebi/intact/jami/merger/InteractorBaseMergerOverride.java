@@ -50,4 +50,19 @@ public class InteractorBaseMergerOverride<I extends Interactor, T extends Intact
     public OrganismEnricher getOrganismEnricher() {
         return null;
     }
+
+    @Override
+    public void setListener(InteractorEnricherListener<I> listener) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> enricher) {
+
+    }
+
+    @Override
+    public void setOrganismEnricher(OrganismEnricher enricher) {
+
+    }
 }

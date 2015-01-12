@@ -53,4 +53,14 @@ public class FeatureMergerEnrichOnly<F extends Feature, I extends AbstractIntact
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
         return null;
     }
+
+    @Override
+    public void setFeatureEnricherListener(FeatureEnricherListener<F> listener) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> cvEnricher) {
+
+    }
 }

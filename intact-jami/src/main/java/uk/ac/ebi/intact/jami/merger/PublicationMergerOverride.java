@@ -45,8 +45,18 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
         return null;
     }
 
+    @Override
+    public void setSourceEnricher(SourceEnricher enricher) {
+
+    }
+
     public PublicationEnricherListener getPublicationEnricherListener() {
         return null;
+    }
+
+    @Override
+    public void setPublicationEnricherListener(PublicationEnricherListener listener) {
+
     }
 
     @Override

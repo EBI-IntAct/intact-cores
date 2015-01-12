@@ -39,6 +39,11 @@ public class InteractionEvidenceMergerOverride extends IntactDbMergerOverride<In
     }
 
     @Override
+    public void setExperimentEnricher(ExperimentEnricher enricher) {
+
+    }
+
+    @Override
     public IntactInteractionEvidence merge(IntactInteractionEvidence int1, IntactInteractionEvidence int2) {
         // reset parent to source parent
         int2.setExperiment(int1.getExperiment());
@@ -56,6 +61,21 @@ public class InteractionEvidenceMergerOverride extends IntactDbMergerOverride<In
 
     public InteractionEnricherListener<InteractionEvidence> getInteractionEnricherListener() {
         return null;
+    }
+
+    @Override
+    public void setParticipantEnricher(ParticipantEnricher enricher) {
+
+    }
+
+    @Override
+    public void setCvTermEnricher(CvTermEnricher<CvTerm> enricher) {
+
+    }
+
+    @Override
+    public void setInteractionEnricherListener(InteractionEnricherListener<InteractionEvidence> listener) {
+
     }
 }
 
