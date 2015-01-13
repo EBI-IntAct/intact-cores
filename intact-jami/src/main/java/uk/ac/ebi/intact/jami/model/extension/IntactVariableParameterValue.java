@@ -97,7 +97,9 @@ public class IntactVariableParameterValue extends AbstractAuditable implements V
         if (order == null){
              this.order = 0;
         }
-        this.order = order;
+        else{
+            this.order = order;
+        }
     }
 
     private void setPersistentOrder(int persistentOrder) {
