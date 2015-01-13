@@ -37,8 +37,8 @@ public class IntactVariableParameterValueSet extends AbstractAuditable implement
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idGenerator")
-    @SequenceGenerator(name="idGenerator", sequenceName="DEFAULT_ID_SEQ", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DEFAULT_ID_SEQ")
+    @SequenceGenerator(name="DEFAULT_ID_SEQ", sequenceName="DEFAULT_ID_SEQ", initialValue = 1)
     public Long getId() {
         return id;
     }
