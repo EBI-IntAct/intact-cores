@@ -87,7 +87,8 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 }
             }
             IntactCvTerm fetchedParticipantDetectionMethod = null;
-            CvTerm commonMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
+            CvTerm commonMethod = experiment instanceof IntactExperiment ? ((IntactExperiment)experiment).getParticipantIdentificationMethod() :
+                    ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(experiment);
             if (commonMethod != null){
                 fetchedParticipantDetectionMethod = getContext().getParticipantDetectionMethodSynchronizer().find(commonMethod);
                 // the participant detection method does not exist so the experiment does not exist
