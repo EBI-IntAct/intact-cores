@@ -445,7 +445,7 @@ public class ParticipantEvidenceDaoImpl extends ParticipantDaoImpl<ParticipantEv
 
     @Override
     public int countExperimentalPreparationsForParticipant(String ac) {
-        Query query = getEntityManager().createQuery("select size(i.ExperimentalPreparations) from IntactParticipantEvidence i " +
+        Query query = getEntityManager().createQuery("select size(i.experimentalPreparations) from IntactParticipantEvidence i " +
                 "where i.ac = :ac");
         query.setParameter("ac", ac);
         return (Integer)query.getSingleResult();
