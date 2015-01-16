@@ -650,7 +650,7 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
                 binds = null;
                 if (!persistentLinkedFeatures.isEmpty()){
                     binds = persistentLinkedFeatures.iterator().next();
-                    persistentLinkedFeatures.remove(removed);
+                    persistentLinkedFeatures.remove(binds);
                 }
             }
             else{

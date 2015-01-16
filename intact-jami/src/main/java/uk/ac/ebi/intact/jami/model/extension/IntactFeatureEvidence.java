@@ -352,7 +352,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
                 identificationMethod = null;
                 if (!persistentDetectionMethods.isEmpty()){
                     identificationMethod = persistentDetectionMethods.iterator().next();
-                    persistentDetectionMethods.remove(removed);
+                    persistentDetectionMethods.remove(identificationMethod);
                 }
             }
             else{
