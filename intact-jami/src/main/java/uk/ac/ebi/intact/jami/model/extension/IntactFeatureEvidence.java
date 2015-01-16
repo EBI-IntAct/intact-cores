@@ -194,6 +194,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
     @Deprecated
     public void setFeatureIdentification( CvTerm cvFeatureIdentification ) {
         this.identificationMethod = cvFeatureIdentification;
+        this.detectionMethods = null;
     }
 
     @Override
@@ -351,6 +352,7 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
                 identificationMethod = null;
                 if (!persistentDetectionMethods.isEmpty()){
                     identificationMethod = persistentDetectionMethods.iterator().next();
+                    persistentDetectionMethods.remove(0);
                 }
             }
             else{
