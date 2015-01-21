@@ -77,87 +77,70 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
     protected IntactComplex(){
         super();
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, CvTerm interactorType) {
         super(name, interactorType);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType) {
         super(name, fullName, interactorType);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, CvTerm interactorType, Organism organism) {
         super(name, interactorType, organism);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType, Organism organism) {
         super(name, fullName, interactorType, organism);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, CvTerm interactorType, Xref uniqueId) {
         super(name, interactorType, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType, Xref uniqueId) {
         super(name, fullName, interactorType, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, CvTerm interactorType, Organism organism, Xref uniqueId) {
         super(name, interactorType, organism, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, CvTerm interactorType, Organism organism, Xref uniqueId) {
         super(name, fullName, interactorType, organism, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name) {
         super(name);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName) {
         super(name, fullName);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, Organism organism) {
         super(name, organism);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, Organism organism) {
         super(name, fullName, organism);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, Xref uniqueId) {
         super(name, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, Xref uniqueId) {
         super(name, fullName, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, Organism organism, Xref uniqueId) {
         super(name, organism, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactComplex(String name, String fullName, Organism organism, Xref uniqueId) {
         super(name, fullName, organism, uniqueId);
-        this.status = LifeCycleStatus.NEW;
     }
 
     @Override
@@ -196,9 +179,18 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
      */
     public LifeCycleStatus getStatus() {
         if (this.status == null){
-            this.status = LifeCycleStatus.NEW;
+            initialiseStatus();
         }
         return status;
+    }
+
+    private void initialiseStatus() {
+        if (this.cvStatus == null){
+            this.status = LifeCycleStatus.NEW;
+        }
+        else{
+            this.status = LifeCycleStatus.toLifeCycleStatus(this.cvStatus);
+        }
     }
 
     public void setStatus( LifeCycleStatus status ) {
@@ -230,9 +222,7 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
     @Deprecated
     public void setCvStatus( CvTerm status ) {
         this.cvStatus = status;
-        if (status != null){
-            this.status = LifeCycleStatus.toLifeCycleStatus(status);
-        }
+        this.status = null;
     }
 
     @ManyToOne( targetEntity = User.class )

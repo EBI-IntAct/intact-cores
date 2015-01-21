@@ -62,9 +62,18 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      */
     public LifeCycleEventType getEvent() {
         if (this.event == null){
-            this.event = LifeCycleEventType.CREATED;
+            initialiseEvent();
         }
         return event;
+    }
+
+    private void initialiseEvent() {
+        if (this.event == null){
+            this.event = LifeCycleEventType.CREATED;
+        }
+        else{
+            this.event = LifeCycleEventType.toLifeCycleEventType(this.cvEvent);
+        }
     }
 
     public void setEvent( LifeCycleEventType event ) {
@@ -129,9 +138,6 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      */
     public void setCvEvent( CvTerm event ) {
         this.cvEvent = event;
-        if (event != null){
-            this.event = LifeCycleEventType.toLifeCycleEventType(event);
-        }
     }
 
     /**

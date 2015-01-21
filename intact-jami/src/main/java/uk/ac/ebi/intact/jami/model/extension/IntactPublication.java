@@ -93,7 +93,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     public IntactPublication(){
         this.curationDepth = CurationDepth.undefined;
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactPublication(Xref identifier){
@@ -119,7 +118,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     public IntactPublication(String pubmed){
         this.curationDepth = CurationDepth.undefined;
-        this.status = LifeCycleStatus.NEW;
 
         if (pubmed != null){
             setPubmedId(pubmed);
@@ -144,7 +142,6 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.journal = journal;
         this.publicationDate = publicationDate;
         this.curationDepth = CurationDepth.undefined;
-        this.status = LifeCycleStatus.NEW;
     }
 
     public IntactPublication(String title, String journal, Date publicationDate, CurationDepth curationDepth, Source source){
@@ -609,9 +606,18 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
      */
     public LifeCycleStatus getStatus() {
         if (this.status == null){
-            this.status = LifeCycleStatus.NEW;
+            initialiseStatus();
         }
         return status;
+    }
+
+    private void initialiseStatus() {
+        if (this.cvStatus == null){
+            this.status = LifeCycleStatus.NEW;
+        }
+        else{
+            this.status = LifeCycleStatus.toLifeCycleStatus(this.cvStatus);
+        }
     }
 
     public void setStatus( LifeCycleStatus status ) {
@@ -643,9 +649,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
     @Deprecated
     public void setCvStatus( CvTerm status ) {
         this.cvStatus = status;
-        if (status != null){
-            this.status = LifeCycleStatus.toLifeCycleStatus(status);
-        }
+        this.status = null;
     }
 
     @Override
