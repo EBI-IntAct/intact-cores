@@ -270,7 +270,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 }
             }
 
-            Query query = getEntityManager().createQuery("select distinct e.ac from IntactExperiment e " +
+            Query query = getEntityManager().createQuery("select distinct e from IntactExperiment e " +
                     (!fetchedOrganisms.isEmpty()? "join e.hostOrganism as h " : "" ) +
                     (!fetchedDetectionMethods.isEmpty() ? "join e.interactionDetectionMethod as det " : "" ) +
                     (!fetchedPublications.isEmpty() ? "join e.publication as p " : "" ) +
