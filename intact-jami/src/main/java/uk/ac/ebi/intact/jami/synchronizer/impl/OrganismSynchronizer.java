@@ -150,7 +150,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
                 if (existingCells.isEmpty() || existingTissues.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
                 else {
                     query = getEntityManager().createQuery("select o from IntactOrganism o " +
@@ -168,7 +168,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 Collection<String> existingCells = getContext().getCellTypeSynchronizer().findAllMatchingAcs(term.getCellType());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
                 if (existingCells.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
                 else {
                     query = getEntityManager().createQuery("select o from IntactOrganism o " +
@@ -183,7 +183,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
                 if (existingTissues.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
                 else {
                     query = getEntityManager().createQuery("select o from IntactOrganism o " +
@@ -226,7 +226,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
                 if (existingCells.isEmpty() || existingTissues.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
                 else {
                     query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +
@@ -244,7 +244,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 Collection<String> existingCells = getContext().getCellTypeSynchronizer().findAllMatchingAcs(term.getCellType());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
                 if (existingCells.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
                 else {
                     query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +
@@ -259,7 +259,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 Collection<String> existingTissues = getContext().getTissueSynchronizer().findAllMatchingAcs(term.getTissue());
                 // cell line or tissue is not known so the biosource does not exist in IntAct
                 if (existingTissues.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
                 else {
                     query = getEntityManager().createQuery("select distinct o.ac from IntactOrganism o " +

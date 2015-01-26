@@ -155,7 +155,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedPublications = getContext().getPublicationSynchronizer().findAllMatchingAcs(experiment.getPublication());
                 // the publication does not exist so the experiment does not exist
                 if (fetchedPublications.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
             Collection<String> fetchedOrganisms = Collections.EMPTY_LIST;
@@ -163,7 +163,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(experiment.getHostOrganism());
                 // the organism does not exist so the experiment does not exist
                 if (fetchedOrganisms.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
             Collection<String> fetchedDetectionMethods = Collections.EMPTY_LIST;
@@ -171,7 +171,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedDetectionMethods = getContext().getInteractionDetectionMethodSynchronizer().findAllMatchingAcs(experiment.getInteractionDetectionMethod());
                 // the detection method does not exist so the experiment does not exist
                 if (fetchedDetectionMethods.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
             Collection<String> fetchedParticipantDetectionMethods = Collections.EMPTY_LIST;
@@ -181,7 +181,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedParticipantDetectionMethods = getContext().getParticipantDetectionMethodSynchronizer().findAllMatchingAcs(commonMethod);
                 // the participant detection method does not exist so the experiment does not exist
                 if (fetchedParticipantDetectionMethods.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
 
@@ -240,7 +240,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedPublications = getContext().getPublicationSynchronizer().findAllMatchingAcs(experiment.getPublication());
                 // the publication does not exist so the experiment does not exist
                 if (fetchedPublications.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
             Collection<String> fetchedOrganisms = Collections.EMPTY_LIST;
@@ -248,7 +248,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(experiment.getHostOrganism());
                 // the organism does not exist so the experiment does not exist
                 if (fetchedOrganisms.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
             Collection<String> fetchedDetectionMethods = Collections.EMPTY_LIST;
@@ -256,7 +256,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedDetectionMethods = getContext().getInteractionDetectionMethodSynchronizer().findAllMatchingAcs(experiment.getInteractionDetectionMethod());
                 // the detection method does not exist so the experiment does not exist
                 if (fetchedDetectionMethods.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
             Collection<String> fetchedParticipantDetectionMethods = Collections.EMPTY_LIST;
@@ -266,7 +266,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                 fetchedParticipantDetectionMethods = getContext().getParticipantDetectionMethodSynchronizer().findAllMatchingAcs(commonMethod);
                 // the participant detection method does not exist so the experiment does not exist
                 if (fetchedParticipantDetectionMethods.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
 

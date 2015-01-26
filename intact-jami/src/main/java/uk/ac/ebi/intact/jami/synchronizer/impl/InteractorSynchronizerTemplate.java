@@ -106,14 +106,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             Collection<String> existingTypes = getContext().getInteractorTypeSynchronizer().findAllMatchingAcs(term.getInteractorType());
             // could not retrieve the interactor type so this interactor does not exist in IntAct
             if (existingTypes.isEmpty()){
-                return null;
+                return Collections.EMPTY_LIST;
             }
             Collection<String> existingOrganisms = Collections.EMPTY_LIST;
             if (term.getOrganism() != null){
                 existingOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(term.getOrganism());
                 // could not retrieve the organism so this interactor does not exist in IntAct
                 if (existingOrganisms.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
 
@@ -148,14 +148,14 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             Collection<String> existingTypes = getContext().getInteractorTypeSynchronizer().findAllMatchingAcs(term.getInteractorType());
             // could not retrieve the interactor type so this interactor does not exist in IntAct
             if (existingTypes.isEmpty()){
-                return null;
+                return Collections.EMPTY_LIST;
             }
             Collection<String> existingOrganisms = Collections.EMPTY_LIST;
             if (term.getOrganism() != null){
                 existingOrganisms = getContext().getOrganismSynchronizer().findAllMatchingAcs(term.getOrganism());
                 // could not retrieve the organism so this interactor does not exist in IntAct
                 if (existingOrganisms.isEmpty()){
-                    return null;
+                    return Collections.EMPTY_LIST;
                 }
             }
 
