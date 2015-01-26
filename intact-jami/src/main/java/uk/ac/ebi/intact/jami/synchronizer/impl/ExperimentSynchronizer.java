@@ -507,8 +507,10 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     protected void prepareAndSynchronizeShortLabel(IntactExperiment intactExperiment) throws SynchronizerException {
-        // first initialise shortlabel if not done
-        if (intactExperiment.getShortLabel() == null){
+        // first initialise shortlabel if not done or does not match our internal shortlabels
+        if (intactExperiment.getShortLabel() == null
+                || (!IntactUtils.EXPERIMENT_LABEL_PATTERN.matcher(intactExperiment.getShortLabel()).matches()
+                && !IntactUtils.EXPERIMENT_SYNCHRONIZED_LABEL_PATTERN.matcher(intactExperiment.getShortLabel()).matches())){
             intactExperiment.setShortLabel(IntactUtils.generateAutomaticExperimentShortlabelFor(intactExperiment, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 

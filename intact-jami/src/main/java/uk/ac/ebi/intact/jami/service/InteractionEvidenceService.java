@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import psidev.psi.mi.jami.model.Publication;
+import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
@@ -141,6 +142,8 @@ public class InteractionEvidenceService implements IntactService<InteractionEvid
 
             curatedExperiment = new IntactExperiment(null);
             ExperimentCloner.copyAndOverrideExperimentProperties(exp, curatedExperiment);
+            // copy participant identification method
+            curatedExperiment.setParticipantIdentificationMethod(ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(exp));
             if (intactCuratedPub != null){
                curatedExperiment.setPublication(intactCuratedPub);
             }
