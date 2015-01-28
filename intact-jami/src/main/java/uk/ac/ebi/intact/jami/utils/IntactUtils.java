@@ -67,8 +67,8 @@ public class IntactUtils {
     public static final String PUBLICATION_STATUS_OBJCLASS ="uk.ac.ebi.intact.model.CvPublicationStatus";
     public static final String LIFECYCLE_EVENT_OBJCLASS ="uk.ac.ebi.intact.model.CvLifecycleEvent";
 
-    public static final Pattern EXPERIMENT_SYNCHRONIZED_LABEL_PATTERN = Pattern.compile("(\\w+)-((\\d{4})[a-z]*)");
-    public static final Pattern EXPERIMENT_LABEL_PATTERN = Pattern.compile("(\\w+)-((\\d{4})[a-z]*)-(\\d+)");
+    public static final Pattern EXPERIMENT_SYNCHRONIZED_LABEL_PATTERN = Pattern.compile("(\\w+)-((\\d{4})[a-z]*)-(\\d+)");
+    public static final Pattern EXPERIMENT_LABEL_PATTERN = Pattern.compile("(\\w+)-(\\d{4})");
 
     public static String generateAutomaticInteractionEvidenceShortlabelFor(InteractionEvidence intactInteraction, int maxLength){
         if (intactInteraction.getParticipants().isEmpty()){
@@ -276,51 +276,112 @@ public class IntactUtils {
             return;
         }
         // then synchronize with database
-        String name = intactExperiment.getShortLabel().trim().toLowerCase();
-
-        // check if short name already exist, if yes, synchronize with existing label
-        Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
-                "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
-                + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
-        query.setParameter("name", name);
-        query.setParameter("nameWithSuffix", name+"-%");
-        if (intactExperiment.getAc() != null){
-            query.setParameter("expAc", intactExperiment.getAc());
-        }
-        List<String> existingExperiments = query.getResultList();
-        // check cached names
-        if (persistedNames.contains(name)){
-            existingExperiments.add(name);
-        }
-        // if the experiment shortlabel is the same as another experiment shortlabel
-        if (!existingExperiments.isEmpty()){
-            // we have a synchronized label, so we need first to extract original label before
-            if (EXPERIMENT_SYNCHRONIZED_LABEL_PATTERN.matcher(name).matches()){
-                name = excludeLastNumberInShortLabel(name);
-                // check if short name already exist, if yes, synchronize with existing label
-                query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
-                        "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
-                        + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
-                query.setParameter("name", name);
-                query.setParameter("nameWithSuffix", name+"-%");
-                if (intactExperiment.getAc() != null){
-                    query.setParameter("expAc", intactExperiment.getAc());
+        String name;
+        List<String> existingExperiments;
+        do{
+            name = intactExperiment.getShortLabel().trim().toLowerCase();
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
+                    "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
+                    + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactExperiment.getAc() != null){
+                query.setParameter("expAc", intactExperiment.getAc());
+            }
+            existingExperiments = query.getResultList();
+            // check cached names
+            if (persistedNames.contains(name)){
+                existingExperiments.add(name);
+            }
+            // if the experiment shortlabel is the same as another experiment shortlabel
+            if (!existingExperiments.isEmpty()){
+                // we have a synchronized label, so we need first to extract original label before
+                if (EXPERIMENT_SYNCHRONIZED_LABEL_PATTERN.matcher(name).matches()){
+                    name = excludeLastNumberInShortLabel(name);
+                    // check if short name already exist, if yes, synchronize with existing label
+                    query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
+                            "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
+                            + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
+                    query.setParameter("name", name);
+                    query.setParameter("nameWithSuffix", name+"-%");
+                    if (intactExperiment.getAc() != null){
+                        query.setParameter("expAc", intactExperiment.getAc());
+                    }
+                    existingExperiments = query.getResultList();
+                    // check cached names
+                    if (persistedNames.contains(name)){
+                        existingExperiments.add(name);
+                    }
                 }
-                existingExperiments = query.getResultList();
-                // check cached names
-                if (persistedNames.contains(name)){
-                    existingExperiments.add(name);
+
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
+                if (!nameInSync.equals(name)){
+                    intactExperiment.setShortLabel(nameInSync);
                 }
             }
-
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
-            if (!nameInSync.equals(name)){
-                intactExperiment.setShortLabel(nameInSync);
+            else{
+                intactExperiment.setShortLabel(name);
             }
         }
-        else{
-            intactExperiment.setShortLabel(name);
+        while(!existingExperiments.isEmpty());
+    }
+
+    public static void synchronizeExperimentComplexShortLabel(IntactExperiment intactExperiment, EntityManager manager, Map<String, Experiment> persistedNames){
+        if (intactExperiment.getShortLabel() == null){
+            return;
         }
+        // then synchronize with database
+        String name;
+        List<String> existingExperiments;
+        do{
+            name = intactExperiment.getShortLabel().trim().toLowerCase();
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
+                    "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
+                    + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (intactExperiment.getAc() != null){
+                query.setParameter("expAc", intactExperiment.getAc());
+            }
+            existingExperiments = query.getResultList();
+            // check cached names
+            if (persistedNames.containsKey(name) && persistedNames.get(name) != intactExperiment){
+                existingExperiments.add(name);
+            }
+            // if the experiment shortlabel is the same as another experiment shortlabel
+            if (!existingExperiments.isEmpty()){
+                // we have a synchronized label, so we need first to extract original label before
+                if (EXPERIMENT_SYNCHRONIZED_LABEL_PATTERN.matcher(name).matches()
+                        || name.matches(".*-\\d+$")){
+                    name = excludeLastNumberInShortLabel(name);
+                    // check if short name already exist, if yes, synchronize with existing label
+                    query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
+                            "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
+                            + (intactExperiment.getAc() != null ? "and e.ac <> :expAc" : ""));
+                    query.setParameter("name", name);
+                    query.setParameter("nameWithSuffix", name+"-%");
+                    if (intactExperiment.getAc() != null){
+                        query.setParameter("expAc", intactExperiment.getAc());
+                    }
+                    existingExperiments.addAll(query.getResultList());
+                    // check cached names
+                    if (persistedNames.containsKey(name) && persistedNames.get(name) != intactExperiment){
+                        existingExperiments.add(name);
+                    }
+                }
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactExperiment.setShortLabel(nameInSync);
+                }
+            }
+            else{
+                intactExperiment.setShortLabel(name);
+            }
+        }
+        while(!existingExperiments.isEmpty());
     }
 
     public static void synchronizeInteractionEvidenceShortName(IntactInteractionEvidence intactInteraction, EntityManager manager, Set<String> persistedNames){
@@ -890,7 +951,7 @@ public class IntactUtils {
 
     public static void initialiseVariableParameterValueSet(IntactVariableParameterValueSet set){
         if (!set.areVariableParameterValuesInitialized()){
-           Hibernate.initialize(set);
+            Hibernate.initialize(set);
         }
     }
 
@@ -901,7 +962,7 @@ public class IntactUtils {
         }
         // initialise values
         if (param.areVariableParameterValuesInitialized()){
-           Hibernate.initialize(param.getVariableValues());
+            Hibernate.initialize(param.getVariableValues());
         }
     }
 
@@ -1172,7 +1233,7 @@ public class IntactUtils {
 
         // init cell type
         if (organism.getCellType() != null){
-           initialiseCvTerm((IntactCvTerm)organism.getCellType());
+            initialiseCvTerm((IntactCvTerm)organism.getCellType());
         }
         // init tissue
         if (organism.getTissue() != null){
@@ -1198,7 +1259,7 @@ public class IntactUtils {
         }
         // initialise organism
         if (interactor.getOrganism() != null){
-           initialiseOrganism((IntactOrganism)interactor.getOrganism());
+            initialiseOrganism((IntactOrganism)interactor.getOrganism());
         }
 
         // special cases
@@ -1272,7 +1333,7 @@ public class IntactUtils {
         }
         // init evidence type
         for (VariableParameterValueSet set : interaction.getVariableParameterValues()){
-             initialiseVariableParameterValueSet((IntactVariableParameterValueSet)set);
+            initialiseVariableParameterValueSet((IntactVariableParameterValueSet)set);
         }
     }
 

@@ -202,7 +202,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     public IntactDbSynchronizer<CvTerm, IntactCvTerm> getAliasTypeSynchronizer() {
         if (this.aliasTypeSynchronizer == null){
             this.aliasTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.ALIAS_TYPE_OBJCLASS);
-            this.aliasSynchronizer.setListener(this.listener);
+            this.aliasTypeSynchronizer.setListener(this.listener);
         }
         return aliasTypeSynchronizer;
     }
