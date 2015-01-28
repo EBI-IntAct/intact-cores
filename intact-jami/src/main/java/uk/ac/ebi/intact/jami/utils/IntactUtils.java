@@ -280,6 +280,10 @@ public class IntactUtils {
         List<String> existingExperiments;
         do{
             name = intactExperiment.getShortLabel().trim().toLowerCase();
+            // we increments experiment label if matches simple automatically generated label
+            if (EXPERIMENT_LABEL_PATTERN.matcher(name).matches()){
+               name = name+"-1";
+            }
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
                     "where (e.shortLabel = :name or e.shortLabel like :nameWithSuffix) "
@@ -392,6 +396,9 @@ public class IntactUtils {
         }
         // then synchronize with database
         String  name = intactInteraction.getShortName().trim().toLowerCase();
+        if (!name.matches(".*-\\d+$")){
+            name = name+"-1";
+        }
 
         // check if short name already exist, if yes, synchronize with existing label
         Query query = manager.createQuery("select i.shortName from IntactInteractionEvidence i " +
