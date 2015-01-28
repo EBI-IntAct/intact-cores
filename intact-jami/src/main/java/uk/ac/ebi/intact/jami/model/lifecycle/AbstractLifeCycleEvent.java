@@ -40,7 +40,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
     }
 
     public AbstractLifeCycleEvent(LifeCycleEventType event, User who, Date when, String note) {
-        this.event = event;
+        setEvent(event);
         this.who = who;
         this.when = when;
         this.note = note;
