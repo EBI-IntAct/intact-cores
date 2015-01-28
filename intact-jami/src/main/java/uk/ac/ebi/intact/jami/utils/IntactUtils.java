@@ -327,7 +327,9 @@ public class IntactUtils {
         while(!existingExperiments.isEmpty());
     }
 
-    public static void synchronizeExperimentComplexShortLabel(IntactExperiment intactExperiment, EntityManager manager, Map<String, Experiment> persistedNames){
+    public static void synchronizeExperimentComplexShortLabel(IntactExperiment intactExperiment,
+                                                              EntityManager manager,
+                                                              Set<String> persistedNames){
         if (intactExperiment.getShortLabel() == null){
             return;
         }
@@ -348,7 +350,7 @@ public class IntactUtils {
             }
             existingExperiments = query.getResultList();
             // check cached names
-            if (persistedNames.containsKey(name) && persistedNames.get(name) != intactExperiment){
+            if (persistedNames.contains(name)){
                 existingExperiments.add(name);
             }
             // if the experiment shortlabel is the same as another experiment shortlabel
@@ -368,7 +370,7 @@ public class IntactUtils {
                     }
                     existingExperiments.addAll(query.getResultList());
                     // check cached names
-                    if (persistedNames.containsKey(name) && persistedNames.get(name) != intactExperiment){
+                    if (persistedNames.contains(name)){
                         existingExperiments.add(name);
                     }
                 }
@@ -505,52 +507,60 @@ public class IntactUtils {
         while(!existingInteractors.isEmpty());
     }
 
-    public static void synchronizeCvTermShortName(IntactCvTerm intactCv, EntityManager manager, String objClass){
+    public static void synchronizeCvTermShortName(IntactCvTerm intactCv,
+                                                  EntityManager manager,
+                                                  String objClass){
         if (intactCv.getShortName() == null){
             return;
         }
-        String name = intactCv.getShortName().trim().toLowerCase();
+        String name = null;
+        List<String> existingCvs = Collections.EMPTY_LIST;
+        do{
+            name = intactCv.getShortName().trim().toLowerCase();
 
-        // check if short name already exist, if yes, synchronize with existing label
-        Query query = manager.createQuery("select cv.shortName from IntactCvTerm cv " +
-                "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
-                + (objClass != null ? " and cv.objClass = :objclass " : " ")
-                + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
-        query.setParameter("name", name);
-        query.setParameter("nameWithSuffix", name+"-%");
-        if (objClass != null){
-            query.setParameter("objclass", objClass);
-        }
-        if (intactCv.getAc() != null){
-            query.setParameter("cvAc", intactCv.getAc());
-        }
-        List<String> existingCvs = query.getResultList();
-        if (!existingCvs.isEmpty()){
-            // we have a synchronized label, so we need first to extract original label before (last -)
-            if (name.matches(".*-\\d+$")){
-                name = excludeLastNumberInShortLabel(name);
-                query = manager.createQuery("select cv.shortName from IntactCvTerm cv " +
-                        "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
-                        + (objClass != null ? " and cv.objClass = :objclass " : " ")
-                        + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
-                query.setParameter("name", name);
-                query.setParameter("nameWithSuffix", name+"-%");
-                if (objClass != null){
-                    query.setParameter("objclass", objClass);
-                }
-                if (intactCv.getAc() != null){
-                    query.setParameter("cvAc", intactCv.getAc());
-                }
-                existingCvs = query.getResultList();
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select cv.shortName from IntactCvTerm cv " +
+                    "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
+                    + (objClass != null ? " and cv.objClass = :objclass " : " ")
+                    + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
+            query.setParameter("name", name);
+            query.setParameter("nameWithSuffix", name+"-%");
+            if (objClass != null){
+                query.setParameter("objclass", objClass);
             }
-            String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-            if (!nameInSync.equals(name)){
-                intactCv.setShortName(nameInSync);
+            if (intactCv.getAc() != null){
+                query.setParameter("cvAc", intactCv.getAc());
+            }
+            existingCvs = query.getResultList();
+
+            if (!existingCvs.isEmpty()){
+                // we have a synchronized label, so we need first to extract original label before (last -)
+                if (name.matches(".*-\\d+$")){
+                    name = excludeLastNumberInShortLabel(name);
+                    query = manager.createQuery("select cv.shortName from IntactCvTerm cv " +
+                            "where (cv.shortName = :name or cv.shortName like :nameWithSuffix)"
+                            + (objClass != null ? " and cv.objClass = :objclass " : " ")
+                            + (intactCv.getAc() != null ? "and cv.ac <> :cvAc" : ""));
+                    query.setParameter("name", name);
+                    query.setParameter("nameWithSuffix", name+"-%");
+                    if (objClass != null){
+                        query.setParameter("objclass", objClass);
+                    }
+                    if (intactCv.getAc() != null){
+                        query.setParameter("cvAc", intactCv.getAc());
+                    }
+                    existingCvs.addAll(query.getResultList());
+                }
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactCv.setShortName(nameInSync);
+                }
+            }
+            else{
+                intactCv.setShortName(name);
             }
         }
-        else{
-            intactCv.setShortName(name);
-        }
+        while(!existingCvs.isEmpty());
     }
 
     public static void synchronizeSourceShortName(IntactSource intactSource, EntityManager manager){
@@ -702,7 +712,7 @@ public class IntactUtils {
             Matcher matcher = IntactUtils.decimalPattern.matcher(strSuffix);
 
             if (matcher.matches()){
-                return currentLabel.substring(0, index-1);
+                return currentLabel.substring(0, index);
             }
         }
         return currentLabel;

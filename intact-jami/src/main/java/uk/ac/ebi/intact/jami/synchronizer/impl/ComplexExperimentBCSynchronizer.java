@@ -38,7 +38,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
 
     private IntactComparator<Experiment> experimentComparator;
 
-    private Map<String, Experiment> persistedNames;
+    private Set<String> persistedNames;
 
     public ComplexExperimentBCSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
@@ -47,7 +47,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
 
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(this.experimentComparator);
         this.convertedObjects = new IdentityMap();
-        persistedNames = new HashMap<String, Experiment>();
+        persistedNames = new HashSet<String>();
     }
 
     public IntactExperiment find(Experiment experiment) throws FinderException {
@@ -393,7 +393,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         // then synchronize with database
         IntactUtils.synchronizeExperimentComplexShortLabel(intactExperiment, getEntityManager(), this.persistedNames);
 
-        this.persistedNames.put(intactExperiment.getShortLabel(), intactExperiment);
+        this.persistedNames.add(intactExperiment.getShortLabel());
     }
 
     @Override
