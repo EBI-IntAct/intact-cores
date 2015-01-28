@@ -162,11 +162,12 @@ public class IntactUtils {
             int rest1 = Math.min(remainingSize, Math.max(0, label1Size - (maxSize1+maxSize2)));
             int rest2 = Math.min(Math.max(0, remainingSize-rest1), Math.max(0, label2Size - (maxSize1+maxSize2)));
 
-            return label1.substring(0, maxSize1 + rest1)
-                    +(label2Size > 0 ? "-"+label2.substring(0, maxSize2 + rest2) : "");
+            // replace non ASCII characters
+            return label1.substring(0, maxSize1 + rest1).replaceAll("[^\\x20-\\x7e]", "")
+                    +(label2Size > 0 ? "-"+label2.substring(0, maxSize2 + rest2).replaceAll("[^\\x20-\\x7e]", "") : "");
         }
 
-        return label1 + (label2 != null ? "-"+label2 : "-1");
+        return label1.replaceAll("[^\\x20-\\x7e]", "") + (label2 != null ? "-"+label2.replaceAll("[^\\x20-\\x7e]", "") : "-1");
     }
 
     public static String generateAutomaticShortlabelForModelledInteraction(ModelledInteraction intactInteraction, int maxLength){
@@ -623,7 +624,8 @@ public class IntactUtils {
         }
         else if (!pub.getAuthors().isEmpty() && pub.getPublicationDate() != null){
             yearString = IntactUtils.YEAR_FORMAT.format(pub.getPublicationDate());
-            label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
+            // replace all non non-ASCII characters
+            label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_").replaceAll("[^\\x20-\\x7e]", "");
             if (label.contains(" ")){
                 label = label.split(" ")[0];
             }
@@ -632,7 +634,7 @@ public class IntactUtils {
         else if (!pub.getAuthors().isEmpty()){
             Calendar now = Calendar.getInstance();
             yearString = Integer.toString(now.get(Calendar.YEAR));
-            label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_");
+            label = pub.getAuthors().iterator().next().trim().toLowerCase().replaceAll("-", "_").replaceAll("[^\\x20-\\x7e]", "");
             if (label.contains(" ")){
                 label = label.split(" ")[0];
             }
