@@ -228,7 +228,13 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             intactPublication.setShortLabel(doi);
         }
         else if (!intactPublication.getIdentifiers().isEmpty()){
-            intactPublication.setShortLabel(intactPublication.getIdentifiers().iterator().next().getId());
+            Iterator<Xref> idIterator = intactPublication.getIdentifiers().iterator();
+            while (idIterator.hasNext()){
+                String id = idIterator.next().getId();
+                if (intactPublication.getAc() == null || !intactPublication.getAc().equals(id)){
+                    intactPublication.setShortLabel(id);
+                }
+            }
         }
         else {
             // create unassigned pubmed id

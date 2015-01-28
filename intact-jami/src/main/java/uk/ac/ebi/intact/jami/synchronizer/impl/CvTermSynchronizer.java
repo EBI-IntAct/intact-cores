@@ -535,7 +535,13 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             }
             // then first identifier
             else if (!intactCv.getIdentifiers().isEmpty()){
-                intactCv.setIdentifier(intactCv.getIdentifiers().iterator().next().getId());
+                Iterator<Xref> idIterator = intactCv.getIdentifiers().iterator();
+                while (idIterator.hasNext()){
+                    String id = idIterator.next().getId();
+                    if (intactCv.getAc() == null || !intactCv.getAc().equals(id)){
+                        intactCv.setIdentifier(id);
+                    }
+                }
             }
             else {
                 final IntactContext context = ApplicationContextProvider.getBean("intactJamiContext");
