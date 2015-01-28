@@ -40,7 +40,7 @@ public class IntactUtils {
     public static final int MAX_SEQ_LENGTH_PER_CHUNK = 1000;
 
     public final static DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
-    public static final Pattern decimalPattern = Pattern.compile("\\d");
+    public static final Pattern decimalPattern = Pattern.compile("\\d+");
 
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
     public static final String UNASSIGNED_SEQ = "unassigned_seq";
