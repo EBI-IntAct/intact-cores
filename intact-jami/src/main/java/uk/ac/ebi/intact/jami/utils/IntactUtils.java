@@ -693,7 +693,7 @@ public class IntactUtils {
                     freeIndex++;
                 }
                 // even if the label without any suffix is available, we force to use a suffix here
-                else if (existingLabel == 0 && alwaysAppendSuffix){
+                else if (existingLabel == 0 && alwaysAppendSuffix && freeIndex == 0){
                     freeIndex++;
                 }
                 // index does not exist, break the loop
