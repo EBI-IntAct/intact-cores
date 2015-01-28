@@ -679,10 +679,16 @@ public class IntactUtils {
         if (!exitingLabels.isEmpty()){
             IntegerComparator comparator = new IntegerComparator();
             SortedSet<Integer> existingIndexes = new TreeSet<Integer>(comparator);
-            for (String exitingLabel : exitingLabels){
+            Iterator<String> iterator = exitingLabels.iterator();
+            while (iterator.hasNext()){
+                String exitingLabel = iterator.next();
                 Integer suffix = extractLastNumberInShortLabel(exitingLabel, currentLabel);
                 if (suffix != null){
                     existingIndexes.add(suffix);
+                }
+                // invalid shortlabel
+                else{
+                    iterator.remove();
                 }
             }
 
@@ -693,8 +699,8 @@ public class IntactUtils {
                     freeIndex++;
                 }
                 // even if the label without any suffix is available, we force to use a suffix here
-                else if (existingLabel == 0 && alwaysAppendSuffix && freeIndex == 0){
-                    freeIndex++;
+                else if (existingLabel == 0 && alwaysAppendSuffix){
+                    // we skip
                 }
                 // index does not exist, break the loop
                 else{
