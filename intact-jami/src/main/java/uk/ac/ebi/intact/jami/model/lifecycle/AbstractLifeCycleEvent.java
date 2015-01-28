@@ -68,7 +68,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
     }
 
     private void initialiseEvent() {
-        if (this.event == null){
+        if (this.cvEvent == null){
             this.event = LifeCycleEventType.CREATED;
         }
         else{
