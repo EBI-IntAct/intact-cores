@@ -615,7 +615,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected boolean isObjectDirty(Publication originalObject) {
+    protected boolean isObjectPartiallyInitialised(Publication originalObject) {
         return !this.publicationComparator.canCompare(originalObject);
     }
 

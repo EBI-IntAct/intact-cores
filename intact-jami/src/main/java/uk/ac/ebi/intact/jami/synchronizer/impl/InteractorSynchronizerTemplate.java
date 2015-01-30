@@ -380,7 +380,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected boolean isObjectDirty(T originalObject) {
+    protected boolean isObjectPartiallyInitialised(T originalObject) {
         return !this.interactorComparator.canCompare(originalObject);
     }
 

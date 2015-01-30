@@ -88,7 +88,7 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
     }
 
     @Override
-    protected boolean isObjectDirty(VariableParameter originalObject) {
+    protected boolean isObjectPartiallyInitialised(VariableParameter originalObject) {
         return false;
     }
 

@@ -190,7 +190,7 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected boolean isObjectDirty(Range originalObject) {
+    protected boolean isObjectPartiallyInitialised(Range originalObject) {
         return false;
     }
 

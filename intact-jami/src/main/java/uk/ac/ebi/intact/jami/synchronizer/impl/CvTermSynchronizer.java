@@ -514,7 +514,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected boolean isObjectDirty(CvTerm originalObject) {
+    protected boolean isObjectPartiallyInitialised(CvTerm originalObject) {
         return !this.cvComparator.canCompare(originalObject);
     }
 

@@ -108,7 +108,7 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     }
 
     @Override
-    protected boolean isObjectDirty(Annotation originalObject) {
+    protected boolean isObjectPartiallyInitialised(Annotation originalObject) {
         return false;
     }
 

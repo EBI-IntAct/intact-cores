@@ -470,7 +470,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected boolean isObjectDirty(Organism originalObject) {
+    protected boolean isObjectPartiallyInitialised(Organism originalObject) {
         return !this.organismComparator.canCompare(originalObject);
     }
 

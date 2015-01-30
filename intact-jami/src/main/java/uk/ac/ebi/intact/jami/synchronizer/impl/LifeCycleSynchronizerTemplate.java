@@ -125,7 +125,7 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
-    protected boolean isObjectDirty(LifeCycleEvent originalObject) {
+    protected boolean isObjectPartiallyInitialised(LifeCycleEvent originalObject) {
         return false;
     }
 

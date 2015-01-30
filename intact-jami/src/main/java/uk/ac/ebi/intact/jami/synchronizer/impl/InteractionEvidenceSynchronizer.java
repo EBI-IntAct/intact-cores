@@ -167,7 +167,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected boolean isObjectDirty(InteractionEvidence originalObject) {
+    protected boolean isObjectPartiallyInitialised(InteractionEvidence originalObject) {
         return false;
     }
 

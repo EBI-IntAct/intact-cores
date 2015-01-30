@@ -104,7 +104,7 @@ public class ApplicationPropertySynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected boolean isObjectDirty(ApplicationProperty originalObject) {
+    protected boolean isObjectPartiallyInitialised(ApplicationProperty originalObject) {
         return false;
     }
 

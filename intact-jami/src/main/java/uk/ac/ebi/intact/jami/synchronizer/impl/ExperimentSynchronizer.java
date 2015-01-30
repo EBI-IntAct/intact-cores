@@ -405,7 +405,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     @Override
-    protected boolean isObjectDirty(Experiment originalObject) {
+    protected boolean isObjectPartiallyInitialised(Experiment originalObject) {
         return !this.experimentComparator.canCompare(originalObject);
     }
 

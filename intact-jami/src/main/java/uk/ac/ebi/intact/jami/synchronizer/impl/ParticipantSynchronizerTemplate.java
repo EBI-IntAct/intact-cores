@@ -150,7 +150,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected boolean isObjectDirty(T originalObject) {
+    protected boolean isObjectPartiallyInitialised(T originalObject) {
         return false;
     }
 

@@ -109,7 +109,7 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
-    protected boolean isObjectDirty(T originalObject) {
+    protected boolean isObjectPartiallyInitialised(T originalObject) {
         return false;
     }
 

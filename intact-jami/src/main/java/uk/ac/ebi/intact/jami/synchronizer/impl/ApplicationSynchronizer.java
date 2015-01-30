@@ -126,7 +126,7 @@ public class ApplicationSynchronizer extends AbstractIntactDbSynchronizer<Applic
     }
 
     @Override
-    protected boolean isObjectDirty(Application originalObject) {
+    protected boolean isObjectPartiallyInitialised(Application originalObject) {
         return false;
     }
 

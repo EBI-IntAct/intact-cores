@@ -50,9 +50,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         FlushModeType mode = initialiseEntityManagerFlushType();
 
         // when the object is dirty, we need to synchronize the properties first
-        if (isObjectDirty((I)object)){
+        if (isObjectPartiallyInitialised((I) object)){
             // synchronise properties of dirty object
-            synchronizeDirtyObjectProperties((I) object, object);
+            synchronizePartiallyInitialisedProperties((I) object, object);
             // store in normal cache
             storeInCache((I)object, object, null);
             // then set userContext
@@ -89,27 +89,29 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // set flush mode to commit so queries do not trigger flush
         FlushModeType mode = initialiseEntityManagerFlushType();
 
-        // check identity cache when possible to avoid internal loops
+        // check identity cache when possible to avoid internal loops.
+        // This can happen if an object refers to itself in one of its properties
         if (containsObjectInstance(object)){
-            return processDirtyObject(object, mode);
+            return processCachedObjectInstance(object, mode);
         }
-
-        // check that the object to synchronize is a proper hibernate entity supported by this synchronizer.
-        // If not, create a new entity and clone properties
-        if (!this.intactClass.isAssignableFrom(object.getClass())){
-            // create a new managed entity from the object to synchronize
-            T newObject = createManagedEntityFrom(object);
+        // check that the object to synchronize is a proper hibernate entity supported by this synchronizer. This allows to persist basic JAMI
+        // objects.
+        // If not, create a new hibernate entity and clone properties
+        else if (!this.intactClass.isAssignableFrom(object.getClass())){
+            // create a new hibernate entity from the object to synchronize
+            T newObject = createIntactEntityFrom(object);
             // boolean value to know if properties need to be synchronized as well
             boolean needToSynchronizeProperties = true;
-            // when the object is dirty, we need to synchronize the properties first
-            if (isObjectDirty(object)){
-                // synchronize the properties of the dirty object
-                synchronizeDirtyObjectProperties(object, newObject);
+            // when the object is partially initialised (some objects and collections are detached and not initialised), we need to synchronize the properties first
+            if (isObjectPartiallyInitialised(object)){
+                // synchronize the properties of the object which is partially initialised
+                synchronizePartiallyInitialisedProperties(object, newObject);
                 // no needs to synchronize again the properties
                 needToSynchronizeProperties = false;
             }
-            // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
+            // check business cache when possible. Only objects that are not partially initialised for the synchronizer can go there
             else if (isObjectStoredInCache(object)){
+                // retrieve object in cache and merge it with current object if necessary
                 return processCachedObject(object, mode, true);
             }
 
@@ -124,9 +126,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // boolean value to know if properties need to be synchronized as well
             boolean needToSynchronizeProperties = true;
             // when the object is dirty, we need to synchronize the properties first
-            if (isObjectDirty(object)){
+            if (isObjectPartiallyInitialised(object)){
                 // synchronize the properties of the dirty object
-                synchronizeDirtyObjectProperties(object, intactObject);
+                synchronizePartiallyInitialisedProperties(object, intactObject);
                 // no needs to synchronize again the properties
                 needToSynchronizeProperties = false;
             }
@@ -235,7 +237,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // check if object is manageable by this synchronizer
         if (!this.intactClass.isAssignableFrom(object.getClass())){
             // create a new copy manageable by this synchronizer
-            T newObject = createManagedEntityFrom(object);
+            T newObject = createIntactEntityFrom(object);
             // process persistable object and convert its properties
             convertProperties(object, newObject);
             // new object fully persistable
@@ -314,7 +316,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // synchronize properties first before merging
             if (synchronizeProperties){
                 // cache object to persist if allowed
-                synchronizeDirtyObjectProperties((I) intactObject, intactObject);
+                synchronizePartiallyInitialisedProperties((I) intactObject, intactObject);
             }
             // merge
             T mergedObject = this.entityManager.merge(intactObject);
@@ -447,6 +449,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      */
     protected T mergeWithCachedObject(I object, T existingInstance, boolean needToSynchronizeProperties) throws PersisterException,
             FinderException, SynchronizerException {
+        // merge only if object instances are different
         if (object != existingInstance){
             // merge cached instance with original object
             try {
@@ -456,7 +459,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // then set userContext
             existingInstance.setLocalUserContext(getContext().getUserContext());
-            // synchronize before persisting
+            // synchronize merged properties in case the cached object has now new properties
             if (needToSynchronizeProperties){
                 // synchronize properties after cache merge
                 mergeWithCache(object, existingInstance);
@@ -467,24 +470,26 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     protected void mergeWithCache(I oject, T existingInstance) throws PersisterException, FinderException, SynchronizerException {
         // by default, does a dirty synchronization
-        synchronizeDirtyObjectProperties(oject, existingInstance);
+        synchronizePartiallyInitialisedProperties(oject, existingInstance);
     }
 
     /**
-     *
-     * @param object : dirty object (lazy initialised collections, object maybe detached from session)
-     * @param persistentObject : persistent instance
+     * This method will synchronize the properties of the object which is partially initialised
+     * @param object : object (lazy initialised collections, object maybe detached from session)
+     * @param intactObject : intact instance
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    protected void synchronizeDirtyObjectProperties(I object, T persistentObject) throws FinderException, PersisterException, SynchronizerException {
-        // store object in a identity cache so no lazy properties can be called before synchronization
-        storeObjectInIdentityCache(object, persistentObject);
+    protected void synchronizePartiallyInitialisedProperties(I object, T intactObject) throws FinderException, PersisterException, SynchronizerException {
+        // store object and intact object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, intactObject);
+        storeObjectInIdentityCache((I)intactObject, intactObject);
         // synchronize properties
-        synchronizeProperties(persistentObject);
-        // remove object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache((I) object);
+        synchronizeProperties(intactObject);
+        // remove object and intact object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
+        removeObjectInstanceFromIdentityCache((I)intactObject);
     }
 
     /**
@@ -513,12 +518,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     /**
-     *
+     * This method will convert an object in its matching IntAct entity which can then be persisted
      * @param object : object implementing JAMI interfaces but not entity managed by this synchronizer
      * @return the copy of this object which can be managed by this synchronizer
      * @throws SynchronizerException
      */
-    protected T createManagedEntityFrom(I object) throws SynchronizerException {
+    protected T createIntactEntityFrom(I object) throws SynchronizerException {
         T newObject;
         try {
             newObject = instantiateNewPersistentInstance(object, this.intactClass);
@@ -535,12 +540,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     /**
-     *
-     * @param object : dirty object which was detached from the session and have lazy initialised collections
+     * Retrieve an object instance from the identity cache and sets the user context.
+     * This method should not synchronize any properties while retrieving the object instance.
+     * This method will reset the entity manager flush mode before returning the object in the identity cache
+     * @param object : object that have been cached in an identity cache
      * @param mode: flush mode type of the entity manager
-     * @return the dirty object after setting the user context
+     * @return the matching object in the identity cache
      */
-    protected T processDirtyObject(I object, FlushModeType mode) {
+    protected T processCachedObjectInstance(I object, FlushModeType mode) {
         // get object from identity cache
         T fetched = fetchMatchingObjectFromIdentityCache(object);
         // then set userContext
@@ -552,19 +559,19 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     /**
-     *
-     * @param object
-     * @param mode
-     * @param needToSynchronize
+     * Method to process an object which already exists in the cache based on a business key
+     * @param object : existing object
+     * @param mode : entity manager flush type
+     * @param needToSynchronize : boolean value to know if the object needs to be synchronized again
      * @return the cached object merged with the properties of the original object
      * @throws PersisterException
      * @throws FinderException
      * @throws SynchronizerException
      */
     protected T processCachedObject(I object, FlushModeType mode, boolean needToSynchronize) throws PersisterException, FinderException, SynchronizerException {
-        // get cached instance
+        // get cached instance from business cache
         T fetched = fetchObjectFromCache(object);
-        // then merge properties if not done yet
+        // then merge properties if not done yet. The object is in a business key map, it may have more properties that could be merged to the original object in the cache
         T merged = mergeWithCachedObject(object, fetched, needToSynchronize);
 
         // reset entity manager flushMode
@@ -611,20 +618,31 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     protected abstract Object extractIdentifier(T object);
 
+    /**
+     * Instantiate the intact entity and initialise the properties from the original object
+     * @param object : original object to clone
+     * @param intactClass : matching intact class to instantiate
+     * @return the intact entity which is a clone of the original object
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     */
     protected abstract T instantiateNewPersistentInstance(I object, Class<? extends T> intactClass) throws InstantiationException, IllegalAccessException,
             InvocationTargetException, NoSuchMethodException;
 
     /**
-     *
-     * @param object
+     * Method to fetch an object from a cache based on a business key.
+     *It can return null if the synchronizer does not need a cache based on a business key
+     * @param object : object
      * @return the synchronized/persistent object associated with this object which has been fetched from the
      * cache
      */
     protected abstract T fetchObjectFromCache(I object);
 
     /**
-     *
-     * @param object
+     * Method to know if an object exists in a cache based on a business key.
+     * @param object which is fully initialised and not lazy
      * @return true if the object has already been synchronized
      */
     protected abstract boolean isObjectStoredInCache(I object);
@@ -643,7 +661,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected abstract void removeObjectInstanceFromIdentityCache(I object);
 
     /**
-     *
+     * This methods return the object matching the given object in a identity cache.
+     * It can be null if the object is not in the identity cache or if the synchronizer do not need to cache objects
      * @param object
      * @return the persistable object associated with this object. The persistable object that is returned is NOT synchronized
      * with existing instances in the database
@@ -667,11 +686,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected abstract void storeObjectInIdentityCache(I originalObject, T persistableObject);
 
     /**
-     *
-     * @param originalObject
-     * @return true if the object is dirty and needs to be synchronized before putting anything in the cache
+     * Method to know if an object is partially initialised (contains properties and collections that are needed to compare this object with others in a map but cannot because they are detached
+     * and/or partially initialised)
+     * @param originalObject : the object
+     * @return true if the object is partially initialised and needs to be synchronized before putting anything in the cache
      */
-    protected abstract boolean isObjectDirty(I originalObject);
+    protected abstract boolean isObjectPartiallyInitialised(I originalObject);
 
     @Override
     public void flush() {

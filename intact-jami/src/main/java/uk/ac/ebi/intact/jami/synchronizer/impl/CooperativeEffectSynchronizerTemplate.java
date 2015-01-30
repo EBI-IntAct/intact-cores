@@ -196,7 +196,7 @@ implements CooperativeEffectSynchronizer<T, C> {
     }
 
     @Override
-    protected boolean isObjectDirty(T originalObject) {
+    protected boolean isObjectPartiallyInitialised(T originalObject) {
         return false;
     }
 

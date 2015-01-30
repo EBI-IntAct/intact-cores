@@ -111,7 +111,7 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
-    protected boolean isObjectDirty(Alias originalObject) {
+    protected boolean isObjectPartiallyInitialised(Alias originalObject) {
         return false;
     }
 

@@ -109,7 +109,7 @@ public class DbInfoSynchronizer extends AbstractIntactDbSynchronizer<DbInfo, DbI
     }
 
     @Override
-    protected boolean isObjectDirty(DbInfo originalObject) {
+    protected boolean isObjectPartiallyInitialised(DbInfo originalObject) {
         return false;
     }
 

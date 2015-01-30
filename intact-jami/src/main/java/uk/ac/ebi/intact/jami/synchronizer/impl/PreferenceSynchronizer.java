@@ -104,7 +104,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected boolean isObjectDirty(Preference originalObject) {
+    protected boolean isObjectPartiallyInitialised(Preference originalObject) {
         return false;
     }
 

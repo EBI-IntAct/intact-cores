@@ -168,7 +168,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected boolean isObjectDirty(Role originalObject) {
+    protected boolean isObjectPartiallyInitialised(Role originalObject) {
         return false;
     }
 

@@ -441,7 +441,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected boolean isObjectDirty(Source originalObject) {
+    protected boolean isObjectPartiallyInitialised(Source originalObject) {
         return !this.sourceComparator.canCompare(originalObject);
     }
 

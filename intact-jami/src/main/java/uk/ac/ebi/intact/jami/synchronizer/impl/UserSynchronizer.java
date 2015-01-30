@@ -211,7 +211,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected boolean isObjectDirty(User originalObject) {
+    protected boolean isObjectPartiallyInitialised(User originalObject) {
         return false;
     }
 

@@ -129,7 +129,7 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected boolean isObjectDirty(CausalRelationship originalObject) {
+    protected boolean isObjectPartiallyInitialised(CausalRelationship originalObject) {
         return false;
     }
 

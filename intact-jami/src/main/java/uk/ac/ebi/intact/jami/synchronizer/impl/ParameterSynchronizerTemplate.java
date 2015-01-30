@@ -128,7 +128,7 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected boolean isObjectDirty(T originalObject) {
+    protected boolean isObjectPartiallyInitialised(T originalObject) {
         return false;
     }
 

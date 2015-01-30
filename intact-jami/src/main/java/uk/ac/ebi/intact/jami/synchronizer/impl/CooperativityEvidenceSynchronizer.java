@@ -136,7 +136,7 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected boolean isObjectDirty(CooperativityEvidence originalObject) {
+    protected boolean isObjectPartiallyInitialised(CooperativityEvidence originalObject) {
         return false;
     }
 

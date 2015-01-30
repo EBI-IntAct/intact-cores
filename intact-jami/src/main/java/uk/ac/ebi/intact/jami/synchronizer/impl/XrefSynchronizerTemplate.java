@@ -129,7 +129,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected boolean isObjectDirty(Xref originalObject) {
+    protected boolean isObjectPartiallyInitialised(Xref originalObject) {
         return false;
     }
 

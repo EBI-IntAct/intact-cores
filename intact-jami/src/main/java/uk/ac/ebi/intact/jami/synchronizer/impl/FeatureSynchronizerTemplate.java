@@ -200,7 +200,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected boolean isObjectDirty(F originalObject) {
+    protected boolean isObjectPartiallyInitialised(F originalObject) {
         // always return false as we only keep identity map of features
         return false;
     }
