@@ -109,8 +109,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // no needs to synchronize again the properties
                 needToSynchronizeProperties = false;
             }
+
             // check business cache when possible. Only objects that are not partially initialised for the synchronizer can go there
-            else if (isObjectStoredInCache(object)){
+            if (isObjectStoredInCache(object)){
                 // retrieve object in cache and merge it with current object if necessary
                 return processCachedObject(object, mode, true);
             }
@@ -367,7 +368,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     }
 
     /**
-     *
+     * Method which find an existing intact instance matching the new object or persist the new object
      * @param originalObject : original object o find and persist
      * @param persistentObject : cloned entity of the original object that can be persisted/merged
      * @param persist : true if we want to persist the object in the db
@@ -381,7 +382,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             throws FinderException, PersisterException, SynchronizerException {
         // find existing instance in the database
         T existingInstance = find((I)persistentObject);
-        // cache object to persist if allowed
+        // cache object to persist if necessary
         storeInCache(originalObject, persistentObject, existingInstance);
         // the existing instance has been found in the DB and we need to merge existing persistent instance with the other instance
         if (existingInstance != null){
@@ -462,15 +463,28 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // synchronize merged properties in case the cached object has now new properties
             if (needToSynchronizeProperties){
                 // synchronize properties after cache merge
-                mergeWithCache(object, existingInstance);
+                // store object and intact object in a identity cache so no lazy properties can be called before synchronization
+                storeObjectInIdentityCache(object, existingInstance);
+                storeObjectInIdentityCache((I)existingInstance, existingInstance);
+                // synchronize properties
+                synchronizePropertiesAfterCacheMerge(existingInstance);
+                // remove object and intact object from identity cache as not dirty anymore
+                removeObjectInstanceFromIdentityCache(object);
+                removeObjectInstanceFromIdentityCache((I) existingInstance);
             }
         }
         return existingInstance;
     }
 
-    protected void mergeWithCache(I oject, T existingInstance) throws PersisterException, FinderException, SynchronizerException {
-        // by default, does a dirty synchronization
-        synchronizePartiallyInitialisedProperties(oject, existingInstance);
+    /**
+     * Method which synchronize the properties which could have been merged after a merge with a cached object
+     * @param existingInstance
+     * @throws FinderException
+     * @throws PersisterException
+     * @throws SynchronizerException
+     */
+    protected void synchronizePropertiesAfterCacheMerge(T existingInstance) throws FinderException, PersisterException, SynchronizerException {
+        synchronizeProperties(existingInstance);
     }
 
     /**

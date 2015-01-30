@@ -197,8 +197,8 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
     }
 
     @Override
-    protected void postProcessCachedProperties(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {
-        super.postProcessCachedProperties(intactFeature);
+    protected void synchronizePropertiesAfterCacheMerge(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesAfterCacheMerge(intactFeature);
         // then check aliases
         prepareAliases(intactFeature, true);
         // then check annotations

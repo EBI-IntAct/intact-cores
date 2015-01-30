@@ -182,9 +182,9 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     }
 
     @Override
-    protected void processPostCacheProperties(IntactInteractorPool existingInstance) throws FinderException, PersisterException, SynchronizerException {
-        super.processPostCacheProperties(existingInstance);
+    protected void synchronizePropertiesAfterMerge(IntactInteractorPool mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        super.synchronizePropertiesAfterCacheMerge(mergedObject);
         // synchronize subInteractors if not done
-        prepareInteractors(existingInstance, true);
+        prepareInteractors(mergedObject, true);
     }
 }

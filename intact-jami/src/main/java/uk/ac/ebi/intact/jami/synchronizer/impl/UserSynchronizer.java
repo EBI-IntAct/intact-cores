@@ -219,4 +219,12 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new UserMergerEnrichOnly());
     }
+
+    @Override
+    protected void synchronizePropertiesAfterCacheMerge(User object) throws FinderException, PersisterException, SynchronizerException {
+        // synchronize preferences
+        preparePreferences(object, true);
+        // synchronize roles
+        prepareRoles(object, true);
+    }
 }

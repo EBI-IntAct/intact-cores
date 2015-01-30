@@ -149,8 +149,8 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     }
 
     @Override
-    protected void postProcessCachedProperties(IntactModelledFeature intactFeature) throws PersisterException, FinderException, SynchronizerException {
-        super.postProcessCachedProperties(intactFeature);
+    protected void synchronizePropertiesAfterCacheMerge(IntactModelledFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesAfterCacheMerge(intactFeature);
         // then check aliases
         prepareAliases(intactFeature, true);
         // then check annotations

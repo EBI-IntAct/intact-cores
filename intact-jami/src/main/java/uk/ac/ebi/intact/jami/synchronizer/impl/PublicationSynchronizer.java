@@ -769,9 +769,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void mergeWithCache(Publication object, IntactPublication existingInstance) throws PersisterException, FinderException, SynchronizerException {
-        // store object in a identity cache so no lazy properties can be called before synchronization
-        storeObjectInIdentityCache(object, existingInstance);
+    protected void synchronizePropertiesAfterCacheMerge(IntactPublication existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // synchronize properties
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(existingInstance);
@@ -785,7 +783,5 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         preparePublicationAuthors(existingInstance);
         // then check annotations
         prepareAnnotations(existingInstance, true);
-        // remove object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache(object);
     }
 }

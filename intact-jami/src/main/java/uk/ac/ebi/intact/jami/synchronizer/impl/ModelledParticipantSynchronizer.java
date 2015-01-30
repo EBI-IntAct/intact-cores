@@ -184,19 +184,19 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     }
 
     @Override
-    protected void postProcessCachedProperties(IntactModelledParticipant intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        super.postProcessCachedProperties(intactEntity);
+    protected void synchronizePropertiesAfterMerge(IntactModelledParticipant mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        super.synchronizePropertiesAfterMerge(mergedObject);
         // then check aliases
-        prepareAliases(intactEntity, true);
+        prepareAliases(mergedObject, true);
         // then check annotations
-        prepareAnnotations(intactEntity, true);
+        prepareAnnotations(mergedObject, true);
         // then check xrefs
-        prepareXrefs(intactEntity, true);
+        prepareXrefs(mergedObject, true);
         // then check causal relationships
-        prepareCausalRelationships(intactEntity, true);
+        prepareCausalRelationships(mergedObject, true);
 
         // check experimental roles for backward compatibility ONLY
-        prepareExperimentalRoles(intactEntity, true);
+        prepareExperimentalRoles(mergedObject, true);
     }
 }
 

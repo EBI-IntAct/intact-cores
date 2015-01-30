@@ -298,9 +298,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void mergeWithCache(InteractionEvidence object, IntactInteractionEvidence existingInstance) throws PersisterException, FinderException, SynchronizerException {
-        // store object in a identity cache so no lazy properties can be called before synchronization
-        storeObjectInIdentityCache(object, existingInstance);
+    protected void synchronizePropertiesAfterCacheMerge(IntactInteractionEvidence existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check new confidences if any
         prepareConfidences(existingInstance, true);
         // then check new parameters if any
@@ -313,7 +311,5 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         prepareParticipants(existingInstance, true);
         // then check new variable parameters if any
         prepareVariableParametersValues(existingInstance, true);
-        // remove object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache(object);
     }
 }

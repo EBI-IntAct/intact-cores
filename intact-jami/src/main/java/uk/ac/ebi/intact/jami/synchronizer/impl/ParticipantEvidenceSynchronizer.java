@@ -257,8 +257,8 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     }
 
     @Override
-    protected void postProcessCachedProperties(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        super.postProcessCachedProperties(intactEntity);
+    protected void synchronizePropertiesAfterCacheMerge(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesAfterCacheMerge(intactEntity);
         // then check aliases
         prepareAliases(intactEntity, true);
         // then check annotations

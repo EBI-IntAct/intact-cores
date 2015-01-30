@@ -683,16 +683,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void mergeWithCache(T object, I existingInstance) throws PersisterException, FinderException, SynchronizerException {
-        // store object in a identity cache so no lazy properties can be called before synchronization
-        storeObjectInIdentityCache(object, existingInstance);
-        // synchronize properties
-        processPostCacheProperties(existingInstance);
-        // remove object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache(object);
-    }
-
-    protected void processPostCacheProperties(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesAfterCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
         prepareAliases(existingInstance, true);
         // then check new annotations if any

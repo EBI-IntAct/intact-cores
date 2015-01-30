@@ -401,14 +401,10 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void mergeWithCache(Experiment object, IntactExperiment existingInstance) throws PersisterException, FinderException, SynchronizerException {
-        // store object in a identity cache so no lazy properties can be called before synchronization
-        storeObjectInIdentityCache(object, existingInstance);
+    protected void synchronizePropertiesAfterCacheMerge(IntactExperiment existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check new annotations if any
         prepareAnnotations(existingInstance, true);
         // then check new xrefs if any
         prepareXrefs(existingInstance, true);
-        // remove object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache(object);
     }
 }
