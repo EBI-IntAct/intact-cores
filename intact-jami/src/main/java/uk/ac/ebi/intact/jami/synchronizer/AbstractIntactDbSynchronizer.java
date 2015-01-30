@@ -458,11 +458,16 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             existingInstance.setLocalUserContext(getContext().getUserContext());
             // synchronize before persisting
             if (needToSynchronizeProperties){
-                // synchronize properties
-                synchronizeDirtyObjectProperties(object, existingInstance);
+                // synchronize properties after cache merge
+                mergeWithCache(object, existingInstance);
             }
         }
         return existingInstance;
+    }
+
+    protected void mergeWithCache(I oject, T existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // by default, does a dirty synchronization
+        synchronizeDirtyObjectProperties(oject, existingInstance);
     }
 
     /**

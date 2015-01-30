@@ -311,22 +311,22 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     public void synchronizeProperties(IntactExperiment intactExperiment) throws FinderException, PersisterException, SynchronizerException {
-        // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(intactExperiment);
         // then check interaction detection method
         prepareInteractionDetectionMethod(intactExperiment, true);
-        // then check participant identification method
-        prepareParticipantIdentificationMethod(intactExperiment, true);
         // then check organism
         prepareHostOrganism(intactExperiment, true);
         // then check annotations
         prepareAnnotations(intactExperiment, true);
         // then check xrefs
         prepareXrefs(intactExperiment, true);
-        // then check interactions
-        prepareInteractions(intactExperiment, true);
         // then check variable parameters
         prepareVariableParameters(intactExperiment, true);
+        // then check interactions
+        prepareInteractions(intactExperiment, true);
+        // then check shortlabel/synchronize
+        prepareAndSynchronizeShortLabel(intactExperiment);
+        // then check participant identification method
+        prepareParticipantIdentificationMethod(intactExperiment, true);
     }
 
     public void clearCache() {
@@ -385,18 +385,18 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     protected void convertPersistableProperties(IntactExperiment intactExperiment) throws SynchronizerException, PersisterException, FinderException {
         // then check interaction detection method
         prepareInteractionDetectionMethod(intactExperiment, false);
-        // then check participant identification method
-        prepareParticipantIdentificationMethod(intactExperiment, false);
         // then check organism
         prepareHostOrganism(intactExperiment, false);
         // then check annotations
         prepareAnnotations(intactExperiment, false);
         // then check xrefs
         prepareXrefs(intactExperiment, false);
-        // then check interactions
-        prepareInteractions(intactExperiment, false);
         // then check variable parameters
         prepareVariableParameters(intactExperiment, false);
+        // then check interactions
+        prepareInteractions(intactExperiment, false);
+        // then check participant identification method
+        prepareParticipantIdentificationMethod(intactExperiment, false);
     }
 
     @Override
@@ -496,7 +496,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
                     getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
                     getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
         }
-        else{
+        else if (intactExperiment.getAc() == null || getEntityManager().contains(intactExperiment)){
             detectionMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(intactExperiment);
             if (detectionMethod != null){
                 intactExperiment.setParticipantIdentificationMethod(enableSynchronization ?
@@ -531,5 +531,26 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
             getContext().getInteractionSynchronizer().delete(f);
         }
         intactParticipant.getInteractionEvidences().clear();
+    }
+
+    @Override
+    protected void synchronizePropertiesAfterMerge(IntactExperiment mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        prepareParticipantIdentificationMethod(mergedObject, true);
+    }
+
+    @Override
+    protected void mergeWithCache(Experiment object, IntactExperiment existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        // then check new annotations if any
+        prepareAnnotations(existingInstance, true);
+        // then check new xrefs if any
+        prepareXrefs(existingInstance, true);
+        // then check new variable parameters if any
+        prepareVariableParameters(existingInstance, true);
+        // then check new interactions if any
+        prepareInteractions(existingInstance, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
     }
 }

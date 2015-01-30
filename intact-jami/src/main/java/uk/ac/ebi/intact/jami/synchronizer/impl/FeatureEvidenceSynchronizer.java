@@ -195,4 +195,21 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
             }
         }
     }
+
+    @Override
+    protected void postProcessCachedProperties(IntactFeatureEvidence intactFeature) throws PersisterException, FinderException, SynchronizerException {
+        super.postProcessCachedProperties(intactFeature);
+        // then check aliases
+        prepareAliases(intactFeature, true);
+        // then check annotations
+        prepareAnnotations(intactFeature, true);
+        // then check xrefs
+        prepareXrefs(intactFeature, true);
+        // then detection methods
+        prepareDetectionMethods(intactFeature, true);
+        // then check ranges
+        prepareRanges(intactFeature, true);
+        // then synchronize parameters
+        prepareParameters(intactFeature, true);
+    }
 }

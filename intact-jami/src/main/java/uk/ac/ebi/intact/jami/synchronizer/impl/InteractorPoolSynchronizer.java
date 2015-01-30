@@ -180,4 +180,11 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
         InteractorCloner.copyAndOverrideBasicInteractorPoolProperties(object, newInteractor);
         return newInteractor;
     }
+
+    @Override
+    protected void processPostCacheProperties(IntactInteractorPool existingInstance) throws FinderException, PersisterException, SynchronizerException {
+        super.processPostCacheProperties(existingInstance);
+        // synchronize subInteractors if not done
+        prepareInteractors(existingInstance, true);
+    }
 }

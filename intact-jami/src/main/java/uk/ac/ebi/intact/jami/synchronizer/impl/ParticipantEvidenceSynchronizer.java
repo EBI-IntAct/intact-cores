@@ -255,6 +255,27 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
         // after persistence, re-attach dependent objects to avoid internal loops when participants are called by each other
         existingInstance.getCausalRelationships().addAll(relationships);
     }
+
+    @Override
+    protected void postProcessCachedProperties(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
+        super.postProcessCachedProperties(intactEntity);
+        // then check aliases
+        prepareAliases(intactEntity, true);
+        // then check annotations
+        prepareAnnotations(intactEntity, true);
+        // then check xrefs
+        prepareXrefs(intactEntity, true);
+        // then check causal relationships
+        prepareCausalRelationships(intactEntity, true);
+        // then check participant identification methods
+        prepareIdentificationMethods(intactEntity, true);
+        // then check experimental preparations
+        prepareExperimentalPreparations(intactEntity, true);
+        // then check confidences
+        prepareConfidences(intactEntity, true);
+        // then check parameters
+        prepareParameters(intactEntity, true);
+    }
 }
 
 

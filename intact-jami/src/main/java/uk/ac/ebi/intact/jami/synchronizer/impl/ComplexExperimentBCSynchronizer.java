@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
-import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
@@ -372,14 +371,6 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                     getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
                     getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
         }
-        else{
-            detectionMethod = ExperimentUtils.extractMostCommonParticipantDetectionMethodFrom(intactExperiment);
-            if (detectionMethod != null){
-                intactExperiment.setParticipantIdentificationMethod(enableSynchronization ?
-                        getContext().getParticipantDetectionMethodSynchronizer().synchronize(detectionMethod, true) :
-                        getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(detectionMethod));
-            }
-        }
     }
 
     protected void prepareAndSynchronizeShortLabel(IntactExperiment intactExperiment) throws SynchronizerException {
@@ -407,5 +398,17 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
             getContext().getInteractionSynchronizer().delete(f);
         }
         intactParticipant.getInteractionEvidences().clear();
+    }
+
+    @Override
+    protected void mergeWithCache(Experiment object, IntactExperiment existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        // then check new annotations if any
+        prepareAnnotations(existingInstance, true);
+        // then check new xrefs if any
+        prepareXrefs(existingInstance, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
     }
 }

@@ -72,8 +72,6 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     public void synchronizeProperties(IntactInteractionEvidence intactInteraction) throws FinderException, PersisterException, SynchronizerException {
-        // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(intactInteraction);
         // then check interaction detection method
         prepareInteractionType(intactInteraction, true);
         // then check participant identification method
@@ -88,6 +86,8 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         prepareParticipants(intactInteraction, true);
         // then check variable parameters
         prepareVariableParametersValues(intactInteraction, true);
+        // then check shortlabel/synchronize
+        prepareAndSynchronizeShortLabel(intactInteraction);
     }
 
     public void clearCache() {
@@ -295,5 +295,25 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             getContext().getParticipantEvidenceSynchronizer().delete((ParticipantEvidence)f);
         }
         intactParticipant.getParticipants().clear();
+    }
+
+    @Override
+    protected void mergeWithCache(InteractionEvidence object, IntactInteractionEvidence existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        // then check new confidences if any
+        prepareConfidences(existingInstance, true);
+        // then check new parameters if any
+        prepareParameters(existingInstance, true);
+        // then check new annotations if any
+        prepareAnnotations(existingInstance, true);
+        // then check new xrefs if any
+        prepareXrefs(existingInstance, true);
+        // then check new interactions if any
+        prepareParticipants(existingInstance, true);
+        // then check new variable parameters if any
+        prepareVariableParametersValues(existingInstance, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
     }
 }

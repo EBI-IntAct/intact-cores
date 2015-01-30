@@ -1,12 +1,10 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
-import psidev.psi.mi.jami.utils.comparator.participant.UnambiguousModelledParticipantComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
@@ -260,7 +258,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
            // for BC with intact-core only
            Xref ecoCode = XrefUtils.collectFirstIdentifierWithDatabase(evidenceType.getIdentifiers(), Complex.ECO_MI, Complex.ECO);
            // only add xref when we can reload the xrefs becaus ethe complex is in the session
-           if (ecoCode != null && getEntityManager().contains(intactComplex)){
+           if (ecoCode != null && (intactComplex.getAc() == null || getEntityManager().contains(intactComplex))){
                Collection<Xref> ecoCodes = XrefUtils.collectAllXrefsHavingDatabase(intactComplex.getXrefs(), Complex.ECO_MI, Complex.ECO);
                // no eco codes
                if (ecoCodes.isEmpty()){
@@ -497,5 +495,18 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     public void clearCache() {
         super.clearCache();
         this.experimentBCSynchronizer.clearCache();
+    }
+
+    @Override
+    protected void processPostCacheProperties(IntactComplex existingInstance) throws FinderException, PersisterException, SynchronizerException {
+        super.processPostCacheProperties(existingInstance);
+        // then check new confidences  if any
+        prepareConfidences(existingInstance, true);
+        // then check new parameters if any
+        prepareParameters(existingInstance, true);
+        // then check new participants if any
+        prepareParticipants(existingInstance, true);
+        // prepare lifecycle
+        prepareLifeCycleEvents(existingInstance, true);
     }
 }

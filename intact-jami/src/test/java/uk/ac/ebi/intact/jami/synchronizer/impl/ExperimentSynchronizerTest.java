@@ -15,7 +15,6 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 
@@ -39,7 +38,7 @@ public class ExperimentSynchronizerTest {
     @PersistenceContext(unitName = "intact-jami")
     protected EntityManager entityManager;
 
-    protected IntactDbSynchronizer synchronizer;
+    protected ExperimentSynchronizer synchronizer;
     protected SynchronizerContext context;
 
     @Before
@@ -59,11 +58,16 @@ public class ExperimentSynchronizerTest {
         IntactExperiment exp = new IntactExperiment(intactPublication);
         IntactExperiment exp2 = new IntactExperiment(intactPublication);
 
-        this.synchronizer.synchronize(exp, true);
-        this.synchronizer.synchronize(exp2, true);
+        IntactExperiment res1 = this.synchronizer.synchronize(exp, true);
+        IntactExperiment res2 =this.synchronizer.synchronize(exp2, true);
 
         Assert.assertEquals(exp.getShortLabel(), "bla_bla-2015-1");
-        Assert.assertEquals(exp2.getShortLabel(), "bla_bla-2015-1");
-        Assert.assertEquals(exp.getAc(), exp2.getAc());
+        Assert.assertNull(exp2.getShortLabel());
+        Assert.assertNull(exp2.getAc());
+        Assert.assertNotNull(exp.getAc());
+        Assert.assertEquals(res1.getShortLabel(), "bla_bla-2015-1");
+        Assert.assertEquals(res2.getShortLabel(), "bla_bla-2015-1");
+        Assert.assertTrue(res1 == res2);
+        Assert.assertTrue(res1 == exp);
     }
 }

@@ -182,6 +182,22 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
         ParticipantCloner.copyAndOverrideModelledParticipantProperties(object, newParticipant, false);
         return newParticipant;
     }
+
+    @Override
+    protected void postProcessCachedProperties(IntactModelledParticipant intactEntity) throws FinderException, PersisterException, SynchronizerException {
+        super.postProcessCachedProperties(intactEntity);
+        // then check aliases
+        prepareAliases(intactEntity, true);
+        // then check annotations
+        prepareAnnotations(intactEntity, true);
+        // then check xrefs
+        prepareXrefs(intactEntity, true);
+        // then check causal relationships
+        prepareCausalRelationships(intactEntity, true);
+
+        // check experimental roles for backward compatibility ONLY
+        prepareExperimentalRoles(intactEntity, true);
+    }
 }
 
 

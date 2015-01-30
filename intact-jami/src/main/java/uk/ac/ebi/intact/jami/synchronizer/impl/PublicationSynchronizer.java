@@ -218,41 +218,43 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     protected void prepareAndSynchronizeShortLabel(IntactPublication intactPublication) throws SynchronizerException {
-        // first initialise shortlabel if not done
-        String pubmed = intactPublication.getPubmedId();
-        String doi = intactPublication.getDoi();
-        if (pubmed != null ){
-            intactPublication.setShortLabel(pubmed);
-        }
-        else if (doi != null){
-            intactPublication.setShortLabel(doi);
-        }
-        else if (!intactPublication.getIdentifiers().isEmpty()){
-            Iterator<Xref> idIterator = intactPublication.getIdentifiers().iterator();
-            while (idIterator.hasNext()){
-                String id = idIterator.next().getId();
-                if (intactPublication.getAc() == null || !intactPublication.getAc().equals(id)){
-                    intactPublication.setShortLabel(id);
+        if (intactPublication.getAc() == null || getEntityManager().contains(intactPublication)){
+            // first initialise shortlabel if not done
+            String pubmed = intactPublication.getPubmedId();
+            String doi = intactPublication.getDoi();
+            if (pubmed != null ){
+                intactPublication.setShortLabel(pubmed);
+            }
+            else if (doi != null){
+                intactPublication.setShortLabel(doi);
+            }
+            else if (!intactPublication.getIdentifiers().isEmpty()){
+                Iterator<Xref> idIterator = intactPublication.getIdentifiers().iterator();
+                while (idIterator.hasNext()){
+                    String id = idIterator.next().getId();
+                    if (intactPublication.getAc() == null || !intactPublication.getAc().equals(id)){
+                        intactPublication.setShortLabel(id);
+                    }
                 }
             }
-        }
-        else {
-            // create unassigned pubmed id
-            SequenceManager seqManager = ApplicationContextProvider.getBean("jamiSequenceManager", SequenceManager.class);
-            if (seqManager == null){
-                throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
-                        "was found in the spring context.");
+            else {
+                // create unassigned pubmed id
+                SequenceManager seqManager = ApplicationContextProvider.getBean("jamiSequenceManager", SequenceManager.class);
+                if (seqManager == null){
+                    throw new SynchronizerException("The publication synchronizer needs a sequence manager to automatically generate a unassigned pubmed identifier for backward compatibility. No sequence manager bean " +
+                            "was found in the spring context.");
+                }
+                seqManager.createSequenceIfNotExists(IntactUtils.UNASSIGNED_SEQ, 1);
+                String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactUtils.UNASSIGNED_SEQ));
+                String identifier = "unassigned" + nextIntegerAsString;
+                // set identifier
+                intactPublication.setShortLabel(identifier);
             }
-            seqManager.createSequenceIfNotExists(IntactUtils.UNASSIGNED_SEQ, 1);
-            String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactUtils.UNASSIGNED_SEQ));
-            String identifier = "unassigned" + nextIntegerAsString;
-            // set identifier
-            intactPublication.setShortLabel(identifier);
-        }
-        // truncate if necessary
-        if (IntactUtils.MAX_SHORT_LABEL_LEN < intactPublication.getShortLabel().length()){
-            log.warn("Publication shortLabel too long: "+intactPublication.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
-            intactPublication.setShortLabel(intactPublication.getShortLabel().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
+            // truncate if necessary
+            if (IntactUtils.MAX_SHORT_LABEL_LEN < intactPublication.getShortLabel().length()){
+                log.warn("Publication shortLabel too long: "+intactPublication.getShortLabel()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
+                intactPublication.setShortLabel(intactPublication.getShortLabel().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
+            }
         }
     }
 
@@ -759,5 +761,31 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             getContext().getExperimentSynchronizer().delete(f);
         }
         intactParticipant.getExperiments().clear();
+    }
+
+    @Override
+    protected void synchronizePropertiesAfterMerge(IntactPublication mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        prepareAndSynchronizeShortLabel(mergedObject);
+    }
+
+    @Override
+    protected void mergeWithCache(Publication object, IntactPublication existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        // synchronize properties
+        // then check shortlabel/synchronize
+        prepareAndSynchronizeShortLabel(existingInstance);
+        // then check xrefs
+        prepareXrefs(existingInstance, true);
+        // then check experiments
+        prepareExperiments(existingInstance, true);
+        // then check publication lifecycle
+        prepareLifeCycleEvents(existingInstance, true);
+        // then check authors
+        preparePublicationAuthors(existingInstance);
+        // then check annotations
+        prepareAnnotations(existingInstance, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
     }
 }

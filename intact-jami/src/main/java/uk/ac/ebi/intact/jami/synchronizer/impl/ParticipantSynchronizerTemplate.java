@@ -210,4 +210,19 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         }
         intactParticipant.getFeatures().clear();
     }
+
+    @Override
+    protected void mergeWithCache(T oject, I existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(oject, existingInstance);
+        postProcessCachedProperties(existingInstance);
+
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(oject);
+    }
+
+    protected void postProcessCachedProperties(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+        // then check features
+        prepareFeatures(existingInstance, true);
+    }
 }

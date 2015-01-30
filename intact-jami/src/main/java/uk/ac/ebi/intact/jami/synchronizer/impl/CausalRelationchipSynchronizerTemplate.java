@@ -55,7 +55,9 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     protected void synchronizeTarget(I object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         Entity target = object.getTarget();
         if (target instanceof Participant){
-            object.setTarget(getContext().getParticipantSynchronizer().synchronize((Participant)target, false));
+            object.setTarget(enableSynchronization ?
+                    getContext().getParticipantSynchronizer().synchronize((Participant)target, false) :
+                    getContext().getParticipantSynchronizer().convertToPersistentObject((Participant)target));
         }
         // TODO: what to do with participant set and candidates?
         else{

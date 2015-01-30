@@ -478,4 +478,14 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new OrganismMergerEnrichOnly(this));
     }
+
+    @Override
+    protected void mergeWithCache(Organism object, IntactOrganism existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        // then check aliases if new aliases
+        prepareAliases(existingInstance, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache((object));
+    }
 }

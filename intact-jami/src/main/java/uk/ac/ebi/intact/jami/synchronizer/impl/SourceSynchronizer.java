@@ -512,4 +512,18 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new SourceMergerEnrichOnly(this));
     }
+
+    @Override
+    protected void mergeWithCache(Source object, IntactSource existingInstance) throws PersisterException, FinderException, SynchronizerException {
+       // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        // then check aliases
+        prepareAliases(existingInstance, true);
+        // then check annotations
+        prepareAnnotations(existingInstance, true);
+        // then check xrefs
+        prepareXrefs(existingInstance, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
+    }
 }

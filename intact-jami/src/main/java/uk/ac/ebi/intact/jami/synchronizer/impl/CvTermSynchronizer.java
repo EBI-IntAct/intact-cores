@@ -519,8 +519,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     protected void initialiseIdentifier(IntactCvTerm intactCv) throws SynchronizerException {
-        // if xrefs have been initialised, some identifiers may have changed
-        if (intactCv.areXrefsInitialized()){
+        // if cv is attached to session, some identifiers may have changed
+        if (intactCv.getAc() == null || getEntityManager().contains(intactCv)){
             // first look at PSI-MI
             if (intactCv.getMIIdentifier() != null){
                 intactCv.setIdentifier(intactCv.getMIIdentifier());
@@ -694,5 +694,28 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             children.getParents().remove(intactObject);
         }
         intactObject.getChildren().clear();
+    }
+
+    @Override
+    protected void mergeWithCache(CvTerm object, IntactCvTerm persistentObject) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, persistentObject);
+        // then check new aliases if any
+        prepareAliases(persistentObject, true);
+        // then check new annotations if any
+        prepareAnnotations(persistentObject, true);
+        // set identifier for backward compatibility
+        initialiseIdentifier(persistentObject);
+        // then check new xrefs if any
+        prepareXrefs(persistentObject, true);
+        // do new parents if any
+        prepareParents(persistentObject, true);
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache(object);
+    }
+
+    @Override
+    protected void synchronizePropertiesAfterMerge(IntactCvTerm mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        initialiseIdentifier(mergedObject);
     }
 }

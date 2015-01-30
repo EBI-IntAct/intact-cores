@@ -229,4 +229,19 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         existingInstance.getDbLinkedFeatures().addAll(linkedFeatures);
         existingInstance.setBinds(bind);
     }
+
+    @Override
+    protected void mergeWithCache(F object, I existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // store object in a identity cache so no lazy properties can be called before synchronization
+        storeObjectInIdentityCache(object, existingInstance);
+        postProcessCachedProperties(existingInstance);
+
+        // remove object from identity cache as not dirty anymore
+        removeObjectInstanceFromIdentityCache((object));
+    }
+
+    protected void postProcessCachedProperties(I existingInstance) throws PersisterException, FinderException, SynchronizerException {
+        // then check linkedFeatures if any
+        prepareLinkedFeatures(existingInstance, true);
+    }
 }
