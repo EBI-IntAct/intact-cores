@@ -498,8 +498,8 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactComplex existingInstance) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesAfterCacheMerge(existingInstance);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactComplex existingInstance) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(existingInstance);
         // then check new confidences  if any
         prepareConfidences(existingInstance, true);
         // then check new parameters if any

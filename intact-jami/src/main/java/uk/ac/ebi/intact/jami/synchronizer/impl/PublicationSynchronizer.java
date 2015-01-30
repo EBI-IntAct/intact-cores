@@ -769,7 +769,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactPublication existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactPublication existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // synchronize properties
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(existingInstance);

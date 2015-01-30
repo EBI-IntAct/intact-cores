@@ -480,7 +480,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactOrganism existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactOrganism existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check aliases if new aliases
         prepareAliases(existingInstance, true);
     }

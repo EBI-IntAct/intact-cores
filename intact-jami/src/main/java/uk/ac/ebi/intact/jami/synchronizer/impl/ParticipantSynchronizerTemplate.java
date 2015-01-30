@@ -212,7 +212,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check features
         prepareFeatures(existingInstance, true);
     }

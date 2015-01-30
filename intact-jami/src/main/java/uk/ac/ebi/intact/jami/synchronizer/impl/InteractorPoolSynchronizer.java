@@ -1,12 +1,9 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.map.IdentityMap;
-import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.DefaultInteractorPoolComparator;
-import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.InteractorPoolMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -16,7 +13,6 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorPoolComparator;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactPolymerComparator;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -183,7 +179,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
 
     @Override
     protected void synchronizePropertiesAfterMerge(IntactInteractorPool mergedObject) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesAfterCacheMerge(mergedObject);
+        super.synchronizePropertiesBeforeCacheMerge(mergedObject);
         // synchronize subInteractors if not done
         prepareInteractors(mergedObject, true);
     }

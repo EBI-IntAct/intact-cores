@@ -221,7 +221,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(User object) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(User object) throws FinderException, PersisterException, SynchronizerException {
         // synchronize preferences
         preparePreferences(object, true);
         // synchronize roles

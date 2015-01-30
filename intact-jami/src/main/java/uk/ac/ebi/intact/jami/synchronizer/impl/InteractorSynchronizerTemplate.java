@@ -683,7 +683,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
         prepareAliases(existingInstance, true);
         // then check new annotations if any

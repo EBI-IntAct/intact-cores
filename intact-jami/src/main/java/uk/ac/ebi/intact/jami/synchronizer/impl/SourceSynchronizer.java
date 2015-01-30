@@ -514,7 +514,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactSource existingInstance) throws SynchronizerException, PersisterException, FinderException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactSource existingInstance) throws SynchronizerException, PersisterException, FinderException {
         // then check aliases
         prepareAliases(existingInstance, true);
         // then check annotations

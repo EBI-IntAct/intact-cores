@@ -67,7 +67,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // check cache when possible
         else if (isObjectStoredInCache((I) object)){
             // process object from cache
-            return processCachedObject((I)object, mode, true);
+            return processCachedObject((I)object, object, mode, true);
         }
 
         // store in cache
@@ -113,7 +113,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // check business cache when possible. Only objects that are not partially initialised for the synchronizer can go there
             if (isObjectStoredInCache(object)){
                 // retrieve object in cache and merge it with current object if necessary
-                return processCachedObject(object, mode, true);
+                return processCachedObject(object,newObject, mode, needToSynchronizeProperties);
             }
 
             // no cached object, process the transient instance and synchronize with database
@@ -148,7 +148,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // check normal cache when possible. Only objects that are not dirty for the synchronizer can go there
             else if (isObjectStoredInCache(object)){
-                return processCachedObject(object, mode, true);
+                return processCachedObject(object, intactObject, mode, needToSynchronizeProperties);
             }
             // retrieve and/or persist transient instance
             else if (identifier == null){
@@ -297,7 +297,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // the reloaded object is not null and is the one that should be used in the cache because we ignore local changes
             if (reloaded != null){
                 // cache object to persist if allowed
-                storeInCache((I)reloaded, intactObject, reloaded);
+                storeInCache((I)intactObject, intactObject, reloaded);
                 if (listener != null
                         && intactObject instanceof IntactPrimaryObject){
                     listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)reloaded);
@@ -388,12 +388,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
+                // synchronize before merging
+                if (needToSynchronizeProperties){
+                    synchronizeProperties(persistentObject);
+                }
+
                 // merge
                 T mergedObject = getIntactMerger().merge(persistentObject, existingInstance);
-                // synchronize before persisting
-                if (needToSynchronizeProperties){
-                    synchronizeProperties(mergedObject);
-                }
+
                 // then set userContext
                 mergedObject.setLocalUserContext(getContext().getUserContext());
 
@@ -445,45 +447,52 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     /**
      * This method will merge properties with object from cache if necessary
      * @param object   : original object
+     * @param intactEntity: intact entity
      * @param existingInstance : existing instance from cache/database
      * @return  the object merged with the cache if necessary, the fetched object otherwise
      */
-    protected T mergeWithCachedObject(I object, T existingInstance, boolean needToSynchronizeProperties) throws PersisterException,
+    protected T mergeWithCachedObject(I object, T intactEntity, T existingInstance, boolean needToSynchronizeProperties) throws PersisterException,
             FinderException, SynchronizerException {
         // merge only if object instances are different
         if (object != existingInstance){
-            // merge cached instance with original object
-            try {
-                getIntactMerger().enrich((I)existingInstance, object);
-            } catch (EnricherException e) {
-                throw new SynchronizerException("Cannot merge "+object + " with "+existingInstance, e);
-            }
-            // then set userContext
-            existingInstance.setLocalUserContext(getContext().getUserContext());
-            // synchronize merged properties in case the cached object has now new properties
+            // first synchronize properties before merging with cache if necessary
             if (needToSynchronizeProperties){
                 // synchronize properties after cache merge
                 // store object and intact object in a identity cache so no lazy properties can be called before synchronization
                 storeObjectInIdentityCache(object, existingInstance);
-                storeObjectInIdentityCache((I)existingInstance, existingInstance);
+                if (object != existingInstance){
+                    storeObjectInIdentityCache((I)existingInstance, existingInstance);
+                }
                 // synchronize properties
-                synchronizePropertiesAfterCacheMerge(existingInstance);
+                synchronizePropertiesBeforeCacheMerge(intactEntity);
                 // remove object and intact object from identity cache as not dirty anymore
                 removeObjectInstanceFromIdentityCache(object);
-                removeObjectInstanceFromIdentityCache((I) existingInstance);
+                if (object != existingInstance){
+                    removeObjectInstanceFromIdentityCache((I) existingInstance);
+                }
             }
+
+            // merge cached instance with original object
+            try {
+                getIntactMerger().enrich((I)existingInstance, (I)intactEntity);
+            } catch (EnricherException e) {
+                throw new SynchronizerException("Cannot merge "+intactEntity + " with "+existingInstance, e);
+            }
+
+            // then set userContext
+            existingInstance.setLocalUserContext(getContext().getUserContext());
         }
         return existingInstance;
     }
 
     /**
-     * Method which synchronize the properties which could have been merged after a merge with a cached object
+     * Method which synchronize the properties which can affect the merge withe the cached object
      * @param existingInstance
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    protected void synchronizePropertiesAfterCacheMerge(T existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(T existingInstance) throws FinderException, PersisterException, SynchronizerException {
         synchronizeProperties(existingInstance);
     }
 
@@ -582,11 +591,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @throws FinderException
      * @throws SynchronizerException
      */
-    protected T processCachedObject(I object, FlushModeType mode, boolean needToSynchronize) throws PersisterException, FinderException, SynchronizerException {
+    protected T processCachedObject(I object, T intactEntity, FlushModeType mode, boolean needToSynchronize) throws PersisterException, FinderException, SynchronizerException {
         // get cached instance from business cache
         T fetched = fetchObjectFromCache(object);
         // then merge properties if not done yet. The object is in a business key map, it may have more properties that could be merged to the original object in the cache
-        T merged = mergeWithCachedObject(object, fetched, needToSynchronize);
+        T merged = mergeWithCachedObject(object, intactEntity, fetched, needToSynchronize);
 
         // reset entity manager flushMode
         resetEntityManagerFlushType(mode);

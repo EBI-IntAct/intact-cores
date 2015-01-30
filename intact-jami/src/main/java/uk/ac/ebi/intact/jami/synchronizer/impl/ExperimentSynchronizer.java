@@ -539,7 +539,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactExperiment existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check new annotations if any
         prepareAnnotations(existingInstance, true);
         // then check new xrefs if any

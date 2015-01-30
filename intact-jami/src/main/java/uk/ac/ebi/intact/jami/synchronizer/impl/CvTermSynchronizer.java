@@ -697,7 +697,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactCvTerm persistentObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactCvTerm persistentObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
         prepareAliases(persistentObject, true);
         // then check new annotations if any

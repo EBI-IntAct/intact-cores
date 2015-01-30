@@ -298,7 +298,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(IntactInteractionEvidence existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractionEvidence existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check new confidences if any
         prepareConfidences(existingInstance, true);
         // then check new parameters if any

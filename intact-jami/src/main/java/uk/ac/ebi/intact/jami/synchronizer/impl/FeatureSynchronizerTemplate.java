@@ -231,7 +231,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected void synchronizePropertiesAfterCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
         // then check linkedFeatures if any
         prepareLinkedFeatures(existingInstance, true);
     }
