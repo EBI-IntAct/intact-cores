@@ -34,8 +34,6 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class AbstractDbSynchronizerTest<I, T extends Auditable> {
     @PersistenceContext(unitName = "intact-jami")
     protected EntityManager entityManager;
-    @PersistenceUnit(unitName = "intact-jami", name = "intactEntityManagerFactory")
-    protected EntityManagerFactory intactEntityManagerFactory;
 
     protected IntactDbSynchronizer synchronizer;
     protected SynchronizerContext context;
