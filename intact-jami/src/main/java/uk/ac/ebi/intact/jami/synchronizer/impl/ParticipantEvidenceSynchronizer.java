@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -257,24 +258,40 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(intactEntity);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactParticipantEvidence mergedObject, IntactParticipantEvidence originalParticipant) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(mergedObject, originalParticipant);
         // then check aliases
-        prepareAliases(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getAliases(), originalParticipant.getAliases())){
+            prepareAliases(mergedObject, true);
+        }
         // then check annotations
-        prepareAnnotations(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getAnnotations(), originalParticipant.getAnnotations())){
+            prepareAnnotations(mergedObject, true);
+        }
         // then check xrefs
-        prepareXrefs(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getXrefs(), originalParticipant.getXrefs())){
+            prepareXrefs(mergedObject, true);
+        }
         // then check causal relationships
-        prepareCausalRelationships(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getCausalRelationships(), originalParticipant.getCausalRelationships())){
+            prepareCausalRelationships(mergedObject, true);
+        }
         // then check participant identification methods
-        prepareIdentificationMethods(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getIdentificationMethods(), originalParticipant.getIdentificationMethods())){
+            prepareIdentificationMethods(mergedObject, true);
+        }
         // then check experimental preparations
-        prepareExperimentalPreparations(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getExperimentalPreparations(), originalParticipant.getExperimentalPreparations())){
+            prepareExperimentalPreparations(mergedObject, true);
+        }
         // then check confidences
-        prepareConfidences(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getConfidences(), originalParticipant.getConfidences())){
+            prepareConfidences(mergedObject, true);
+        }
         // then check parameters
-        prepareParameters(intactEntity, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getParameters(), originalParticipant.getParameters())){
+            prepareParameters(mergedObject, true);
+        }
     }
 }
 

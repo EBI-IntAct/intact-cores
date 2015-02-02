@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -480,8 +481,10 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactOrganism existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactOrganism existingInstance, IntactOrganism originalOrganism) throws FinderException, PersisterException, SynchronizerException {
         // then check aliases if new aliases
-        prepareAliases(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAliases(), originalOrganism.getAliases())){
+            prepareAliases(existingInstance, true);
+        }
     }
 }

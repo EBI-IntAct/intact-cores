@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
@@ -401,10 +402,14 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment existingInstance, IntactExperiment originalExperiment) throws FinderException, PersisterException, SynchronizerException {
         // then check new annotations if any
-        prepareAnnotations(existingInstance, true);
-        // then check new xrefs if any
-        prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalExperiment.getAnnotations())){
+            prepareAnnotations(existingInstance, true);
+        }
+        if (!CollectionUtils.isEqualCollection(existingInstance.getXrefs(), existingInstance.getXrefs())){
+            // then check new xrefs if any
+            prepareXrefs(existingInstance, true);
+        }
     }
 }

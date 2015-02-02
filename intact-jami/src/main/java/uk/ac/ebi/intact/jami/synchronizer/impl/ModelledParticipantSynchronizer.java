@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -184,19 +185,29 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     }
 
     @Override
-    protected void synchronizePropertiesAfterMerge(IntactModelledParticipant mergedObject) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesAfterMerge(mergedObject);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledParticipant mergedObject, IntactModelledParticipant originalParticipant) throws SynchronizerException, PersisterException, FinderException {
+        super.synchronizePropertiesBeforeCacheMerge(mergedObject, originalParticipant);
         // then check aliases
-        prepareAliases(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getAliases(), originalParticipant.getAliases())){
+            prepareAliases(mergedObject, true);
+        }
         // then check annotations
-        prepareAnnotations(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getAnnotations(), originalParticipant.getAnnotations())){
+            prepareAnnotations(mergedObject, true);
+        }
         // then check xrefs
-        prepareXrefs(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getXrefs(), originalParticipant.getXrefs())){
+            prepareXrefs(mergedObject, true);
+        }
         // then check causal relationships
-        prepareCausalRelationships(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getCausalRelationships(), originalParticipant.getCausalRelationships())){
+            prepareCausalRelationships(mergedObject, true);
+        }
 
         // check experimental roles for backward compatibility ONLY
-        prepareExperimentalRoles(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject.getDbExperimentalRoles(), originalParticipant.getDbExperimentalRoles())){
+            prepareExperimentalRoles(mergedObject, true);
+        }
     }
 }
 

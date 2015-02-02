@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
@@ -539,14 +540,22 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment existingInstance, IntactExperiment originalExperiment) throws FinderException, PersisterException, SynchronizerException {
         // then check new annotations if any
-        prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalExperiment.getAnnotations())){
+            prepareAnnotations(existingInstance, true);
+        }
         // then check new xrefs if any
-        prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getXrefs(), originalExperiment.getXrefs())){
+            prepareXrefs(existingInstance, true);
+        }
         // then check new variable parameters if any
-        prepareVariableParameters(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getVariableParameters(), originalExperiment.getVariableParameters())){
+            prepareVariableParameters(existingInstance, true);
+        }
         // then check new interactions if any
-        prepareInteractions(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getInteractionEvidences(), originalExperiment.getInteractionEvidences())){
+            prepareInteractions(existingInstance, true);
+        }
     }
 }

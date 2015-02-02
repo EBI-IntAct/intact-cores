@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -48,6 +49,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     private IntactComparator<CvTerm> cvComparator;
 
+    private Set<String> persistedNames;
+
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
     public CvTermSynchronizer(SynchronizerContext context){
@@ -58,6 +61,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(cvComparator);
         this.convertedObjects = new IdentityMap();
+        this.persistedNames = new HashSet<String>();
     }
 
     public CvTermSynchronizer(SynchronizerContext context, String objClass){
@@ -327,6 +331,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.persistedNames.clear();
     }
 
     public String getObjClass() {
@@ -344,7 +349,9 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
-        IntactUtils.synchronizeCvTermShortName(intactCv, getEntityManager(), this.objClass);
+        IntactUtils.synchronizeCvTermShortName(intactCv, getEntityManager(), this.objClass, this.persistedNames);
+
+        this.persistedNames.add(intactCv.getShortName());
     }
 
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
@@ -697,17 +704,25 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactCvTerm persistentObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactCvTerm persistentObject, IntactCvTerm originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
-        prepareAliases(persistentObject, true);
+        if (!CollectionUtils.isEqualCollection(persistentObject.getSynonyms(), originalObject.getSynonyms())){
+            prepareAliases(persistentObject, true);
+        }
         // then check new annotations if any
-        prepareAnnotations(persistentObject, true);
+        if (!CollectionUtils.isEqualCollection(persistentObject.getAnnotations(), originalObject.getAnnotations())){
+            prepareAnnotations(persistentObject, true);
+        }
         // set identifier for backward compatibility
-        initialiseIdentifier(persistentObject);
-        // then check new xrefs if any
-        prepareXrefs(persistentObject, true);
+        if (!CollectionUtils.isEqualCollection(persistentObject.getDbXrefs(), originalObject.getDbXrefs())){
+            initialiseIdentifier(persistentObject);
+            // then check new xrefs if any
+            prepareXrefs(persistentObject, true);
+        }
         // do new parents if any
-        prepareParents(persistentObject, true);
+        if (!CollectionUtils.isEqualCollection(persistentObject.getParents(), originalObject.getParents())){
+            prepareParents(persistentObject, true);
+        }
     }
 
     @Override

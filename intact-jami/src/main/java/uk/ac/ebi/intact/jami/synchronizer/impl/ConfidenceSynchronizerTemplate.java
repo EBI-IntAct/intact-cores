@@ -117,4 +117,9 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<T, C>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(C existingInstance, C originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

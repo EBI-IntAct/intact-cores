@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -769,19 +770,30 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactPublication existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactPublication existingInstance, IntactPublication originalInstance) throws FinderException, PersisterException, SynchronizerException {
         // synchronize properties
         // then check shortlabel/synchronize
-        prepareAndSynchronizeShortLabel(existingInstance);
-        // then check xrefs
-        prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalInstance.getDbXrefs())){
+            prepareAndSynchronizeShortLabel(existingInstance);
+            // then check xrefs
+            prepareXrefs(existingInstance, true);
+        }
         // then check experiments
-        prepareExperiments(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getExperiments(), originalInstance.getExperiments())){
+            prepareExperiments(existingInstance, true);
+        }
         // then check publication lifecycle
-        prepareLifeCycleEvents(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getLifecycleEvents(), originalInstance.getLifecycleEvents())){
+            prepareLifeCycleEvents(existingInstance, true);
+        }
         // then check authors
-        preparePublicationAuthors(existingInstance);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAuthors(), originalInstance.getAuthors())){
+            preparePublicationAuthors(existingInstance);
+        }
         // then check annotations
-        prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalInstance.getAnnotations())){
+            prepareAnnotations(existingInstance, true);
+        }
+
     }
 }

@@ -112,4 +112,9 @@ public class ApplicationPropertySynchronizer extends AbstractIntactDbSynchronize
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<ApplicationProperty, ApplicationProperty>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(ApplicationProperty existingInstance, ApplicationProperty originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

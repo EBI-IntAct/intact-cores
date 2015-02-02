@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -221,10 +222,14 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(User object) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(User object, User cached) throws FinderException, PersisterException, SynchronizerException {
         // synchronize preferences
-        preparePreferences(object, true);
+        if (!CollectionUtils.isEqualCollection(object.getPreferences(), cached.getPreferences())){
+            preparePreferences(object, true);
+        }
         // synchronize roles
-        prepareRoles(object, true);
+        if (!CollectionUtils.isEqualCollection(object.getRoles(), cached.getRoles())){
+            prepareRoles(object, true);
+        }
     }
 }

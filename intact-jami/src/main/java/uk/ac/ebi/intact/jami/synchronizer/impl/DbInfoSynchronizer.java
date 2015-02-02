@@ -117,4 +117,9 @@ public class DbInfoSynchronizer extends AbstractIntactDbSynchronizer<DbInfo, DbI
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<DbInfo, DbInfo>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(DbInfo existingInstance, DbInfo originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

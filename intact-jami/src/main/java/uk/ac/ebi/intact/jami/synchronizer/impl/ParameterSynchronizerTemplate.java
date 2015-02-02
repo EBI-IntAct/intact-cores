@@ -136,4 +136,9 @@ implements ParameterSynchronizer<T,P>{
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<T, P>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(P existingInstance, P originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

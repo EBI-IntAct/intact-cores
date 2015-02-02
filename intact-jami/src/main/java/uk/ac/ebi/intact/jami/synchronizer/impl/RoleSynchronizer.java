@@ -176,4 +176,9 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new RoleMerger());
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(Role existingInstance, Role originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
@@ -298,18 +299,30 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractionEvidence existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractionEvidence existingInstance, IntactInteractionEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new confidences if any
-        prepareConfidences(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getConfidences(), originalObject.getConfidences())){
+            prepareConfidences(existingInstance, true);
+        }
         // then check new parameters if any
-        prepareParameters(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getParameters(), originalObject.getParameters())){
+            prepareParameters(existingInstance, true);
+        }
         // then check new annotations if any
-        prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalObject.getAnnotations())){
+            prepareAnnotations(existingInstance, true);
+        }
         // then check new xrefs if any
-        prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalObject.getDbXrefs())){
+            prepareXrefs(existingInstance, true);
+        }
         // then check new interactions if any
-        prepareParticipants(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getParticipants(), originalObject.getParticipants())){
+            prepareParticipants(existingInstance, true);
+        }
         // then check new variable parameters if any
-        prepareVariableParametersValues(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getVariableParameterValues(), originalObject.getVariableParameterValues())){
+            prepareVariableParametersValues(existingInstance, true);
+        }
     }
 }

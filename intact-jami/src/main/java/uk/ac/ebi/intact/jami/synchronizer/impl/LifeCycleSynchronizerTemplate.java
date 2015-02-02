@@ -133,4 +133,9 @@ implements LifecycleEventSynchronizer<A>{
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<LifeCycleEvent, A>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(A existingInstance, A originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

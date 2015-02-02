@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -683,12 +684,18 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
-        prepareAliases(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAliases(), originalObject.getAliases())){
+            prepareAliases(existingInstance, true);
+        }
         // then check new annotations if any
-        prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalObject.getAnnotations())){
+            prepareAnnotations(existingInstance, true);
+        }
         // then check new xrefs if any
-        prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalObject.getDbXrefs())){
+            prepareXrefs(existingInstance, true);
+        }
     }
 }

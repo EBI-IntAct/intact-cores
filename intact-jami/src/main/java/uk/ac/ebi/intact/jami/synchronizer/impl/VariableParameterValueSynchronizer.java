@@ -161,4 +161,9 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<VariableParameterValue, IntactVariableParameterValue>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(IntactVariableParameterValue existingInstance, IntactVariableParameterValue originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

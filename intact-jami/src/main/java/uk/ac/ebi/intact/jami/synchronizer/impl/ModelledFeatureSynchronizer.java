@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.RangeUtils;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
@@ -149,15 +150,23 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledFeature intactFeature) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(intactFeature);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledFeature intactFeature, IntactModelledFeature originalFeature) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(intactFeature, originalFeature);
         // then check aliases
-        prepareAliases(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getAliases(), originalFeature.getAliases())){
+            prepareAliases(intactFeature, true);
+        }
         // then check annotations
-        prepareAnnotations(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getAnnotations(), originalFeature.getAnnotations())){
+            prepareAnnotations(intactFeature, true);
+        }
         // then check xrefs
-        prepareXrefs(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getDbXrefs(), originalFeature.getDbXrefs())){
+            prepareXrefs(intactFeature, true);
+        }
         // then check ranges
-        prepareRanges(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getRanges(), originalFeature.getRanges())){
+            prepareRanges(intactFeature, true);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.InteractorPool;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
@@ -178,9 +179,11 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     }
 
     @Override
-    protected void synchronizePropertiesAfterMerge(IntactInteractorPool mergedObject) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesBeforeCacheMerge(mergedObject);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractorPool mergedObject, IntactInteractorPool originalObject) throws SynchronizerException, PersisterException, FinderException {
+        super.synchronizePropertiesBeforeCacheMerge(mergedObject, originalObject);
         // synchronize subInteractors if not done
-        prepareInteractors(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(mergedObject, originalObject)){
+            prepareInteractors(mergedObject, true);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -231,8 +232,10 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalFeature) throws FinderException, PersisterException, SynchronizerException {
         // then check linkedFeatures if any
-        prepareLinkedFeatures(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getLinkedFeatures(), originalFeature.getLinkedFeatures())){
+            prepareLinkedFeatures(existingInstance, true);
+        }
     }
 }

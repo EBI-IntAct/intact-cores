@@ -518,7 +518,8 @@ public class IntactUtils {
 
     public static void synchronizeCvTermShortName(IntactCvTerm intactCv,
                                                   EntityManager manager,
-                                                  String objClass){
+                                                  String objClass,
+                                                  Set<String> persistedNames){
         if (intactCv.getShortName() == null){
             return;
         }
@@ -541,6 +542,10 @@ public class IntactUtils {
             }
             existingCvs = query.getResultList();
 
+            if (persistedNames.contains(name)){
+                existingCvs.add(name);
+            }
+
             if (!existingCvs.isEmpty()){
                 // we have a synchronized label, so we need first to extract original label before (last -)
                 if (name.matches(".*-\\d+$")){
@@ -559,6 +564,9 @@ public class IntactUtils {
                     query.setParameter("cvAc", intactCv.getAc());
                 }
                 existingCvs.addAll(query.getResultList());
+                if (persistedNames.contains(name)){
+                    existingCvs.add(name);
+                }
 
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
                 if (!nameInSync.equals(name)){

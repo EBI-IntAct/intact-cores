@@ -61,6 +61,11 @@ public class ComplexXrefSynchronizerTemplate extends XrefSynchronizerTemplate<In
     }
 
     @Override
+    protected void synchronizePropertiesBeforeCacheMerge(InteractorXref existingInstance, InteractorXref originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
+
+    @Override
     protected void convertPersistableProperties(InteractorXref object) throws SynchronizerException, PersisterException, FinderException {
         super.convertPersistableProperties(object);
         if (object instanceof ComplexGOXref){

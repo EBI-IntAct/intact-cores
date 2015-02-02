@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
@@ -498,15 +499,23 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactComplex existingInstance) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(existingInstance);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactComplex existingInstance, IntactComplex originalComplex) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(existingInstance, originalComplex);
         // then check new confidences  if any
-        prepareConfidences(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getModelledConfidences(), originalComplex.getModelledConfidences())){
+            prepareConfidences(existingInstance, true);
+        }
         // then check new parameters if any
-        prepareParameters(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getModelledParameters(), originalComplex.getModelledParameters())){
+            prepareParameters(existingInstance, true);
+        }
         // then check new participants if any
-        prepareParticipants(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getParticipants(), originalComplex.getParticipants())){
+            prepareParticipants(existingInstance, true);
+        }
         // prepare lifecycle
-        prepareLifeCycleEvents(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getLifecycleEvents(), originalComplex.getLifecycleEvents())){
+            prepareLifeCycleEvents(existingInstance, true);
+        }
     }
 }

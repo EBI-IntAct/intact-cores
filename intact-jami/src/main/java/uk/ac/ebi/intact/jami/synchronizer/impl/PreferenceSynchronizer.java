@@ -112,4 +112,9 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Preference, Preference>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(Preference existingInstance, Preference originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

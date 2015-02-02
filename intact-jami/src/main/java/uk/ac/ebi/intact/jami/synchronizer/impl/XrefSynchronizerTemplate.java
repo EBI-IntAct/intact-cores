@@ -137,4 +137,9 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Xref, X>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(X existingInstance, X originalObject) throws FinderException, PersisterException, SynchronizerException {
+
+    }
 }

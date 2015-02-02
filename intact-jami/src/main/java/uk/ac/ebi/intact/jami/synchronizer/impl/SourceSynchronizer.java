@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -514,12 +515,18 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactSource existingInstance) throws SynchronizerException, PersisterException, FinderException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactSource existingInstance, IntactSource originalSource) throws SynchronizerException, PersisterException, FinderException {
         // then check aliases
-        prepareAliases(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getSynonyms(), originalSource.getSynonyms())){
+            prepareAliases(existingInstance, true);
+        }
         // then check annotations
-        prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalSource.getAnnotations())){
+            prepareAnnotations(existingInstance, true);
+        }
         // then check xrefs
-        prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalSource.getDbXrefs())){
+            prepareXrefs(existingInstance, true);
+        }
     }
 }

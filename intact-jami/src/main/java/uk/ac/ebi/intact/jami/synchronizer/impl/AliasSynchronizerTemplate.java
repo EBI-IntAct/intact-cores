@@ -119,4 +119,9 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Alias, A>(this));
     }
+
+    @Override
+    protected void synchronizePropertiesBeforeCacheMerge(A existingInstance, A originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
+    }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.RangeUtils;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
@@ -197,19 +198,31 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactFeatureEvidence intactFeature) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(intactFeature);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactFeatureEvidence intactFeature, IntactFeatureEvidence originalFeature) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(intactFeature, originalFeature);
         // then check aliases
-        prepareAliases(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getAliases(), originalFeature.getAliases())){
+            prepareAliases(intactFeature, true);
+        }
         // then check annotations
-        prepareAnnotations(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getAnnotations(), originalFeature.getAnnotations())){
+            prepareAnnotations(intactFeature, true);
+        }
         // then check xrefs
-        prepareXrefs(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getDbXrefs(), originalFeature.getDbXrefs())){
+            prepareXrefs(intactFeature, true);
+        }
         // then detection methods
-        prepareDetectionMethods(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getDetectionMethods(), originalFeature.getDetectionMethods())){
+            prepareDetectionMethods(intactFeature, true);
+        }
         // then check ranges
-        prepareRanges(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getRanges(), originalFeature.getRanges())){
+            prepareRanges(intactFeature, true);
+        }
         // then synchronize parameters
-        prepareParameters(intactFeature, true);
+        if (!CollectionUtils.isEqualCollection(intactFeature.getParameters(), originalFeature.getParameters())){
+            prepareParameters(intactFeature, true);
+        }
     }
 }

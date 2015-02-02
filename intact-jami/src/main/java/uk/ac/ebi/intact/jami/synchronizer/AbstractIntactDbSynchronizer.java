@@ -463,12 +463,18 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 if (object != existingInstance){
                     storeObjectInIdentityCache((I)existingInstance, existingInstance);
                 }
+                if (object != intactEntity){
+                    storeObjectInIdentityCache((I)intactEntity, existingInstance);
+                }
                 // synchronize properties
-                synchronizePropertiesBeforeCacheMerge(intactEntity);
+                synchronizePropertiesBeforeCacheMerge(intactEntity, intactEntity);
                 // remove object and intact object from identity cache as not dirty anymore
                 removeObjectInstanceFromIdentityCache(object);
                 if (object != existingInstance){
                     removeObjectInstanceFromIdentityCache((I) existingInstance);
+                }
+                if (object != intactEntity){
+                    removeObjectInstanceFromIdentityCache((I)intactEntity);
                 }
             }
 
@@ -488,13 +494,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     /**
      * Method which synchronize the properties which can affect the merge withe the cached object
      * @param existingInstance
+     * @param originalObject : the original object in the cache
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    protected void synchronizePropertiesBeforeCacheMerge(T existingInstance) throws FinderException, PersisterException, SynchronizerException {
-        synchronizeProperties(existingInstance);
-    }
+    protected abstract void synchronizePropertiesBeforeCacheMerge(T existingInstance, T originalObject) throws FinderException, PersisterException, SynchronizerException;
 
     /**
      * This method will synchronize the properties of the object which is partially initialised
