@@ -37,6 +37,7 @@ public class InteractorSynchronizerTemplate<T extends Interactor, I extends Inta
 implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     private Map<T, I> persistedObjects;
     private Map<T, I> convertedObjects;
+    private Set<String> persistedNames;
 
     private IntactComparator interactorComparator;
 
@@ -46,6 +47,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         super(context, intactClass);
         // to keep track of persisted cvs
         initialisePersistedObjectMap();
+        persistedNames = new HashSet<String>();
     }
 
     public I find(T term) throws FinderException {
@@ -292,6 +294,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.persistedNames.clear();
     }
 
     protected void initialisePersistedObjectMap() {
@@ -444,7 +447,9 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
-        IntactUtils.synchronizeInteractorShortName(intactInteractor, getEntityManager());
+        IntactUtils.synchronizeInteractorShortName(intactInteractor, getEntityManager(), persistedNames);
+
+        this.persistedNames.add(intactInteractor.getShortName());
     }
 
     protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {

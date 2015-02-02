@@ -467,7 +467,7 @@ public class IntactUtils {
         while(!existingInteractions.isEmpty());
     }
 
-    public static void synchronizeInteractorShortName(IntactInteractor intactInteractor, EntityManager manager){
+    public static void synchronizeInteractorShortName(IntactInteractor intactInteractor, EntityManager manager, Set<String> persistedNames){
         if (intactInteractor.getShortName() == null){
             return;
         }
@@ -485,6 +485,11 @@ public class IntactUtils {
                 query.setParameter("interactorAc", intactInteractor.getAc());
             }
             existingInteractors = query.getResultList();
+            // check cached names
+            if (persistedNames.contains(name)){
+                existingInteractors.add(name);
+            }
+
             if (!existingInteractors.isEmpty()){
                 // we have a synchronized label, so we need first to extract original label before (last -)
                 if (name.matches(".*-\\d+$")){
@@ -500,6 +505,11 @@ public class IntactUtils {
                     query.setParameter("interactorAc", intactInteractor.getAc());
                 }
                 existingInteractors.addAll(query.getResultList());
+
+                // check cached names
+                if (persistedNames.contains(name)){
+                    existingInteractors.add(name);
+                }
 
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
                 if (!nameInSync.equals(name)){
