@@ -7,15 +7,13 @@ import psidev.psi.mi.jami.utils.comparator.annotation.DefaultAnnotationComparato
 import psidev.psi.mi.jami.utils.comparator.confidence.DefaultConfidenceComparator;
 import psidev.psi.mi.jami.utils.comparator.cv.DefaultCvTermComparator;
 import psidev.psi.mi.jami.utils.comparator.experiment.DefaultVariableParameterComparator;
+import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
 import psidev.psi.mi.jami.utils.comparator.parameter.DefaultParameterComparator;
 import psidev.psi.mi.jami.utils.comparator.xref.DefaultXrefComparator;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Enricher utils for intact
@@ -234,6 +232,47 @@ public class IntactEnricherUtils {
         // remove xrefs which have been synchronized from original object
         enrichedXrefs.removeAll(xrefsToBeAdded);
         enrichedXrefs.addAll(synchronizedXrefs);
+    }
+
+    /**
+     * Method which will synchronize interactors that are not present in the interactors to enrich
+     * @param interactorsToEnrich : the collection of interactors to be enriched
+     * @param enrichedInteractors : the collections of interactors fully enriched
+     * @param interactorSynchronizer : the interactors sycnrhonizer to be used
+     * @return the synchronized interactors which will be added to the xrefs to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static void synchronizeInteractorsToEnrich(Collection<Interactor> interactorsToEnrich,
+                                                Collection<Interactor> enrichedInteractors,
+                                                IntactDbSynchronizer interactorSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+        Collection<Interactor> interactorsToBeAdded = CollectionUtils.subtract(enrichedInteractors, interactorsToEnrich);
+        if (!interactorsToBeAdded.isEmpty()){
+            // filter interactors to be added in case we have mix of database/qualifier with MI identifier and with shortlabel only
+            Iterator<Interactor> refIterator = interactorsToBeAdded.iterator();
+            while (refIterator.hasNext()){
+                Interactor toBeAdded = refIterator.next();
+                for (Interactor existingXref : interactorsToEnrich){
+                    if (UnambiguousExactInteractorComparator.areEquals(toBeAdded, existingXref)){
+                        refIterator.remove();
+                        break;
+                    }
+                }
+            }
+        }
+
+        List<Interactor> synchronizedInteractors = new ArrayList<Interactor>(interactorsToBeAdded.size());
+        for (Interactor ref : interactorsToBeAdded){
+            // do not persist or merge interactors because of cascades
+            Interactor expRef = (Interactor)interactorSynchronizer.synchronize(ref, true);
+            // we have a different instance because needed to be synchronized
+            synchronizedInteractors.add(expRef);
+        }
+
+        // remove interactors which have been synchronized from original object
+        enrichedInteractors.removeAll(interactorsToBeAdded);
+        enrichedInteractors.addAll(synchronizedInteractors);
     }
 
     /**

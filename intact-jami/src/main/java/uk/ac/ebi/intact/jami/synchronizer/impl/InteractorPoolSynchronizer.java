@@ -13,6 +13,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorPoolComparator;
 
 import javax.persistence.Query;
@@ -182,8 +183,8 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     protected void synchronizePropertiesBeforeCacheMerge(IntactInteractorPool objectInCache, IntactInteractorPool originalObject) throws SynchronizerException, PersisterException, FinderException {
         super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalObject);
         // synchronize subInteractors if not done
-        if (!CollectionUtils.isEqualCollection(objectInCache, originalObject)){
-            prepareInteractors(objectInCache, true);
-        }
+        IntactEnricherUtils.synchronizeInteractorsToEnrich(originalObject,
+                objectInCache,
+                getContext().getInteractorSynchronizer());
     }
 }
