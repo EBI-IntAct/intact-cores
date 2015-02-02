@@ -114,7 +114,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(Preference existingInstance, Preference originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(Preference objectInCache, Preference originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

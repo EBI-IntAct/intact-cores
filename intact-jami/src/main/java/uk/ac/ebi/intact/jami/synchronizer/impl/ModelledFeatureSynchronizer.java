@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.RangeUtils;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
@@ -10,6 +9,7 @@ import uk.ac.ebi.intact.jami.model.extension.ModelledResultingSequence;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -150,23 +150,26 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledFeature intactFeature, IntactModelledFeature originalFeature) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(intactFeature, originalFeature);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledFeature objectInCache, IntactModelledFeature originalFeature) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalFeature);
         // then check aliases
-        if (!CollectionUtils.isEqualCollection(intactFeature.getAliases(), originalFeature.getAliases())){
-            prepareAliases(intactFeature, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(originalFeature.getAliases(),
+                objectInCache.getAliases(),
+                getContext().getModelledFeatureAliasSynchronizer());
+
         // then check annotations
-        if (!CollectionUtils.isEqualCollection(intactFeature.getAnnotations(), originalFeature.getAnnotations())){
-            prepareAnnotations(intactFeature, true);
-        }
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalFeature.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getModelledFeatureAnnotationSynchronizer());
+
         // then check xrefs
-        if (!CollectionUtils.isEqualCollection(intactFeature.getDbXrefs(), originalFeature.getDbXrefs())){
-            prepareXrefs(intactFeature, true);
-        }
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getDbXrefs(),
+                objectInCache.getDbXrefs(),
+                getContext().getModelledFeatureXrefSynchronizer());
+
         // then check ranges
-        if (!CollectionUtils.isEqualCollection(intactFeature.getRanges(), originalFeature.getRanges())){
-            prepareRanges(intactFeature, true);
-        }
+        IntactEnricherUtils.synchronizeRangesToEnrich(originalFeature.getRanges(),
+                objectInCache.getRanges(),
+                getContext().getModelledRangeSynchronizer());
     }
 }

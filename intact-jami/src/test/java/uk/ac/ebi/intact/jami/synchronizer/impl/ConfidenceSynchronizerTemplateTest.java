@@ -274,7 +274,7 @@ public class ConfidenceSynchronizerTemplateTest extends AbstractDbSynchronizerTe
 
         CvTermXref ref1 = new CvTermXref(psimi, "MI:xxx1", identity);
         aliasSynonym.getDbXrefs().add(ref1);
-        CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI, identity);
+        CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI_MI, identity);
         psimi.getDbXrefs().add(ref2);
         CvTermXref ref3 = new CvTermXref(psimi, Xref.IDENTITY_MI, identity);
         identity.getDbXrefs().add(ref3);

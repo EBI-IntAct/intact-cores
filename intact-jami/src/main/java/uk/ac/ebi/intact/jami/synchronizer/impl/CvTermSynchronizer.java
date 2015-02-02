@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,6 +21,7 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactCvTermComparator;
@@ -704,25 +704,26 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactCvTerm persistentObject, IntactCvTerm originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactCvTerm objectInCache, IntactCvTerm originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
-        if (!CollectionUtils.isEqualCollection(persistentObject.getSynonyms(), originalObject.getSynonyms())){
-            prepareAliases(persistentObject, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(originalObject.getSynonyms(),
+                objectInCache.getSynonyms(),
+                getContext().getCvAliasSynchronizer());
+
         // then check new annotations if any
-        if (!CollectionUtils.isEqualCollection(persistentObject.getAnnotations(), originalObject.getAnnotations())){
-            prepareAnnotations(persistentObject, true);
-        }
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalObject.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getCvAnnotationSynchronizer());
+
         // set identifier for backward compatibility
-        if (!CollectionUtils.isEqualCollection(persistentObject.getDbXrefs(), originalObject.getDbXrefs())){
-            initialiseIdentifier(persistentObject);
-            // then check new xrefs if any
-            prepareXrefs(persistentObject, true);
-        }
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getDbXrefs(),
+                objectInCache.getDbXrefs(),
+                getContext().getCvXrefSynchronizer());
+
         // do new parents if any
-        if (!CollectionUtils.isEqualCollection(persistentObject.getParents(), originalObject.getParents())){
-            prepareParents(persistentObject, true);
-        }
+        IntactEnricherUtils.synchronizeCvsToEnrich(originalObject.getParents(),
+                objectInCache.getParents(),
+                this);
     }
 
     @Override

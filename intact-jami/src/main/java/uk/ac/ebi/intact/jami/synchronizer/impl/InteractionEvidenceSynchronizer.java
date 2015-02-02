@@ -299,30 +299,30 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractionEvidence existingInstance, IntactInteractionEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractionEvidence objectInCache, IntactInteractionEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new confidences if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getConfidences(), originalObject.getConfidences())){
-            prepareConfidences(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getConfidences(), originalObject.getConfidences())){
+            prepareConfidences(objectInCache, true);
         }
         // then check new parameters if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getParameters(), originalObject.getParameters())){
-            prepareParameters(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getParameters(), originalObject.getParameters())){
+            prepareParameters(objectInCache, true);
         }
         // then check new annotations if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalObject.getAnnotations())){
-            prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getAnnotations(), originalObject.getAnnotations())){
+            prepareAnnotations(objectInCache, true);
         }
         // then check new xrefs if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalObject.getDbXrefs())){
-            prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getDbXrefs(),originalObject.getDbXrefs())){
+            prepareXrefs(objectInCache, true);
         }
         // then check new interactions if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getParticipants(), originalObject.getParticipants())){
-            prepareParticipants(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getParticipants(), originalObject.getParticipants())){
+            prepareParticipants(objectInCache, true);
         }
         // then check new variable parameters if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getVariableParameterValues(), originalObject.getVariableParameterValues())){
-            prepareVariableParametersValues(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getVariableParameterValues(), originalObject.getVariableParameterValues())){
+            prepareVariableParametersValues(objectInCache, true);
         }
     }
 }

@@ -179,11 +179,11 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractorPool mergedObject, IntactInteractorPool originalObject) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesBeforeCacheMerge(mergedObject, originalObject);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractorPool objectInCache, IntactInteractorPool originalObject) throws SynchronizerException, PersisterException, FinderException {
+        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalObject);
         // synchronize subInteractors if not done
-        if (!CollectionUtils.isEqualCollection(mergedObject, originalObject)){
-            prepareInteractors(mergedObject, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache, originalObject)){
+            prepareInteractors(objectInCache, true);
         }
     }
 }

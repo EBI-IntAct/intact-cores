@@ -9,7 +9,6 @@ import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.utils.clone.OrganismCloner;
-import psidev.psi.mi.jami.utils.comparator.organism.UnambiguousOrganismComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -18,6 +17,7 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactOrganismComparator;
@@ -481,10 +481,10 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactOrganism existingInstance, IntactOrganism originalOrganism) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactOrganism objectInCache, IntactOrganism originalOrganism) throws FinderException, PersisterException, SynchronizerException {
         // then check aliases if new aliases
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAliases(), originalOrganism.getAliases())){
-            prepareAliases(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(originalOrganism.getAliases(),
+                objectInCache.getAliases(),
+                getContext().getOrganismAliasSynchronizer());
     }
 }

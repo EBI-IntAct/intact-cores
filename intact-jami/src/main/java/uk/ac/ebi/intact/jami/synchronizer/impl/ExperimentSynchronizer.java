@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
@@ -16,6 +15,7 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
 
@@ -540,22 +540,25 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment existingInstance, IntactExperiment originalExperiment) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment objectInCache, IntactExperiment originalExperiment) throws FinderException, PersisterException, SynchronizerException {
         // then check new annotations if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalExperiment.getAnnotations())){
-            prepareAnnotations(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalExperiment.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getExperimentAnnotationSynchronizer());
+
         // then check new xrefs if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getXrefs(), originalExperiment.getXrefs())){
-            prepareXrefs(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalExperiment.getXrefs(),
+                objectInCache.getXrefs(),
+                getContext().getExperimentXrefSynchronizer());
+
         // then check new variable parameters if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getVariableParameters(), originalExperiment.getVariableParameters())){
-            prepareVariableParameters(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeVariableParametersToEnrich(originalExperiment.getVariableParameters(),
+                objectInCache.getVariableParameters(),
+                getContext().getVariableParameterSynchronizer());
+
         // then check new interactions if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getInteractionEvidences(), originalExperiment.getInteractionEvidences())){
-            prepareInteractions(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeInteractionsToEnrich(originalExperiment.getInteractionEvidences(),
+                objectInCache.getInteractionEvidences(),
+                getContext().getInteractionSynchronizer());
     }
 }

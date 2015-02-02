@@ -10,15 +10,14 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
-import uk.ac.ebi.intact.jami.utils.comparator.IntactCvTermComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactSourceComparator;
 
 import javax.persistence.Query;
@@ -515,18 +514,20 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactSource existingInstance, IntactSource originalSource) throws SynchronizerException, PersisterException, FinderException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactSource objectInCache, IntactSource originalSource) throws SynchronizerException, PersisterException, FinderException {
         // then check aliases
-        if (!CollectionUtils.isEqualCollection(existingInstance.getSynonyms(), originalSource.getSynonyms())){
-            prepareAliases(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(originalSource.getSynonyms(),
+                objectInCache.getSynonyms(),
+                getContext().getSourceAliasSynchronizer());
+
         // then check annotations
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalSource.getAnnotations())){
-            prepareAnnotations(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalSource.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getSourceAnnotationSynchronizer());
+
         // then check xrefs
-        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalSource.getDbXrefs())){
-            prepareXrefs(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalSource.getDbXrefs(),
+                objectInCache.getDbXrefs(),
+                getContext().getSourceXrefSynchronizer());
     }
 }

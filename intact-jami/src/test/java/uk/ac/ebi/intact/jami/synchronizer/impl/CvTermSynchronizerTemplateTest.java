@@ -253,7 +253,7 @@ public class CvTermSynchronizerTemplateTest extends AbstractDbSynchronizerTest<C
 
         CvTermXref ref1 = new CvTermXref(psimi, Alias.GENE_NAME_MI, identity);
         aliasSynonym.getDbXrefs().add(ref1);
-        CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI, identity);
+        CvTermXref ref2 = new CvTermXref(psimi, CvTerm.PSI_MI_MI, identity);
         psimi.getDbXrefs().add(ref2);
         CvTermXref ref3 = new CvTermXref(psimi, Xref.IDENTITY_MI, identity);
         identity.getDbXrefs().add(ref3);

@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -9,6 +8,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -185,29 +185,27 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledParticipant mergedObject, IntactModelledParticipant originalParticipant) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesBeforeCacheMerge(mergedObject, originalParticipant);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledParticipant objectInCache, IntactModelledParticipant originalParticipant) throws SynchronizerException, PersisterException, FinderException {
+        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalParticipant);
         // then check aliases
-        if (!CollectionUtils.isEqualCollection(mergedObject.getAliases(), originalParticipant.getAliases())){
-            prepareAliases(mergedObject, true);
-        }
-        // then check annotations
-        if (!CollectionUtils.isEqualCollection(mergedObject.getAnnotations(), originalParticipant.getAnnotations())){
-            prepareAnnotations(mergedObject, true);
-        }
-        // then check xrefs
-        if (!CollectionUtils.isEqualCollection(mergedObject.getXrefs(), originalParticipant.getXrefs())){
-            prepareXrefs(mergedObject, true);
-        }
-        // then check causal relationships
-        if (!CollectionUtils.isEqualCollection(mergedObject.getCausalRelationships(), originalParticipant.getCausalRelationships())){
-            prepareCausalRelationships(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(originalParticipant.getAliases(),
+                objectInCache.getAliases(),
+                getContext().getModelledParticipantAliasSynchronizer());
 
-        // check experimental roles for backward compatibility ONLY
-        if (!CollectionUtils.isEqualCollection(mergedObject.getDbExperimentalRoles(), originalParticipant.getDbExperimentalRoles())){
-            prepareExperimentalRoles(mergedObject, true);
-        }
+        // then check annotations
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalParticipant.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getModelledParticipantAnnotationSynchronizer());
+
+        // then check xrefs
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalParticipant.getXrefs(),
+                objectInCache.getXrefs(),
+                getContext().getModelledParticipantXrefSynchronizer());
+
+        // then check causal relationships
+        IntactEnricherUtils.synchronizeCausalRelationshipsToEnrich(originalParticipant.getCausalRelationships(),
+                objectInCache.getCausalRelationships(),
+                getContext().getModelledCausalRelationshipSynchronizer());
     }
 }
 

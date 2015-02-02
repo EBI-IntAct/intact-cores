@@ -389,8 +389,26 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
                 // synchronize before merging
-                if (needToSynchronizeProperties){
-                    synchronizeProperties(persistentObject);
+                if (needToSynchronizeProperties && existingInstance != persistentObject){
+                    // synchronize properties after cache merge
+                    // store object and intact object in a identity cache so no lazy properties can be called before synchronization
+                    storeObjectInIdentityCache(originalObject, existingInstance);
+                    if (originalObject != existingInstance){
+                        storeObjectInIdentityCache((I)existingInstance, existingInstance);
+                    }
+                    if (originalObject != persistentObject){
+                        storeObjectInIdentityCache((I)persistentObject, existingInstance);
+                    }
+                    // synchronize properties
+                    synchronizePropertiesBeforeCacheMerge(persistentObject, existingInstance);
+                    // remove object and intact object from identity cache as not dirty anymore
+                    removeObjectInstanceFromIdentityCache(originalObject);
+                    if (originalObject != existingInstance){
+                        removeObjectInstanceFromIdentityCache((I) existingInstance);
+                    }
+                    if (originalObject != persistentObject){
+                        removeObjectInstanceFromIdentityCache((I)persistentObject);
+                    }
                 }
 
                 // merge
@@ -456,7 +474,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // merge only if object instances are different
         if (object != existingInstance){
             // first synchronize properties before merging with cache if necessary
-            if (needToSynchronizeProperties){
+            if (needToSynchronizeProperties && existingInstance != intactEntity){
                 // synchronize properties after cache merge
                 // store object and intact object in a identity cache so no lazy properties can be called before synchronization
                 storeObjectInIdentityCache(object, existingInstance);
@@ -467,7 +485,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                     storeObjectInIdentityCache((I)intactEntity, existingInstance);
                 }
                 // synchronize properties
-                synchronizePropertiesBeforeCacheMerge(intactEntity, intactEntity);
+                synchronizePropertiesBeforeCacheMerge(intactEntity, existingInstance);
                 // remove object and intact object from identity cache as not dirty anymore
                 removeObjectInstanceFromIdentityCache(object);
                 if (object != existingInstance){
@@ -493,13 +511,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
     /**
      * Method which synchronize the properties which can affect the merge withe the cached object
-     * @param existingInstance
+     * @param objectInCache :
      * @param originalObject : the original object in the cache
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    protected abstract void synchronizePropertiesBeforeCacheMerge(T existingInstance, T originalObject) throws FinderException, PersisterException, SynchronizerException;
+    protected abstract void synchronizePropertiesBeforeCacheMerge(T objectInCache, T originalObject) throws FinderException, PersisterException, SynchronizerException;
 
     /**
      * This method will synchronize the properties of the object which is partially initialised

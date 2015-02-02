@@ -139,7 +139,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(X existingInstance, X originalObject) throws FinderException, PersisterException, SynchronizerException {
-
+    protected void synchronizePropertiesBeforeCacheMerge(X objectInCache, X originalObject) throws FinderException, PersisterException, SynchronizerException {
+        // nothing to do
     }
 }

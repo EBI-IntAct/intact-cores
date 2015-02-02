@@ -204,7 +204,7 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

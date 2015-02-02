@@ -14,6 +14,7 @@ import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactModelledParticipantComparator;
@@ -499,23 +500,26 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactComplex existingInstance, IntactComplex originalComplex) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(existingInstance, originalComplex);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactComplex objectInCache, IntactComplex originalComplex) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalComplex);
         // then check new confidences  if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getModelledConfidences(), originalComplex.getModelledConfidences())){
-            prepareConfidences(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeConfidencesToEnrich(originalComplex.getModelledConfidences(),
+                objectInCache.getModelledConfidences(),
+                getContext().getComplexConfidenceSynchronizer());
+
         // then check new parameters if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getModelledParameters(), originalComplex.getModelledParameters())){
-            prepareParameters(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeParametersToEnrich(originalComplex.getModelledParameters(),
+                objectInCache.getModelledParameters(),
+                getContext().getComplexParameterSynchronizer());
+
         // then check new participants if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getParticipants(), originalComplex.getParticipants())){
-            prepareParticipants(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeParticipantsToEnrich(originalComplex.getParticipants(),
+                objectInCache.getParticipants(),
+                getContext().getParticipantSynchronizer());
+
         // prepare lifecycle
-        if (!CollectionUtils.isEqualCollection(existingInstance.getLifecycleEvents(), originalComplex.getLifecycleEvents())){
-            prepareLifeCycleEvents(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeLifeCycleEventsToEnrich(originalComplex.getLifecycleEvents(),
+                objectInCache.getLifecycleEvents(),
+                getContext().getComplexLifecycleSynchronizer());
     }
 }

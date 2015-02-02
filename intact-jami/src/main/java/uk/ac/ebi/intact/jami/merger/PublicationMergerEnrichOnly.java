@@ -126,7 +126,7 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
             boolean containsEvent = false;
             for (LifeCycleEvent event2 : toEnrichEvents){
                 // identical terms
-                if (event == event2){
+                if (event.equals(event2)){
                     containsEvent = true;
                     break;
                 }

@@ -135,7 +135,7 @@ implements LifecycleEventSynchronizer<A>{
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(A existingInstance, A originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(A objectInCache, A originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

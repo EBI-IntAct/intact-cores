@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -222,14 +221,14 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(User object, User cached) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(User objectInCache, User cached) throws FinderException, PersisterException, SynchronizerException {
         // synchronize preferences
-        if (!CollectionUtils.isEqualCollection(object.getPreferences(), cached.getPreferences())){
-            preparePreferences(object, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getPreferences(), cached.getPreferences())){
+            preparePreferences(objectInCache, true);
         }
         // synchronize roles
-        if (!CollectionUtils.isEqualCollection(object.getRoles(), cached.getRoles())){
-            prepareRoles(object, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getRoles(), cached.getRoles())){
+            prepareRoles(objectInCache, true);
         }
     }
 }

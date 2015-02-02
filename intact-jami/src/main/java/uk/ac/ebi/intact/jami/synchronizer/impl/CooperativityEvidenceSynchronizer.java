@@ -146,7 +146,7 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactCooperativityEvidence existingInstance, IntactCooperativityEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactCooperativityEvidence objectInCache, IntactCooperativityEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

@@ -684,18 +684,18 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAliases(), originalObject.getAliases())){
-            prepareAliases(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getAliases(), originalObject.getAliases())){
+            prepareAliases(objectInCache, true);
         }
         // then check new annotations if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalObject.getAnnotations())){
-            prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getAnnotations(), originalObject.getAnnotations())){
+            prepareAnnotations(objectInCache, true);
         }
         // then check new xrefs if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalObject.getDbXrefs())){
-            prepareXrefs(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getDbXrefs(), originalObject.getDbXrefs())){
+            prepareXrefs(objectInCache, true);
         }
     }
 }

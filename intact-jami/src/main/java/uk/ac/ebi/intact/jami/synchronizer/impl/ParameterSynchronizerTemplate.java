@@ -138,7 +138,7 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(P existingInstance, P originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(P objectInCache, P originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

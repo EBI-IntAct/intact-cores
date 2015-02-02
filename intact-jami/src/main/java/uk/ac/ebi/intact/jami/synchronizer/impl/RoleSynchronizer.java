@@ -178,7 +178,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(Role existingInstance, Role originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(Role objectInCache, Role originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

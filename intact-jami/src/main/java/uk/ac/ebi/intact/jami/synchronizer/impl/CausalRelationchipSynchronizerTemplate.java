@@ -139,7 +139,7 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

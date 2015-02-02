@@ -119,7 +119,7 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(C existingInstance, C originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(C objectInCache, C originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

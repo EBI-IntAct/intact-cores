@@ -154,7 +154,7 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactVariableParameter existingInstance, IntactVariableParameter originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactVariableParameter objectInCache, IntactVariableParameter originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

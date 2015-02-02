@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,6 +12,7 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -232,10 +232,10 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalFeature) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalFeature) throws FinderException, PersisterException, SynchronizerException {
         // then check linkedFeatures if any
-        if (!CollectionUtils.isEqualCollection(existingInstance.getLinkedFeatures(), originalFeature.getLinkedFeatures())){
-            prepareLinkedFeatures(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeFeaturesToEnrich(originalFeature.getLinkedFeatures(),
+                objectInCache.getLinkedFeatures(),
+                this);
     }
 }

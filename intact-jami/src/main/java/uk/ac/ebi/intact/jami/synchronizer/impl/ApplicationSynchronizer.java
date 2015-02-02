@@ -136,7 +136,7 @@ public class ApplicationSynchronizer extends AbstractIntactDbSynchronizer<Applic
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(Application existingInstance, Application originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(Application objectInCache, Application originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }

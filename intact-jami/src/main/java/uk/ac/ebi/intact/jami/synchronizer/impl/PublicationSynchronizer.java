@@ -13,10 +13,8 @@ import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
-import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
-import uk.ac.ebi.intact.jami.model.extension.PublicationXref;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
@@ -24,6 +22,7 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactPublicationComparator;
@@ -770,30 +769,36 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactPublication existingInstance, IntactPublication originalInstance) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(IntactPublication objectInCache, IntactPublication originalInstance) throws FinderException, PersisterException, SynchronizerException {
         // synchronize properties
         // then check shortlabel/synchronize
-        if (!CollectionUtils.isEqualCollection(existingInstance.getDbXrefs(), originalInstance.getDbXrefs())){
-            prepareAndSynchronizeShortLabel(existingInstance);
-            // then check xrefs
-            prepareXrefs(existingInstance, true);
-        }
-        // then check experiments
-        if (!CollectionUtils.isEqualCollection(existingInstance.getExperiments(), originalInstance.getExperiments())){
-            prepareExperiments(existingInstance, true);
-        }
-        // then check publication lifecycle
-        if (!CollectionUtils.isEqualCollection(existingInstance.getLifecycleEvents(), originalInstance.getLifecycleEvents())){
-            prepareLifeCycleEvents(existingInstance, true);
-        }
-        // then check authors
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAuthors(), originalInstance.getAuthors())){
-            preparePublicationAuthors(existingInstance);
-        }
-        // then check annotations
-        if (!CollectionUtils.isEqualCollection(existingInstance.getAnnotations(), originalInstance.getAnnotations())){
-            prepareAnnotations(existingInstance, true);
+        if (!CollectionUtils.isEqualCollection(objectInCache.getIdentifiers(), originalInstance.getIdentifiers())){
+            prepareAndSynchronizeShortLabel(objectInCache);
         }
 
+        // then check xrefs
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getDbXrefs(),
+                objectInCache.getDbXrefs(),
+                getContext().getPublicationXrefSynchronizer());
+
+        // then check experiments
+        IntactEnricherUtils.synchronizeExperimentsToEnrich(originalInstance.getExperiments(),
+                objectInCache.getExperiments(),
+                getContext().getExperimentSynchronizer());
+
+        // then check publication lifecycle
+        IntactEnricherUtils.synchronizeLifeCycleEventsToEnrich(originalInstance.getLifecycleEvents(),
+                objectInCache.getLifecycleEvents(),
+                getContext().getPublicationLifecycleSynchronizer());
+
+        // then check authors
+        if (!CollectionUtils.isEqualCollection(objectInCache.getAuthors(), originalInstance.getAuthors())){
+            preparePublicationAuthors(objectInCache);
+        }
+
+        // then check annotations
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalInstance.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getPublicationAnnotationSynchronizer());
     }
 }

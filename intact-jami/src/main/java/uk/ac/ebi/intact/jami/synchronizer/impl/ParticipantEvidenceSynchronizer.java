@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
@@ -10,6 +9,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -258,40 +258,47 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactParticipantEvidence mergedObject, IntactParticipantEvidence originalParticipant) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(mergedObject, originalParticipant);
+    protected void synchronizePropertiesBeforeCacheMerge(IntactParticipantEvidence objectInCache, IntactParticipantEvidence originalParticipant) throws FinderException, PersisterException, SynchronizerException {
+        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalParticipant);
         // then check aliases
-        if (!CollectionUtils.isEqualCollection(mergedObject.getAliases(), originalParticipant.getAliases())){
-            prepareAliases(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(originalParticipant.getAliases(),
+                objectInCache.getAliases(),
+                getContext().getParticipantEvidenceAliasSynchronizer());
+
         // then check annotations
-        if (!CollectionUtils.isEqualCollection(mergedObject.getAnnotations(), originalParticipant.getAnnotations())){
-            prepareAnnotations(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalParticipant.getAnnotations(),
+                objectInCache.getAnnotations(),
+                getContext().getParticipantEvidenceAnnotationSynchronizer());
+
         // then check xrefs
-        if (!CollectionUtils.isEqualCollection(mergedObject.getXrefs(), originalParticipant.getXrefs())){
-            prepareXrefs(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalParticipant.getXrefs(),
+                objectInCache.getXrefs(),
+                getContext().getParticipantEvidenceXrefSynchronizer());
+
         // then check causal relationships
-        if (!CollectionUtils.isEqualCollection(mergedObject.getCausalRelationships(), originalParticipant.getCausalRelationships())){
-            prepareCausalRelationships(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeCausalRelationshipsToEnrich(originalParticipant.getCausalRelationships(),
+                objectInCache.getCausalRelationships(),
+                getContext().getExperimentalCausalRelationshipSynchronizer());
+
         // then check participant identification methods
-        if (!CollectionUtils.isEqualCollection(mergedObject.getIdentificationMethods(), originalParticipant.getIdentificationMethods())){
-            prepareIdentificationMethods(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeCvsToEnrich(originalParticipant.getIdentificationMethods(),
+                objectInCache.getIdentificationMethods(),
+                getContext().getParticipantDetectionMethodSynchronizer());
+
         // then check experimental preparations
-        if (!CollectionUtils.isEqualCollection(mergedObject.getExperimentalPreparations(), originalParticipant.getExperimentalPreparations())){
-            prepareExperimentalPreparations(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeCvsToEnrich(originalParticipant.getExperimentalPreparations(),
+                objectInCache.getExperimentalPreparations(),
+                getContext().getExperimentalPreparationSynchronizer());
+
         // then check confidences
-        if (!CollectionUtils.isEqualCollection(mergedObject.getConfidences(), originalParticipant.getConfidences())){
-            prepareConfidences(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeConfidencesToEnrich(originalParticipant.getConfidences(),
+                objectInCache.getConfidences(),
+                getContext().getParticipantEvidenceConfidenceSynchronizer());
+
         // then check parameters
-        if (!CollectionUtils.isEqualCollection(mergedObject.getParameters(), originalParticipant.getParameters())){
-            prepareParameters(mergedObject, true);
-        }
+        IntactEnricherUtils.synchronizeParametersToEnrich(originalParticipant.getParameters(),
+                objectInCache.getParameters(),
+                getContext().getParticipantEvidenceParameterSynchronizer());
     }
 }
 

@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,6 +10,7 @@ import uk.ac.ebi.intact.jami.merger.ParticipantMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactStoichiometry;
 import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -213,10 +213,10 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I existingInstance, I originalParticipant) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalParticipant) throws FinderException, PersisterException, SynchronizerException {
         // then check features
-        if (!CollectionUtils.isEqualCollection(existingInstance.getFeatures(), originalParticipant.getFeatures())){
-            prepareFeatures(existingInstance, true);
-        }
+        IntactEnricherUtils.synchronizeFeaturesToEnrich(originalParticipant.getFeatures(),
+                objectInCache.getFeatures(),
+                getFeatureSynchronizer());
     }
 }

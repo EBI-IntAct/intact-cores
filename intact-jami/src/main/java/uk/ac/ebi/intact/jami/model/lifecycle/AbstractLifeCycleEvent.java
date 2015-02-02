@@ -166,4 +166,43 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
         // read default xrefs
         setCvEvent((CvTerm)ois.readObject());
     }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
+        if ( !( o instanceof LifeCycleEvent ) ) return false;
+
+        LifeCycleEvent evt = ( LifeCycleEvent ) o;
+
+        if (evt.getEvent() != this.event){
+            return false;
+        }
+        else if ((evt.getNote() == null && this.note != null) || (evt.getNote() == null && this.note != null)){
+            return false;
+        }
+        else if (!evt.getNote().equalsIgnoreCase(this.note)){
+             return false;
+        }
+        else if (!evt.getWho().equals(this.who)){
+            return false;
+        }
+        else if (!evt.getWhen().equals(this.when)){
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hashcode = 31;
+        hashcode = 31*hashcode + this.event.hashCode();
+        if (this.note != null){
+            hashcode = 31*hashcode + this.note.hashCode();
+        }
+        hashcode = 31*hashcode + this.who.hashCode();
+        hashcode = 31*hashcode + this.when.hashCode();
+
+        return hashcode;
+    }
 }

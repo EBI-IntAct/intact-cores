@@ -119,7 +119,7 @@ public class DbInfoSynchronizer extends AbstractIntactDbSynchronizer<DbInfo, DbI
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(DbInfo existingInstance, DbInfo originalObject) throws FinderException, PersisterException, SynchronizerException {
+    protected void synchronizePropertiesBeforeCacheMerge(DbInfo objectInCache, DbInfo originalObject) throws FinderException, PersisterException, SynchronizerException {
         // nothing to do
     }
 }
