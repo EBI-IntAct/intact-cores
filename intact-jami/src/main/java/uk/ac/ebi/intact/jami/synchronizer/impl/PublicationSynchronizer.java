@@ -777,9 +777,12 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         }
 
         // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getXrefs(),
+                objectInCache.getXrefs(),
                 getContext().getPublicationXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getIdentifiers(),
+                objectInCache.getIdentifiers(),
+                getContext().getCvXrefSynchronizer());
 
         // then check experiments
         IntactEnricherUtils.synchronizeExperimentsToEnrich(originalInstance.getExperiments(),

@@ -716,8 +716,11 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 getContext().getCvAnnotationSynchronizer());
 
         // set identifier for backward compatibility
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getIdentifiers(),
+                objectInCache.getIdentifiers(),
+                getContext().getCvXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getXrefs(),
+                objectInCache.getXrefs(),
                 getContext().getCvXrefSynchronizer());
 
         // do new parents if any

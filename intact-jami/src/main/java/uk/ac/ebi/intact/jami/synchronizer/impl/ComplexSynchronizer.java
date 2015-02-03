@@ -512,8 +512,11 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                 getContext().getInteractorAnnotationSynchronizer());
 
         // then check new xrefs if any
-        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getIdentifiers(),
+                objectInCache.getIdentifiers(),
+                getContext().getComplexXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getXrefs(),
+                objectInCache.getXrefs(),
                 getContext().getComplexXrefSynchronizer());
 
         // then check new confidences  if any

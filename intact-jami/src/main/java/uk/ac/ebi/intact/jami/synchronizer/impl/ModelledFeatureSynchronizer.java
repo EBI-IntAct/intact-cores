@@ -163,9 +163,12 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                 getContext().getModelledFeatureAnnotationSynchronizer());
 
         // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getXrefs(),
+                objectInCache.getXrefs(),
                 getContext().getModelledFeatureXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getIdentifiers(),
+                objectInCache.getIdentifiers(),
+                getContext().getCvXrefSynchronizer());
 
         // then check ranges
         IntactEnricherUtils.synchronizeRangesToEnrich(originalFeature.getRanges(),

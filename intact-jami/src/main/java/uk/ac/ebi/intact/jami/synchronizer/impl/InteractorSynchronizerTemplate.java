@@ -701,8 +701,11 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                 getContext().getInteractorAnnotationSynchronizer());
 
         // then check new xrefs if any
-        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getXrefs(),
+                objectInCache.getXrefs(),
                 getContext().getInteractorXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getIdentifiers(),
+                objectInCache.getIdentifiers(),
+                getContext().getCvXrefSynchronizer());
     }
 }

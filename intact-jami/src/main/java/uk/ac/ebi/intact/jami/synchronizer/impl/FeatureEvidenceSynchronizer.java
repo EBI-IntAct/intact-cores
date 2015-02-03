@@ -211,9 +211,12 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                 getContext().getFeatureEvidenceAnnotationSynchronizer());
 
         // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getIdentifiers(),
+                objectInCache.getIdentifiers(),
                 getContext().getFeatureEvidenceXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getXrefs(),
+                objectInCache.getXrefs(),
+                getContext().getCvXrefSynchronizer());
 
         // then detection methods
         IntactEnricherUtils.synchronizeCvsToEnrich(originalFeature.getDetectionMethods(),

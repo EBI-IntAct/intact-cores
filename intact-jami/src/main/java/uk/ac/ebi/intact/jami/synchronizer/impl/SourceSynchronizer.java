@@ -531,8 +531,11 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                 getContext().getSourceAnnotationSynchronizer());
 
         // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalSource.getDbXrefs(),
-                objectInCache.getDbXrefs(),
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalSource.getXrefs(),
+                objectInCache.getXrefs(),
                 getContext().getSourceXrefSynchronizer());
+        IntactEnricherUtils.synchronizeXrefsToEnrich(originalSource.getIdentifiers(),
+                objectInCache.getIdentifiers(),
+                getContext().getCvXrefSynchronizer());
     }
 }

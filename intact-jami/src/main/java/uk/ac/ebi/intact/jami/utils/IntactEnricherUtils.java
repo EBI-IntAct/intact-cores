@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.utils;
 
 import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.comparator.alias.DefaultAliasComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.DefaultAnnotationComparator;
 import psidev.psi.mi.jami.utils.comparator.confidence.DefaultConfidenceComparator;
@@ -10,10 +11,15 @@ import psidev.psi.mi.jami.utils.comparator.experiment.DefaultVariableParameterCo
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
 import psidev.psi.mi.jami.utils.comparator.parameter.DefaultParameterComparator;
 import psidev.psi.mi.jami.utils.comparator.xref.DefaultXrefComparator;
+import uk.ac.ebi.intact.jami.ApplicationContextProvider;
+import uk.ac.ebi.intact.jami.context.IntactConfiguration;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Enricher utils for intact
@@ -210,10 +216,15 @@ public class IntactEnricherUtils {
         if (!xrefsToBeAdded.isEmpty()){
             // filter xrefs to be added in case we have mix of database/qualifier with MI identifier and with shortlabel only
             Iterator<Xref> refIterator = xrefsToBeAdded.iterator();
+            IntactConfiguration config = ApplicationContextProvider.getBean("intactJamiConfiguration");
+            String db = config != null ? config.getDefaultInstitution().getShortName() : "intact";
             while (refIterator.hasNext()){
                 Xref toBeAdded = refIterator.next();
                 for (Xref existingXref : xrefsToEnrich){
-                    if (DefaultXrefComparator.areEquals(toBeAdded, existingXref)){
+                    // ignore basic database ac
+                    if (DefaultXrefComparator.areEquals(toBeAdded, existingXref) ||
+                            (XrefUtils.isXrefFromDatabase(existingXref, null, db)
+                                    && XrefUtils.doesXrefHaveQualifier(existingXref, Xref.IDENTITY_MI, Xref.IDENTITY))){
                         refIterator.remove();
                         break;
                     }
