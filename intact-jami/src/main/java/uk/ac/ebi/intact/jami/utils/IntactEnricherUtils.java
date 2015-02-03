@@ -224,7 +224,7 @@ public class IntactEnricherUtils {
                     // ignore basic database ac
                     if (DefaultXrefComparator.areEquals(toBeAdded, existingXref) ||
                             (XrefUtils.isXrefFromDatabase(existingXref, null, db)
-                                    && XrefUtils.doesXrefHaveQualifier(existingXref, Xref.IDENTITY_MI, Xref.IDENTITY))){
+                                    && XrefUtils.doesXrefHaveQualifier(toBeAdded, Xref.IDENTITY_MI, Xref.IDENTITY))){
                         refIterator.remove();
                         break;
                     }
