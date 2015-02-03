@@ -277,14 +277,22 @@ public class IntactUtils {
             return;
         }
         // then synchronize with database
-        String name;
-        List<String> existingExperiments;
+        String name=null;
+        String originalName=null;
+        List<String> existingExperiments=Collections.EMPTY_LIST;
         do{
+            if (originalName != null || name != null){
+                // clear existing sources from original name and synchronized name
+                existingExperiments.remove(originalName);
+                // clear existing sources from original name and synchronized name
+                existingExperiments.remove(name);
+            }
             name = intactExperiment.getShortLabel().trim().toLowerCase();
             // we increments experiment label if matches simple automatically generated label
             if (EXPERIMENT_LABEL_PATTERN.matcher(name).matches()){
                 name = name+"-1";
             }
+            originalName = name;
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
                     "where (e.shortLabel = :name) "
@@ -339,10 +347,18 @@ public class IntactUtils {
             return;
         }
         // then synchronize with database
-        String name;
-        List<String> existingExperiments;
+        String name = null;
+        String originalName = null;
+        List<String> existingExperiments=Collections.EMPTY_LIST;
         do{
+            if (originalName != null || name != null){
+                // clear existing sources from original name and synchronized name
+                existingExperiments.remove(originalName);
+                // clear existing sources from original name and synchronized name
+                existingExperiments.remove(name);
+            }
             name = intactExperiment.getShortLabel().trim().toLowerCase();
+            originalName = name;
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select e.shortLabel from IntactExperiment e " +
@@ -395,13 +411,21 @@ public class IntactUtils {
             return;
         }
         String name = null;
+        String originalName = null;
         List<String> existingInteractions = Collections.EMPTY_LIST;
         do{
+            if (originalName != null || name != null){
+                // clear existing sources from original name and synchronized name
+                existingInteractions.remove(originalName);
+                // clear existing sources from original name and synchronized name
+                existingInteractions.remove(name);
+            }
             // then synchronize with database
             name = intactInteraction.getShortName().trim().toLowerCase();
             if (!name.matches(".*-\\d+$")){
                 name = name+"-1";
             }
+            originalName = name;
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select i.shortName from IntactInteractionEvidence i " +
@@ -471,11 +495,18 @@ public class IntactUtils {
         if (intactInteractor.getShortName() == null){
             return;
         }
-        String name;
-        List<String> existingInteractors;
+        String name=null;
+        String originalName = null;
+        List<String> existingInteractors=Collections.EMPTY_LIST;
         do{
+            if (originalName != null || name != null){
+                // clear existing sources from original name and synchronized name
+                existingInteractors.remove(originalName);
+                // clear existing sources from original name and synchronized name
+                existingInteractors.remove(name);
+            }
             name = intactInteractor.getShortName().trim().toLowerCase();
-
+            originalName = name;
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select i.shortName from IntactInteractor i " +
                     "where (i.shortName = :name) "
@@ -534,10 +565,17 @@ public class IntactUtils {
             return;
         }
         String name = null;
+        String originalName = null;
         List<String> existingCvs = Collections.EMPTY_LIST;
         do{
+            if (originalName != null || name != null){
+                // clear existing sources from original name and synchronized name
+                existingCvs.remove(originalName);
+                // clear existing sources from original name and synchronized name
+                existingCvs.remove(name);
+            }
             name = intactCv.getShortName().trim().toLowerCase();
-
+            originalName = name;
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select cv.shortName from IntactCvTerm cv " +
                     "where (cv.shortName = :name)"
@@ -595,9 +633,18 @@ public class IntactUtils {
             return;
         }
         String name = null;
+        String originalName = null;
         List<String> existingSource = Collections.EMPTY_LIST;
         do{
+            if (originalName != null || name != null){
+                // clear existing sources from original name and synchronized name
+                existingSource.remove(originalName);
+                // clear existing sources from original name and synchronized name
+                existingSource.remove(name);
+            }
+
             name = intactSource.getShortName().trim();
+            originalName = name;
 
             // check if short name already exist, if yes, synchronize with existing label
             Query query = manager.createQuery("select s.shortName from IntactSource s " +
