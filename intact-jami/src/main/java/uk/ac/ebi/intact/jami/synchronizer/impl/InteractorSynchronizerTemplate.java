@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +16,7 @@ import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactExactInteractorBaseComparator;
@@ -691,16 +691,18 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     @Override
     protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalObject) throws FinderException, PersisterException, SynchronizerException {
         // then check new aliases if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getAliases(), originalObject.getAliases())){
-            prepareAliases(objectInCache, true);
-        }
+        IntactEnricherUtils.synchronizeAliasesToEnrich(objectInCache.getAliases(),
+                objectInCache.getAliases(),
+                getContext().getInteractorAliasSynchronizer());
+
         // then check new annotations if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getAnnotations(), originalObject.getAnnotations())){
-            prepareAnnotations(objectInCache, true);
-        }
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(objectInCache.getDbAnnotations(),
+                objectInCache.getDbAnnotations(),
+                getContext().getInteractorAnnotationSynchronizer());
+
         // then check new xrefs if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getDbXrefs(), originalObject.getDbXrefs())){
-            prepareXrefs(objectInCache, true);
-        }
+        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getDbXrefs(),
+                objectInCache.getDbXrefs(),
+                getContext().getInteractorXrefSynchronizer());
     }
 }

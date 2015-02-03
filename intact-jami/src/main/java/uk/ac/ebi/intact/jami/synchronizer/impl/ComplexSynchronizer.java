@@ -501,7 +501,21 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     @Override
     protected void synchronizePropertiesBeforeCacheMerge(IntactComplex objectInCache, IntactComplex originalComplex) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalComplex);
+        // then check new aliases if any
+        IntactEnricherUtils.synchronizeAliasesToEnrich(objectInCache.getAliases(),
+                objectInCache.getAliases(),
+                getContext().getInteractorAliasSynchronizer());
+
+        // then check new annotations if any
+        IntactEnricherUtils.synchronizeAnnotationsToEnrich(objectInCache.getDbAnnotations(),
+                objectInCache.getDbAnnotations(),
+                getContext().getInteractorAnnotationSynchronizer());
+
+        // then check new xrefs if any
+        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getDbXrefs(),
+                objectInCache.getDbXrefs(),
+                getContext().getComplexXrefSynchronizer());
+
         // then check new confidences  if any
         IntactEnricherUtils.synchronizeConfidencesToEnrich(originalComplex.getModelledConfidences(),
                 objectInCache.getModelledConfidences(),

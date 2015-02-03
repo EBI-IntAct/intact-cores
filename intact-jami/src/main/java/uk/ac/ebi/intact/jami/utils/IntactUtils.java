@@ -278,7 +278,9 @@ public class IntactUtils {
         }
         // then synchronize with database
         String name;
-        Set<String> existingExperiments=new HashSet<String>();
+        Set<String> existingExperiments=Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
+
         do{
             name = intactExperiment.getShortLabel().trim().toLowerCase();
             // we increments experiment label if matches simple automatically generated label
@@ -293,10 +295,11 @@ public class IntactUtils {
             if (intactExperiment.getAc() != null){
                 query.setParameter("expAc", intactExperiment.getAc());
             }
-            existingExperiments.addAll(query.getResultList());
+            existingExperiments = new HashSet<String>(query.getResultList());
             // check cached names
             if (persistedNames.contains(name)){
                 existingExperiments.add(name);
+                cachedLabels.add(name);
             }
             // if the experiment shortlabel is the same as another experiment shortlabel
             if (!existingExperiments.isEmpty()){
@@ -317,8 +320,9 @@ public class IntactUtils {
                 existingExperiments.addAll(query.getResultList());
                 // check cached names
                 if (persistedNames.contains(name)){
-                    existingExperiments.add(name);
+                    cachedLabels.add(name);
                 }
+                existingExperiments.addAll(cachedLabels);
 
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, true);
                 if (!nameInSync.equals(name)){
@@ -340,7 +344,8 @@ public class IntactUtils {
         }
         // then synchronize with database
         String name;
-        Set<String> existingExperiments = new HashSet<String>();
+        Set<String> existingExperiments = Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
         do{
             name = intactExperiment.getShortLabel().trim().toLowerCase();
 
@@ -352,10 +357,11 @@ public class IntactUtils {
             if (intactExperiment.getAc() != null){
                 query.setParameter("expAc", intactExperiment.getAc());
             }
-            existingExperiments.addAll(query.getResultList());
+            existingExperiments = new HashSet<String>(query.getResultList());
             // check cached names
             if (persistedNames.contains(name)){
                 existingExperiments.add(name);
+                cachedLabels.add(name);
             }
             // if the experiment shortlabel is the same as another experiment shortlabel
             if (!existingExperiments.isEmpty()){
@@ -376,8 +382,9 @@ public class IntactUtils {
                 existingExperiments.addAll(query.getResultList());
                 // check cached names
                 if (persistedNames.contains(name)){
-                    existingExperiments.add(name);
+                    cachedLabels.add(name);
                 }
+                existingExperiments.addAll(cachedLabels);
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingExperiments, IntactUtils.MAX_SHORT_LABEL_LEN, false);
                 if (!nameInSync.equals(name)){
                     intactExperiment.setShortLabel(nameInSync);
@@ -395,7 +402,8 @@ public class IntactUtils {
             return;
         }
         String name = null;
-        Set<String> existingInteractions = new HashSet<String>();
+        Set<String> existingInteractions = Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
         do{
             // then synchronize with database
             name = intactInteraction.getShortName().trim().toLowerCase();
@@ -411,7 +419,7 @@ public class IntactUtils {
             if (intactInteraction.getAc() != null){
                 query.setParameter("interAc", intactInteraction.getAc());
             }
-            existingInteractions.addAll(query.getResultList());
+            existingInteractions = new HashSet<String>(query.getResultList());
             // check also with interactors
             Query query2 = manager.createQuery("select i.shortName from IntactInteractor i " +
                     "where (i.shortName = :name) "
@@ -424,6 +432,7 @@ public class IntactUtils {
             // check cached names
             if (persistedNames.contains(name)){
                 existingInteractions.add(name);
+                cachedLabels.add(name);
             }
 
             if (!existingInteractions.isEmpty()){
@@ -453,8 +462,9 @@ public class IntactUtils {
                 existingInteractions.addAll(query2.getResultList());
                 // check cached names
                 if (persistedNames.contains(name)){
-                    existingInteractions.add(name);
+                    cachedLabels.add(name);
                 }
+                existingInteractions.addAll(cachedLabels);
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractions, IntactUtils.MAX_SHORT_LABEL_LEN, true);
                 if (!nameInSync.equals(name)){
                     intactInteraction.setShortName(nameInSync);
@@ -472,7 +482,8 @@ public class IntactUtils {
             return;
         }
         String name;
-        Set<String> existingInteractors = new HashSet<String>();
+        Set<String> existingInteractors = Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
         do{
             name = intactInteractor.getShortName().trim().toLowerCase();
 
@@ -484,10 +495,11 @@ public class IntactUtils {
             if (intactInteractor.getAc() != null){
                 query.setParameter("interactorAc", intactInteractor.getAc());
             }
-            existingInteractors.addAll(query.getResultList());
+            existingInteractors = new HashSet<String>(query.getResultList());
             // check cached names
             if (persistedNames.contains(name)){
                 existingInteractors.add(name);
+                cachedLabels.add(name);
             }
 
             if (!existingInteractors.isEmpty()){
@@ -508,8 +520,9 @@ public class IntactUtils {
 
                 // check cached names
                 if (persistedNames.contains(name)){
-                    existingInteractors.add(name);
+                    cachedLabels.add(name);
                 }
+                existingInteractors.addAll(cachedLabels);
 
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingInteractors, IntactUtils.MAX_SHORT_LABEL_LEN, false);
                 if (!nameInSync.equals(name)){
@@ -535,7 +548,8 @@ public class IntactUtils {
         }
         String name = null;
         String originalName = null;
-        Set<String> existingCvs = new HashSet<String>();
+        Set<String> existingCvs = Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
         do{
             name = intactCv.getShortName().trim().toLowerCase();
             originalName = name;
@@ -551,10 +565,11 @@ public class IntactUtils {
             if (intactCv.getAc() != null){
                 query.setParameter("cvAc", intactCv.getAc());
             }
-            existingCvs.addAll(query.getResultList());
+            existingCvs = new HashSet<String>(query.getResultList());
 
             if (persistedNames.contains(name)){
                 existingCvs.add(name);
+                cachedLabels.add(name);
             }
 
             if (!existingCvs.isEmpty()){
@@ -576,8 +591,9 @@ public class IntactUtils {
                 }
                 existingCvs.addAll(query.getResultList());
                 if (persistedNames.contains(name)){
-                    existingCvs.add(name);
+                    cachedLabels.add(name);
                 }
+                existingCvs.addAll(cachedLabels);
 
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingCvs, IntactUtils.MAX_SHORT_LABEL_LEN, false);
                 if (!nameInSync.equals(name)){
@@ -597,12 +613,14 @@ public class IntactUtils {
         while(!existingCvs.isEmpty());
     }
 
-    public static void synchronizeSourceShortName(IntactSource intactSource, EntityManager manager){
+    public static void synchronizeSourceShortName(IntactSource intactSource, EntityManager manager,
+                                                  Set<String> persistedNames){
         if (intactSource.getShortName() == null){
             return;
         }
         String name = null;
-        Set<String> existingSource = new HashSet<String>();
+        Set<String> existingSource = Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
         do{
 
             name = intactSource.getShortName().trim();
@@ -615,7 +633,11 @@ public class IntactUtils {
             if (intactSource.getAc() != null){
                 query.setParameter("sourceAc", intactSource.getAc());
             }
-            existingSource.addAll(query.getResultList());
+            existingSource = new HashSet<String>(query.getResultList());
+            if (persistedNames.contains(name)){
+                existingSource.add(name);
+                cachedLabels.add(name);
+            }
             if (!existingSource.isEmpty()){
                 // we have a synchronized label, so we need first to extract original label before (last -)
                 if (name.matches(".*-\\d+$")){
@@ -631,7 +653,10 @@ public class IntactUtils {
                     query.setParameter("sourceAc", intactSource.getAc());
                 }
                 existingSource.addAll(query.getResultList());
-
+                if (persistedNames.contains(name)){
+                    cachedLabels.add(name);
+                }
+                existingSource.addAll(cachedLabels);
                 String nameInSync = IntactUtils.synchronizeShortlabel(name, existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
                 if (!nameInSync.equals(name)){
                     intactSource.setShortName(nameInSync);

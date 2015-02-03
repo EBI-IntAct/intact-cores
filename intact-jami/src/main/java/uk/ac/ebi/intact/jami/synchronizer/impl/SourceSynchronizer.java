@@ -35,6 +35,7 @@ import java.util.*;
 public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements SourceFetcher {
     private Map<Source, IntactSource> persistedObjects;
     private Map<Source, IntactSource> convertedObjects;
+    private Set<String> persistedNames;
 
     private IntactComparator<Source> sourceComparator;
 
@@ -46,6 +47,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<Source, IntactSource>(this.sourceComparator);
         this.convertedObjects = new IdentityMap();
+        persistedNames = new HashSet<String>();
     }
 
     public IntactSource find(Source term) throws FinderException {
@@ -165,6 +167,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.persistedNames.clear();
     }
 
     public Source fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -505,7 +508,9 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
-        IntactUtils.synchronizeSourceShortName(intactSource, getEntityManager());
+        IntactUtils.synchronizeSourceShortName(intactSource, getEntityManager(), this.persistedNames);
+
+        this.persistedNames.add(intactSource.getShortName());
     }
 
     @Override
