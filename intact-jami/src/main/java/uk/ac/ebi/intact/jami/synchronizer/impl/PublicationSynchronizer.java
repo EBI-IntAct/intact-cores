@@ -770,12 +770,6 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     @Override
     protected void synchronizePropertiesBeforeCacheMerge(IntactPublication objectInCache, IntactPublication originalInstance) throws FinderException, PersisterException, SynchronizerException {
-        // synchronize properties
-        // then check shortlabel/synchronize
-        if (!CollectionUtils.isEqualCollection(objectInCache.getIdentifiers(), originalInstance.getIdentifiers())){
-            prepareAndSynchronizeShortLabel(objectInCache);
-        }
-
         // then check xrefs
         IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getXrefs(),
                 objectInCache.getXrefs(),
