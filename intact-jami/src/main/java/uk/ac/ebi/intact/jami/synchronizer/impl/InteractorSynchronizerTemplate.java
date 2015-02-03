@@ -75,7 +75,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
             // try to fetch interactor using identifiers
             Collection<I> results = findByIdentifier(term, existingOrganism, existingType);
-            if (results.isEmpty()){
+            // if no identifiers and no results, look at other properties
+            if (results.isEmpty() && term.getIdentifiers().isEmpty()){
                 // fetch using other properties
                 results = findByOtherProperties(term, existingType, existingOrganism);
                 if (results.isEmpty()){
@@ -122,7 +123,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
             // try to fetch interactor using identifiers
             Collection<I> results = findByIdentifiers(term, existingOrganisms, existingTypes);
-            if (results.isEmpty()){
+            // if no identifiers and no results, look at other properties
+            if (results.isEmpty() && term.getIdentifiers().isEmpty()){
                 // fetch using other properties
                 results = findByOtherProperties(term, existingTypes, existingOrganisms);
                 if (results.isEmpty()){
@@ -164,7 +166,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
             // try to fetch interactor using identifiers
             Collection<I> results = findByIdentifiers(term, existingOrganisms, existingTypes);
-            if (results.isEmpty()){
+            // if no identifiers and no results, look at other properties
+            if (results.isEmpty() && term.getIdentifiers().isEmpty()){
                 // fetch using other properties
                 results = findByOtherProperties(term, existingTypes, existingOrganisms);
                 if (results.isEmpty()){
