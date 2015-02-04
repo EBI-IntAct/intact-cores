@@ -202,9 +202,4 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Range, I>(this));
     }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // nothing to do
-    }
 }
