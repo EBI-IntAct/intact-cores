@@ -116,9 +116,4 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Annotation, A>(this));
     }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(A objectInCache, A originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // nothing to do
-    }
 }

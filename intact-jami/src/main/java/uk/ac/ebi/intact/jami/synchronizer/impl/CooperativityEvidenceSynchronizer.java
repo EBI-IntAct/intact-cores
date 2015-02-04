@@ -144,9 +144,4 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<CooperativityEvidence, IntactCooperativityEvidence>(this));
     }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactCooperativityEvidence objectInCache, IntactCooperativityEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // nothing to do
-    }
 }

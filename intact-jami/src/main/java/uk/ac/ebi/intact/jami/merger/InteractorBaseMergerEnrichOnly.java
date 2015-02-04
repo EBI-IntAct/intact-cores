@@ -40,7 +40,7 @@ public class InteractorBaseMergerEnrichOnly<I extends Interactor, T extends Inta
     }
 
     public InteractorEnricherListener<I> getListener() {
-        return null;
+        return getBasicEnricher().getListener();
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
@@ -53,7 +53,7 @@ public class InteractorBaseMergerEnrichOnly<I extends Interactor, T extends Inta
 
     @Override
     public void setListener(InteractorEnricherListener<I> listener) {
-
+         getBasicEnricher().setListener(listener);
     }
 
     @Override

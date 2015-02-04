@@ -151,11 +151,6 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(AbstractIntactAllostery objectInCache, AbstractIntactAllostery originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // ntohing to do
-    }
-
-    @Override
     protected void storeInCache(Allostery originalObject, AbstractIntactAllostery persistentObject, AbstractIntactAllostery existingInstance) {
         // nothing to do
     }

@@ -5,18 +5,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.InteractorFetcher;
+import psidev.psi.mi.jami.enricher.InteractorEnricher;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.Xref;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.InteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactExactInteractorBaseComparator;
@@ -41,6 +43,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     private IntactComparator interactorComparator;
 
+    private DbInteractorEnricherListener<T> enricherListener;
+
     private static final Log log = LogFactory.getLog(InteractorSynchronizerTemplate.class);
 
     public InteractorSynchronizerTemplate(SynchronizerContext context, Class<I> intactClass){
@@ -48,6 +52,12 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         // to keep track of persisted cvs
         initialisePersistedObjectMap();
         persistedNames = new HashSet<String>();
+
+        enricherListener = initDefaultEnricherListener();
+    }
+
+    protected DbInteractorEnricherListener<T> initDefaultEnricherListener() {
+        return new DbInteractorEnricherListener<T>(getContext(), this);
     }
 
     public I find(T term) throws FinderException {
@@ -298,6 +308,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         this.persistedObjects.clear();
         this.convertedObjects.clear();
         this.persistedNames.clear();
+        this.enricherListener.getInteractorUpdates().clear();
     }
 
     protected void initialisePersistedObjectMap() {
@@ -443,7 +454,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(I intactInteractor) {
+    public void prepareAndSynchronizeShortLabel(I intactInteractor) {
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactInteractor.getShortName().length()){
             log.warn("Interactor shortLabel too long: "+intactInteractor.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
@@ -688,27 +699,16 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new InteractorBaseMergerEnrichOnly<T,I>(this));
+        InteractorBaseMergerEnrichOnly<T,I> merger = new InteractorBaseMergerEnrichOnly<T,I>(this);
+        merger.setListener(this.enricherListener);
+        super.setIntactMerger(merger);
     }
 
     @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // then check new aliases if any
-        IntactEnricherUtils.synchronizeAliasesToEnrich(objectInCache.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getInteractorAliasSynchronizer());
-
-        // then check new annotations if any
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(objectInCache.getDbAnnotations(),
-                objectInCache.getDbAnnotations(),
-                getContext().getInteractorAnnotationSynchronizer());
-
-        // then check new xrefs if any
-        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getInteractorXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getCvXrefSynchronizer());
+    public void setIntactMerger(IntactDbMerger<T, I> intactMerger) {
+        if (intactMerger instanceof InteractorEnricher){
+            ((InteractorEnricher)intactMerger).setListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 }

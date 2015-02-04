@@ -3,16 +3,19 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.jami.enricher.FeatureEnricher;
 import psidev.psi.mi.jami.model.Feature;
 import psidev.psi.mi.jami.utils.clone.FeatureCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.FeatureMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactFeature;
 import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.AbstractDbFeatureEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbFeatureEnricherListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -29,6 +32,8 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     private Map<F, I> persistedObjects;
     private Map<F, I> convertedObjects;
 
+    private AbstractDbFeatureEnricherListener<F> enricherListener;
+
     private static final Log log = LogFactory.getLog(FeatureSynchronizerTemplate.class);
 
     public FeatureSynchronizerTemplate(SynchronizerContext context, Class<? extends I> featureClass){
@@ -36,6 +41,11 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
 
         this.persistedObjects = new IdentityMap();
         this.convertedObjects = new IdentityMap();
+        enricherListener = instantiateDefaultEnricherlistener();
+    }
+
+    protected AbstractDbFeatureEnricherListener<F> instantiateDefaultEnricherlistener() {
+        return new DbFeatureEnricherListener<F>(getContext(), this);
     }
 
     public I find(F feature) throws FinderException {
@@ -100,6 +110,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.enricherListener.getFeatureUpdates().clear();
     }
 
     protected void prepareType(I intactFeature, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
@@ -213,7 +224,17 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new FeatureMergerEnrichOnly<F, I>());
+        FeatureMergerEnrichOnly<F, I> merger = new FeatureMergerEnrichOnly<F, I>();
+        merger.setFeatureEnricherListener(this.enricherListener);
+        super.setIntactMerger(merger);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<F, I> intactMerger) {
+        if (intactMerger instanceof FeatureEnricher){
+            ((FeatureEnricher)intactMerger).setFeatureEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 
     @Override
@@ -229,13 +250,5 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
         existingInstance.getDbLinkedFeatures().addAll(linkedFeatures);
         existingInstance.setBinds(bind);
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalFeature) throws FinderException, PersisterException, SynchronizerException {
-        // then check linkedFeatures if any
-        IntactEnricherUtils.synchronizeFeaturesToEnrich(originalFeature.getLinkedFeatures(),
-                objectInCache.getLinkedFeatures(),
-                this);
     }
 }

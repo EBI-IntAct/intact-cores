@@ -11,6 +11,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.InteractionEvidence;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
+import uk.ac.ebi.intact.jami.synchronizer.listener.IntactExperimentEnricherListener;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -48,7 +49,7 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
     }
 
     public ExperimentEnricherListener getExperimentEnricherListener() {
-        return null;
+        return getBasicEnricher().getExperimentEnricherListener();
     }
 
     @Override
@@ -68,7 +69,7 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
 
     @Override
     public void setExperimentEnricherListener(ExperimentEnricherListener listener) {
-
+        getBasicEnricher().setExperimentEnricherListener(listener);
     }
 
     @Override
@@ -82,11 +83,19 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
         // merge shortLabel
         if ((mergedExp.getShortLabel() != null && !mergedExp.getShortLabel().equals(exp1.getShortLabel()))
                 || mergedExp.getShortLabel() == null){
+            String oldLabel = mergedExp.getShortLabel();
             mergedExp.setShortLabel(exp1.getShortLabel());
+            if (getBasicEnricher().getExperimentEnricherListener() instanceof IntactExperimentEnricherListener){
+                ((IntactExperimentEnricherListener)getBasicEnricher().getExperimentEnricherListener()).onShortLabelUpdate(mergedExp, oldLabel);
+            }
         }
         // merge participant identification method
         if (mergedExp.getParticipantIdentificationMethod() != exp1.getParticipantIdentificationMethod()){
+            CvTerm oldMethod = mergedExp.getParticipantIdentificationMethod();
             mergedExp.setParticipantIdentificationMethod(exp1.getParticipantIdentificationMethod());
+            if (getBasicEnricher().getExperimentEnricherListener() instanceof IntactExperimentEnricherListener){
+                ((IntactExperimentEnricherListener)getBasicEnricher().getExperimentEnricherListener()).onParticipantDetectionMethodUpdate(mergedExp, oldMethod);
+            }
         }
         //merge interactions
         if (exp1.areInteractionEvidencesInitialized()){
@@ -111,6 +120,9 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
             // remove interaction not in second list
             if (!containsInteraction){
                 interactionIterator.remove();
+                if (getBasicEnricher().getExperimentEnricherListener() instanceof IntactExperimentEnricherListener){
+                    ((IntactExperimentEnricherListener)getBasicEnricher().getExperimentEnricherListener()).onRemovedInteractionEvidence(exp, interaction);
+                }
             }
         }
         interactionIterator = sourceInteractions.iterator();
@@ -127,6 +139,9 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
             // add missing interaction not in second list
             if (!containsInteraction){
                 exp.addInteractionEvidence(interaction);
+                if (getBasicEnricher().getExperimentEnricherListener() instanceof IntactExperimentEnricherListener){
+                    ((IntactExperimentEnricherListener)getBasicEnricher().getExperimentEnricherListener()).onAddedInteractionEvidence(exp, interaction);
+                }
             }
         }
     }

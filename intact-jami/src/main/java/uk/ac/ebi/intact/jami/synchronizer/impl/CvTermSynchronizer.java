@@ -6,21 +6,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.CvTermFetcher;
+import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.CvTermMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
 import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
 import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.IntactCvEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbCvEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
@@ -41,7 +42,7 @@ import java.util.*;
  * @since <pre>21/01/14</pre>
  */
 
-public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements CvTermFetcher<CvTerm> {
+public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, IntactCvTerm> implements CvTermFetcher<CvTerm>, IntactCvSynchronizer {
 
     private String objClass;
     private Map<CvTerm, IntactCvTerm> persistedObjects;
@@ -50,6 +51,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     private IntactComparator<CvTerm> cvComparator;
 
     private Set<String> persistedNames;
+
+    private DbCvEnricherListener enricherListener;
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
 
@@ -62,6 +65,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         this.persistedObjects = new TreeMap<CvTerm, IntactCvTerm>(cvComparator);
         this.convertedObjects = new IdentityMap();
         this.persistedNames = new HashSet<String>();
+        this.enricherListener = new DbCvEnricherListener(getContext(), this);
     }
 
     public CvTermSynchronizer(SynchronizerContext context, String objClass){
@@ -332,6 +336,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         this.persistedObjects.clear();
         this.convertedObjects.clear();
         this.persistedNames.clear();
+        this.enricherListener.getCvUpdates().clear();
     }
 
     public String getObjClass() {
@@ -663,7 +668,17 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new CvTermMergerEnrichOnly(this));
+        CvTermMergerEnrichOnly merger =  new CvTermMergerEnrichOnly(this);
+        merger.setCvTermEnricherListener(this.enricherListener);
+        super.setIntactMerger(merger);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<CvTerm, IntactCvTerm> intactMerger) {
+        if (intactMerger instanceof CvTermEnricher){
+            ((CvTermEnricher)intactMerger).setCvTermEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 
     @Override
@@ -701,36 +716,5 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             children.getParents().remove(intactObject);
         }
         intactObject.getChildren().clear();
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactCvTerm objectInCache, IntactCvTerm originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // then check new aliases if any
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalObject.getSynonyms(),
-                objectInCache.getSynonyms(),
-                getContext().getCvAliasSynchronizer());
-
-        // then check new annotations if any
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalObject.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getCvAnnotationSynchronizer());
-
-        // set identifier for backward compatibility
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getCvXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalObject.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getCvXrefSynchronizer());
-
-        // do new parents if any
-        IntactEnricherUtils.synchronizeCvsToEnrich(originalObject.getParents(),
-                objectInCache.getParents(),
-                this);
-    }
-
-    @Override
-    protected void synchronizePropertiesAfterMerge(IntactCvTerm mergedObject) throws SynchronizerException, PersisterException, FinderException {
-        initialiseIdentifier(mergedObject);
     }
 }

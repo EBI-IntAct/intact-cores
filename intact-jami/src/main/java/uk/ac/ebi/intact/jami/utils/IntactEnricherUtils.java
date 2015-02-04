@@ -5,7 +5,6 @@ import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.XrefUtils;
 import psidev.psi.mi.jami.utils.comparator.alias.DefaultAliasComparator;
 import psidev.psi.mi.jami.utils.comparator.annotation.DefaultAnnotationComparator;
-import psidev.psi.mi.jami.utils.comparator.confidence.DefaultConfidenceComparator;
 import psidev.psi.mi.jami.utils.comparator.cv.DefaultCvTermComparator;
 import psidev.psi.mi.jami.utils.comparator.experiment.DefaultVariableParameterComparator;
 import psidev.psi.mi.jami.utils.comparator.interactor.UnambiguousExactInteractorComparator;
@@ -74,6 +73,30 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize annotations that are not present in the annotations to enrich, only in the enriched annotations.
+     * It will refresh the enriched annotations to have fully initialised annotations before enrichment
+     * @param annotationsToBeAdded : the collection of annotations to be enriched
+     * @param annotationSynchronizer : the annotation sycnrhonizer to be used
+     * @return the synchronized annotations which will be added to the annotations to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Annotation> synchronizeAnnotationsToEnrich(Collection<Annotation> annotationsToBeAdded,
+                                                      AnnotationSynchronizer annotationSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Annotation> synchronizedAnnots = new ArrayList<Annotation>(annotationsToBeAdded.size());
+        for (Annotation annotation : annotationsToBeAdded){
+            // do not persist or merge annotations because of cascades
+            Annotation expAnnotation = (Annotation)annotationSynchronizer.synchronize(annotation, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedAnnots.add(expAnnotation);
+        }
+
+        return synchronizedAnnots;
+    }
+
+    /**
      * Method which will synchronize aliases that are not present in the aliases to enrich, only in the enriched aliases.
      * It will refresh the enriched aliases to have fully initialised aliases before enrichment
      * @param aliasesToEnrich : the collection of aliases to be enriched
@@ -113,6 +136,30 @@ public class IntactEnricherUtils {
         // remove annotations which have been synchronized from original object
         enrichedAliases.removeAll(aliasesToBeAdded);
         enrichedAliases.addAll(synchronizedAliases);
+    }
+
+    /**
+     * Method which will synchronize aliases that are not present in the aliases to enrich, only in the enriched aliases.
+     * It will refresh the enriched aliases to have fully initialised aliases before enrichment
+     * @param aliasesToBeAdded : the collection of aliases to be enriched
+     * @param aliasSynchronizer : the aliases synchronizer to be used
+     * @return the synchronized aliases which will be added to the aliases to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Alias> synchronizeAliasesToEnrich(Collection<Alias> aliasesToBeAdded,
+                                                  AliasSynchronizer aliasSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Alias> synchronizedAliases = new ArrayList<Alias>(aliasesToBeAdded.size());
+        for (Alias annotation : aliasesToBeAdded){
+            // do not persist or merge aliases because of cascades
+            Alias expAlias = (Alias)aliasSynchronizer.synchronize(annotation, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedAliases.add(expAlias);
+        }
+
+        return synchronizedAliases;
     }
 
     /**
@@ -158,6 +205,30 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize variable parameters that are not present in the variable parameters to enrich, only in the enriched variable parameters.
+     * It will refresh the enriched variable parameters to have fully initialised variable parameters before enrichment
+     * @param paramsToBweAdded : the collection of variable parameters to be enriched
+     * @param vPSynchronizer : the variable parameters synchronizer to be used
+     * @return the synchronized variable parameters which will be added to the variable parameters to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<VariableParameter> synchronizeVariableParametersToEnrich(Collection<VariableParameter> paramsToBweAdded,
+                                                             IntactDbSynchronizer vPSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<VariableParameter> synchronizedParameters = new ArrayList<VariableParameter>(paramsToBweAdded.size());
+        for (VariableParameter annotation : paramsToBweAdded){
+            // do not persist or merge variable parameters because of cascades
+            VariableParameter cpExp = (VariableParameter)vPSynchronizer.synchronize(annotation, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedParameters.add(cpExp);
+        }
+
+        return synchronizedParameters;
+    }
+
+    /**
      * Method which will synchronize cv parents that are not present in the aliases to enrich, only in the enriched cv parents.
      * It will refresh the enriched cv parents to have fully initialised cv parents before enrichment
      * @param parentsToEnrich : the collection of cv parents to be enriched
@@ -197,6 +268,30 @@ public class IntactEnricherUtils {
         // remove cv parents which have been synchronized from original object
         enrichedParents.removeAll(cvsToBeAdded);
         enrichedParents.addAll(synchronizedCvs);
+    }
+
+    /**
+     * Method which will synchronize cv parents that are not present in the aliases to enrich, only in the enriched cv parents.
+     * It will refresh the enriched cv parents to have fully initialised cv parents before enrichment
+     * @param cvsToBeAdded : the collection of cv parents to be enriched
+     * @param cvSynchronizer : the cv parents synchronizer to be used
+     * @return the synchronized cv parents which will be added to the cv parents to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static <C extends CvTerm> List<C> synchronizeCvsToEnrich(Collection<C> cvsToBeAdded,
+                                                                 IntactDbSynchronizer cvSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<C> synchronizedCvs = new ArrayList<C>(cvsToBeAdded.size());
+        for (C cv : cvsToBeAdded){
+            // do not persist or merge cv parents because of cascades
+            C expCv = (C)cvSynchronizer.synchronize(cv, true);
+            // we have a different instance because needed to be synchronized
+            synchronizedCvs.add(expCv);
+        }
+
+        return synchronizedCvs;
     }
 
     /**
@@ -246,6 +341,29 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize xrefs that are not present in the xrefs to enrich
+     * @param xrefsToBeAdded : the collection of xrefs to be enriched
+     * @param xrefSynchronizer : the xref sycnrhonizer to be used
+     * @return the synchronized xrefs which will be added to the xrefs to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Xref> synchronizeXrefsToEnrich(Collection<Xref> xrefsToBeAdded,
+                                                XrefSynchronizer xrefSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Xref> synchronizedXrefs = new ArrayList<Xref>(xrefsToBeAdded.size());
+        for (Xref ref : xrefsToBeAdded){
+            // do not persist or merge xrefs because of cascades
+            Xref expRef = (Xref)xrefSynchronizer.synchronize(ref, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedXrefs.add(expRef);
+        }
+
+        return synchronizedXrefs;
+    }
+
+    /**
      * Method which will synchronize interactors that are not present in the interactors to enrich
      * @param interactorsToEnrich : the collection of interactors to be enriched
      * @param enrichedInteractors : the collections of interactors fully enriched
@@ -287,32 +405,39 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize interactors that are not present in the interactors to enrich
+     * @param interactorsToBeAdded : the collection of interactors to be enriched
+     * @param interactorSynchronizer : the interactors sycnrhonizer to be used
+     * @return the synchronized interactors which will be added to the xrefs to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Interactor> synchronizeInteractorsToEnrich(Collection<Interactor> interactorsToBeAdded,
+                                                      IntactDbSynchronizer interactorSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Interactor> synchronizedInteractors = new ArrayList<Interactor>(interactorsToBeAdded.size());
+        for (Interactor ref : interactorsToBeAdded){
+            // do not persist or merge interactors because of cascades
+            Interactor expRef = (Interactor)interactorSynchronizer.synchronize(ref, true);
+            // we have a different instance because needed to be synchronized
+            synchronizedInteractors.add(expRef);
+        }
+
+        return synchronizedInteractors;
+    }
+
+    /**
      * Method which will synchronize confidences that are not present in the confidences to enrich
-     * @param confidencesToEnrich : the collection of confidences to be enriched
-     * @param enrichedConfidences : the collections of confidences fully enriched
+     * @param confidencesToBeAdded : the collection of confidences to be enriched
      * @param confidenceSynchronizer : the confidences synchronizer to be used
      * @return the synchronized confidences which will be added to the confidences to enrich
      * @throws PersisterException
      * @throws FinderException
      * @throws SynchronizerException
      */
-    public static <C extends Confidence> void synchronizeConfidencesToEnrich(Collection<C> confidencesToEnrich,
-                                                            Collection<C> enrichedConfidences,
+    public static <C extends Confidence> List<C> synchronizeConfidencesToEnrich(Collection<C> confidencesToBeAdded,
                                                             ConfidenceSynchronizer confidenceSynchronizer) throws PersisterException, FinderException, SynchronizerException {
-        Collection<C> confidencesToBeAdded = CollectionUtils.subtract(enrichedConfidences, confidencesToEnrich);
-        if (!confidencesToBeAdded.isEmpty()){
-            // filter confidences to be added in case we have mix of type with MI identifier and with shortlabel only
-            Iterator<C> refIterator = confidencesToBeAdded.iterator();
-            while (refIterator.hasNext()){
-                C toBeAdded = refIterator.next();
-                for (C exististingConf : confidencesToEnrich){
-                    if (DefaultConfidenceComparator.areEquals(toBeAdded, exististingConf)){
-                        refIterator.remove();
-                        break;
-                    }
-                }
-            }
-        }
 
         List<C> synchronizedConfidences = new ArrayList<C>(confidencesToBeAdded.size());
         for (C conf : confidencesToBeAdded){
@@ -322,9 +447,7 @@ public class IntactEnricherUtils {
             synchronizedConfidences.add(expConf);
         }
 
-        // remove confidences which have been synchronized from original object
-        enrichedConfidences.removeAll(confidencesToBeAdded);
-        enrichedConfidences.addAll(synchronizedConfidences);
+        return synchronizedConfidences;
     }
 
     /**
@@ -369,6 +492,29 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize parameters that are not present in the parameters to enrich
+     * @param parametersToBeAdded : the collection of parameters to be enriched
+     * @param parameterSynchronizer : the parameters synchronizer to be used
+     * @return the synchronized parameters which will be added to the parameters to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static <C extends Parameter> List<C> synchronizeParametersToEnrich(Collection<C> parametersToBeAdded,
+                                                                           ParameterSynchronizer parameterSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<C> synchronizedParameters = new ArrayList<C>(parametersToBeAdded.size());
+        for (C para : parametersToBeAdded){
+            // do not persist or merge parameters because of cascades
+            C expConf = (C)parameterSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedParameters.add(expConf);
+        }
+
+        return synchronizedParameters;
+    }
+
+    /**
      * Method which will synchronize participants that are not present in the participants to enrich
      * @param participantsToEnrich : the collection of participants to be enriched
      * @param enrichedParticipants : the collections of participants fully enriched
@@ -397,31 +543,49 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize participants that are not present in the participants to enrich
+     * @param participantsToBeAdded : the collection of participants to be enriched
+     * @param participantSynchronizer : the participants synchronizer to be used
+     * @return the synchronized participants which will be added to the participants to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static <C extends Participant> List<C> synchronizeParticipantsToEnrich(Collection<C> participantsToBeAdded,
+                                                                               ParticipantSynchronizer participantSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<C> synchronizedParticipants = new ArrayList<C>(participantsToBeAdded.size());
+        for (C para : participantsToBeAdded){
+            // do not persist or merge participants because of cascades
+            C expParticipant = (C)participantSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedParticipants.add(expParticipant);
+        }
+
+        return synchronizedParticipants;
+    }
+
+    /**
      * Method which will synchronize interactions that are not present in the interactions to enrich
-     * @param interactionsToEnrich : the collection of interactions to be enriched
-     * @param enrichedInteractions : the collections of interactions fully enriched
+     * @param addedInteractions : the collection of interactions to be synchronized
      * @param interactionSynchronizer : the interactions synchronizer to be used
      * @return the synchronized interactions which will be added to the interactions to enrich
      * @throws PersisterException
      * @throws FinderException
      * @throws SynchronizerException
      */
-    public static void synchronizeInteractionsToEnrich(Collection<InteractionEvidence> interactionsToEnrich,
-                                                                                        Collection<InteractionEvidence> enrichedInteractions,
+    public static List<InteractionEvidence> synchronizeInteractionsToEnrich(Collection<InteractionEvidence> addedInteractions,
                                                                                         IntactDbSynchronizer interactionSynchronizer) throws PersisterException, FinderException, SynchronizerException {
-        Collection<InteractionEvidence> interactionsToBeAdded = CollectionUtils.subtract(enrichedInteractions, interactionsToEnrich);
 
-        List<InteractionEvidence> synchronizedInteractions = new ArrayList<InteractionEvidence>(interactionsToBeAdded.size());
-        for (InteractionEvidence para : interactionsToBeAdded){
+        List<InteractionEvidence> synchronizedInteractions = new ArrayList<InteractionEvidence>(addedInteractions.size());
+        for (InteractionEvidence para : addedInteractions){
             // do not persist or merge interactions because of cascades
             InteractionEvidence expInteraction = (InteractionEvidence)interactionSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
             synchronizedInteractions.add(expInteraction);
         }
 
-        // remove interactions which have been synchronized from original object
-        enrichedInteractions.removeAll(interactionsToBeAdded);
-        enrichedInteractions.addAll(synchronizedInteractions);
+        return synchronizedInteractions;
     }
 
     /**
@@ -481,6 +645,29 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize ranges that are not present in the ranges to enrich
+     * @param rangesToBeAdded : the collection of ranges to be enriched
+     * @param rangeSynchronizer : the ranges synchronizer to be used
+     * @return the synchronized ranges which will be added to the ranges to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Range> synchronizeRangesToEnrich(Collection<Range> rangesToBeAdded,
+                                                 IntactDbSynchronizer rangeSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Range> synchronizedRanges = new ArrayList<Range>(rangesToBeAdded.size());
+        for (Range para : rangesToBeAdded){
+            // do not persist or merge ranges because of cascades
+            Range expInteraction = (Range)rangeSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedRanges.add(expInteraction);
+        }
+
+        return synchronizedRanges;
+    }
+
+    /**
      * Method which will synchronize features that are not present in the features to enrich
      * @param featuresToEnrich : the collection of features to be enriched
      * @param enrichedFeatures : the collections of features fully enriched
@@ -506,6 +693,29 @@ public class IntactEnricherUtils {
         // remove ranges which have been synchronized from original object
         enrichedFeatures.removeAll(featuresToBeAdded);
         enrichedFeatures.addAll(synchronizedfeatures);
+    }
+
+    /**
+     * Method which will synchronize features that are not present in the features to enrich
+     * @param featuresToBeAdded : the collection of features to be enriched
+     * @param featureSynchronizer : the feature synchronizer to be used
+     * @return the synchronized features which will be added to the features to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static <F extends Feature> List<F> synchronizeFeaturesToEnrich(Collection<F> featuresToBeAdded,
+                                                                       IntactDbSynchronizer featureSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<F> synchronizedfeatures = new ArrayList<F>(featuresToBeAdded.size());
+        for (F para : featuresToBeAdded){
+            // do not persist or merge ranges because of cascades
+            F expInteraction = (F)featureSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedfeatures.add(expInteraction);
+        }
+
+        return synchronizedfeatures;
     }
 
     /**
@@ -562,5 +772,28 @@ public class IntactEnricherUtils {
         // remove lifecycle which have been synchronized from original object
         enrichedLs.removeAll(lcToBeAdded);
         enrichedLs.addAll(synchronizedLc);
+    }
+
+    /**
+     * Method which will synchronize lifecycle that are not present in the lifecycle to enrich
+     * @param lcToBeAdded : the collection of lifecycle to be enriched
+     * @param lcSynchronizer : the lifecycle synchronizer to be used
+     * @return the synchronized lifecycle which will be added to the lifecycle to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static <C extends LifeCycleEvent> List<C> synchronizeLifeCycleEventsToEnrich(Collection<C> lcToBeAdded,
+                                                                                     IntactDbSynchronizer lcSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<C> synchronizedLc = new ArrayList<C>(lcToBeAdded.size());
+        for (C para : lcToBeAdded){
+            // do not persist or merge lifecycle because of cascades
+            C expLc = (C)lcSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedLc.add(expLc);
+        }
+
+        return synchronizedLc;
     }
 }

@@ -10,7 +10,8 @@ import uk.ac.ebi.intact.jami.model.extension.IntactFeatureEvidence;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.AbstractDbFeatureEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbFeatureEvidenceEnricherListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
 
     public void clearCache() {
         super.clearCache();
+    }
+
+    @Override
+    protected AbstractDbFeatureEnricherListener<FeatureEvidence> instantiateDefaultEnricherlistener() {
+        return new DbFeatureEvidenceEnricherListener(getContext(), this);
     }
 
     @Override
@@ -195,42 +201,5 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                 intactFeature.getAliases().add(featureAlias);
             }
         }
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactFeatureEvidence objectInCache, IntactFeatureEvidence originalFeature) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalFeature);
-        // then check aliases
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalFeature.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getFeatureEvidenceAliasSynchronizer());
-
-        // then check annotations
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalFeature.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getFeatureEvidenceAnnotationSynchronizer());
-
-        // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getFeatureEvidenceXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getCvXrefSynchronizer());
-
-        // then detection methods
-        IntactEnricherUtils.synchronizeCvsToEnrich(originalFeature.getDetectionMethods(),
-                objectInCache.getDetectionMethods(),
-                getContext().getFeatureDetectionMethodSynchronizer());
-
-        // then check ranges
-        IntactEnricherUtils.synchronizeRangesToEnrich(originalFeature.getRanges(),
-                objectInCache.getRanges(),
-                getContext().getExperimentalRangeSynchronizer());
-
-        // then synchronize parameters
-        IntactEnricherUtils.synchronizeParametersToEnrich(originalFeature.getParameters(),
-                objectInCache.getParameters(),
-                getContext().getFeatureParameterSynchronizer());
     }
 }

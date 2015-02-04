@@ -368,4 +368,39 @@ public class CompositeInteractorSynchronizer implements InteractorFetcher<Intera
         this.context.getInteractorPoolSynchronizer().setListener(listener);
         this.context.getInteractorBaseSynchronizer().setListener(listener);
     }
+
+    @Override
+    public void prepareAndSynchronizeShortLabel(IntactInteractor term) throws SynchronizerException {
+        if (term instanceof IntactMolecule){
+            if (term instanceof IntactPolymer){
+                if (term instanceof Protein){
+                    this.context.getProteinSynchronizer().prepareAndSynchronizeShortLabel((IntactProtein) term);
+                }
+                else if (term instanceof IntactNucleicAcid){
+                    this.context.getNucleicAcidSynchronizer().prepareAndSynchronizeShortLabel((IntactNucleicAcid) term);
+                }
+                else{
+                    this.context.getPolymerSynchronizer().prepareAndSynchronizeShortLabel((IntactPolymer) term);
+                }
+            }
+            else if (term instanceof IntactBioactiveEntity){
+                this.context.getBioactiveEntitySynchronizer().prepareAndSynchronizeShortLabel((IntactBioactiveEntity) term);
+            }
+            else if (term instanceof IntactGene){
+                this.context.getGeneSynchronizer().prepareAndSynchronizeShortLabel((IntactGene) term);
+            }
+            else{
+                this.context.getMoleculeSynchronizer().prepareAndSynchronizeShortLabel((IntactMolecule)term);
+            }
+        }
+        else if (term instanceof IntactComplex){
+            this.context.getComplexSynchronizer().prepareAndSynchronizeShortLabel((IntactComplex) term);
+        }
+        else if (term instanceof IntactInteractorPool){
+            this.context.getInteractorPoolSynchronizer().prepareAndSynchronizeShortLabel((IntactInteractorPool) term);
+        }
+        else {
+            this.context.getInteractorBaseSynchronizer().prepareAndSynchronizeShortLabel(term);
+        }
+    }
 }

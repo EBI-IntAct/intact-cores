@@ -9,6 +9,7 @@ import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.synchronizer.listener.IntactComplexEnricherListener;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
     }
 
     public InteractorEnricherListener<Complex> getListener() {
-        return null;
+        return getBasicEnricher().getListener();
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
@@ -59,7 +60,7 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
 
     @Override
     public void setListener(InteractorEnricherListener<Complex> listener) {
-
+        getBasicEnricher().setListener(listener);
     }
 
     @Override
@@ -103,24 +104,33 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
         // merge status
         if (mergedComplex.getCvStatus() == null && obj1.getCvStatus() != null){
             mergedComplex.setCvStatus(obj1.getCvStatus());
+            if (getListener() instanceof IntactComplexEnricherListener){
+                 ((IntactComplexEnricherListener) getListener()).onStatusUpdate(mergedComplex, null);
+            }
         }
         // merge curator
         if (mergedComplex.getCurrentOwner() == null && obj1.getCurrentOwner() != null){
             mergedComplex.setCurrentOwner(obj1.getCurrentOwner());
+            if (getListener() instanceof IntactComplexEnricherListener){
+                ((IntactComplexEnricherListener) getListener()).onCurrentOwnerUpdate(mergedComplex, null);
+            }
         }
         // merge reviewer
         if (mergedComplex.getCurrentReviewer() == null && obj1.getCurrentReviewer() != null){
             mergedComplex.setCurrentReviewer(obj1.getCurrentReviewer());
+            if (getListener() instanceof IntactComplexEnricherListener){
+                ((IntactComplexEnricherListener) getListener()).onCurrentReviewerUpdate(mergedComplex, null);
+            }
         }
         // merge lifecycle
         if (obj1.areLifeCycleEventsInitialized()){
-            mergeLifeCycleEvents(mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
+            mergeLifeCycleEvents(mergedComplex, mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
 
         return mergedComplex;
     }
 
-    private void mergeLifeCycleEvents(List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
+    private void mergeLifeCycleEvents(IntactComplex mergedComplex, List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
 
         Iterator<LifeCycleEvent> eventIterator = sourceEvents.iterator();
         int index = 0;
@@ -137,6 +147,9 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
             // add missing xref not in second list
             if (!containsEvent){
                 toEnrichEvents.add(index, event);
+                if (getListener() instanceof IntactComplexEnricherListener){
+                    ((IntactComplexEnricherListener) getListener()).onAddedLifeCycleEvent(mergedComplex, null);
+                }
             }
             index++;
         }

@@ -14,6 +14,9 @@ import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbComplexEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorPoolEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexComparator;
@@ -43,6 +46,11 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
         super(context, IntactComplex.class);
         this.participantsComparator = new CollectionComparator<ModelledParticipant>(new IntactModelledParticipantComparator());
         this.experimentBCSynchronizer = new ComplexExperimentBCSynchronizer(context);
+    }
+
+    @Override
+    protected DbInteractorEnricherListener<Complex> initDefaultEnricherListener() {
+        return new DbComplexEnricherListener(getContext(), this);
     }
 
     @Override
@@ -464,7 +472,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
-    protected void prepareAndSynchronizeShortLabel(IntactComplex intactInteraction) {
+    public void prepareAndSynchronizeShortLabel(IntactComplex intactInteraction) {
         // first initialise shortlabel if not done
         if (intactInteraction.getShortName() == null){
             intactInteraction.setShortName(IntactUtils.generateAutomaticComplexShortlabelFor(intactInteraction, IntactUtils.MAX_SHORT_LABEL_LEN));
@@ -497,46 +505,5 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     public void clearCache() {
         super.clearCache();
         this.experimentBCSynchronizer.clearCache();
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactComplex objectInCache, IntactComplex originalComplex) throws FinderException, PersisterException, SynchronizerException {
-        // then check new aliases if any
-        IntactEnricherUtils.synchronizeAliasesToEnrich(objectInCache.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getInteractorAliasSynchronizer());
-
-        // then check new annotations if any
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(objectInCache.getDbAnnotations(),
-                objectInCache.getDbAnnotations(),
-                getContext().getInteractorAnnotationSynchronizer());
-
-        // then check new xrefs if any
-        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getComplexXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(objectInCache.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getComplexXrefSynchronizer());
-
-        // then check new confidences  if any
-        IntactEnricherUtils.synchronizeConfidencesToEnrich(originalComplex.getModelledConfidences(),
-                objectInCache.getModelledConfidences(),
-                getContext().getComplexConfidenceSynchronizer());
-
-        // then check new parameters if any
-        IntactEnricherUtils.synchronizeParametersToEnrich(originalComplex.getModelledParameters(),
-                objectInCache.getModelledParameters(),
-                getContext().getComplexParameterSynchronizer());
-
-        // then check new participants if any
-        IntactEnricherUtils.synchronizeParticipantsToEnrich(originalComplex.getParticipants(),
-                objectInCache.getParticipants(),
-                getContext().getParticipantSynchronizer());
-
-        // prepare lifecycle
-        IntactEnricherUtils.synchronizeLifeCycleEventsToEnrich(originalComplex.getLifecycleEvents(),
-                objectInCache.getLifecycleEvents(),
-                getContext().getComplexLifecycleSynchronizer());
     }
 }

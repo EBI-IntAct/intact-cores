@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullParticipantUpdater;
 import psidev.psi.mi.jami.model.ModelledFeature;
 import psidev.psi.mi.jami.model.ModelledParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactModelledParticipant;
@@ -19,7 +20,7 @@ public class ModelledParticipantMergerOverride<E extends ModelledParticipant, I 
         extends ParticipantMergerOverride<E, I, ModelledFeature> {
 
     public ModelledParticipantMergerOverride() {
-        super((Class<I>)IntactModelledParticipant.class, new FullParticipantEnricher<E, ModelledFeature>());
+        super((Class<I>)IntactModelledParticipant.class, new FullParticipantUpdater<E, ModelledFeature>());
     }
 
     public ModelledParticipantMergerOverride(ParticipantEnricher<E, ModelledFeature> basicEnricher) {

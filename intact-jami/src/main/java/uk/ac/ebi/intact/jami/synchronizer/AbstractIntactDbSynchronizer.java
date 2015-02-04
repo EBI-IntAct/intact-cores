@@ -517,7 +517,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    protected abstract void synchronizePropertiesBeforeCacheMerge(T objectInCache, T originalObject) throws FinderException, PersisterException, SynchronizerException;
+    protected void synchronizePropertiesBeforeCacheMerge(T objectInCache, T originalObject)
+            throws FinderException, PersisterException, SynchronizerException{
+
+    }
 
     /**
      * This method will synchronize the properties of the object which is partially initialised

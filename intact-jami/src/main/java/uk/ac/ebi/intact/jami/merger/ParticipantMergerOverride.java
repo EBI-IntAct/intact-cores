@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.enricher.FeatureEnricher;
 import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.enricher.impl.CompositeInteractorEnricher;
 import psidev.psi.mi.jami.enricher.impl.full.FullParticipantEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullParticipantUpdater;
 import psidev.psi.mi.jami.enricher.listener.EntityEnricherListener;
 import psidev.psi.mi.jami.enricher.listener.ParticipantEnricherListener;
 import psidev.psi.mi.jami.model.CvTerm;
@@ -24,7 +25,7 @@ import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParticipant;
 public class ParticipantMergerOverride<E extends Participant, I extends AbstractIntactParticipant, F extends Feature> extends IntactDbMergerOverride<E, I> implements ParticipantEnricher<E,F> {
 
     public ParticipantMergerOverride() {
-        super((Class<I>)AbstractIntactParticipant.class, new FullParticipantEnricher<E,F>());
+        super((Class<I>)AbstractIntactParticipant.class, new FullParticipantUpdater<E,F>());
     }
 
     public ParticipantMergerOverride(ParticipantEnricher<E, F> basicEnricher) {

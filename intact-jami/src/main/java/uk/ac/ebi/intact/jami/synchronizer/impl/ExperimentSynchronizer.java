@@ -11,11 +11,8 @@ import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbExperimentEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactExperimentComparator;
 
@@ -31,9 +28,10 @@ import java.util.*;
  * @since <pre>21/01/14</pre>
  */
 
-public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experiment, IntactExperiment> {
+public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experiment, IntactExperiment>
+implements IntactExperimentSynchronizer{
 
-    private Map<Experiment, IntactExperiment> persistedObjects;
+private Map<Experiment, IntactExperiment> persistedObjects;
     private Map<Experiment, IntactExperiment> convertedObjects;
 
     private CollectionComparator<Annotation> annotationCollectionComparator;
@@ -42,6 +40,8 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     private IntactExperimentComparator experimentComparator;
 
     private Set<String> persistedNames;
+
+    private DbExperimentEnricherListener enricherListener;
 
     public ExperimentSynchronizer(SynchronizerContext context){
         super(context, IntactExperiment.class);
@@ -53,6 +53,8 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         this.persistedObjects = new TreeMap<Experiment, IntactExperiment>(experimentComparator);
         this.convertedObjects = new IdentityMap();
         persistedNames = new HashSet<String>();
+
+        enricherListener = new DbExperimentEnricherListener(context, this);
     }
 
     public IntactExperiment find(Experiment experiment) throws FinderException {
@@ -334,6 +336,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         this.persistedObjects.clear();
         this.convertedObjects.clear();
         this.persistedNames.clear();
+        this.enricherListener.getExperimentUpdates().clear();
     }
     @Override
     protected Object extractIdentifier(IntactExperiment object) {
@@ -507,7 +510,7 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(IntactExperiment intactExperiment) throws SynchronizerException {
+    public void prepareAndSynchronizeShortLabel(IntactExperiment intactExperiment) throws SynchronizerException {
         // first initialise shortlabel if not done or does not match our internal shortlabels
         if (intactExperiment.getShortLabel() == null
                 || (!IntactUtils.EXPERIMENT_LABEL_PATTERN.matcher(intactExperiment.getShortLabel()).matches()
@@ -537,28 +540,5 @@ public class ExperimentSynchronizer extends AbstractIntactDbSynchronizer<Experim
     @Override
     protected void synchronizePropertiesAfterMerge(IntactExperiment mergedObject) throws SynchronizerException, PersisterException, FinderException {
         prepareParticipantIdentificationMethod(mergedObject, true);
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactExperiment objectInCache, IntactExperiment originalExperiment) throws FinderException, PersisterException, SynchronizerException {
-        // then check new annotations if any
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalExperiment.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getExperimentAnnotationSynchronizer());
-
-        // then check new xrefs if any
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalExperiment.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getExperimentXrefSynchronizer());
-
-        // then check new variable parameters if any
-        IntactEnricherUtils.synchronizeVariableParametersToEnrich(originalExperiment.getVariableParameters(),
-                objectInCache.getVariableParameters(),
-                getContext().getVariableParameterSynchronizer());
-
-        // then check new interactions if any
-        IntactEnricherUtils.synchronizeInteractionsToEnrich(originalExperiment.getInteractionEvidences(),
-                objectInCache.getInteractionEvidences(),
-                getContext().getInteractionSynchronizer());
     }
 }

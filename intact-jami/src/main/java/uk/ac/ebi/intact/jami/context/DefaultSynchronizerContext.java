@@ -16,6 +16,7 @@ import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.IntactExperimentSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.impl.*;
 import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
@@ -38,28 +39,28 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private DbSynchronizerListener listener;
 
     // cv synchronizer
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> generalCvSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> databaseSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> qualifierSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> topicSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> aliasTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> unitSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> featureTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalRoleSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> biologicalRoleSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> interactionDetectionMethodSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> interactionTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> participantDetectionMethodSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> experimentalPreparationSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> interactorTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> rangeStatusSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> confidenceTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> parameterTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> cellTypeSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> tissueSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> featureDetectionMethodSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> lifecycleStatusSynchronizer;
-    private IntactDbSynchronizer<CvTerm, IntactCvTerm> lifecycleEventSynchronizer;
+    private IntactCvSynchronizer generalCvSynchronizer;
+    private IntactCvSynchronizer databaseSynchronizer;
+    private IntactCvSynchronizer qualifierSynchronizer;
+    private IntactCvSynchronizer topicSynchronizer;
+    private IntactCvSynchronizer aliasTypeSynchronizer;
+    private IntactCvSynchronizer unitSynchronizer;
+    private IntactCvSynchronizer featureTypeSynchronizer;
+    private IntactCvSynchronizer experimentalRoleSynchronizer;
+    private IntactCvSynchronizer biologicalRoleSynchronizer;
+    private IntactCvSynchronizer interactionDetectionMethodSynchronizer;
+    private IntactCvSynchronizer interactionTypeSynchronizer;
+    private IntactCvSynchronizer participantDetectionMethodSynchronizer;
+    private IntactCvSynchronizer experimentalPreparationSynchronizer;
+    private IntactCvSynchronizer interactorTypeSynchronizer;
+    private IntactCvSynchronizer rangeStatusSynchronizer;
+    private IntactCvSynchronizer confidenceTypeSynchronizer;
+    private IntactCvSynchronizer parameterTypeSynchronizer;
+    private IntactCvSynchronizer cellTypeSynchronizer;
+    private IntactCvSynchronizer tissueSynchronizer;
+    private IntactCvSynchronizer featureDetectionMethodSynchronizer;
+    private IntactCvSynchronizer lifecycleStatusSynchronizer;
+    private IntactCvSynchronizer lifecycleEventSynchronizer;
 
     // source synchronizer
     private IntactDbSynchronizer<Source, IntactSource> sourceSynchronizer;
@@ -115,7 +116,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer;
 
     // experiment synchronizers
-    private IntactDbSynchronizer<Experiment, IntactExperiment> experimentSynchronizer;
+    private IntactExperimentSynchronizer experimentSynchronizer;
 
     // interaction synchronizers
     private IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> interactionEvidenceSynchronizer;
@@ -175,7 +176,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.entityManager;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDatabaseSynchronizer() {
+    public IntactCvSynchronizer getDatabaseSynchronizer() {
         if (this.databaseSynchronizer == null){
             this.databaseSynchronizer = new CvTermSynchronizer(this, IntactUtils.DATABASE_OBJCLASS);
             this.databaseSynchronizer.setListener(this.listener);
@@ -183,7 +184,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return databaseSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getQualifierSynchronizer() {
+    public IntactCvSynchronizer getQualifierSynchronizer() {
         if (this.qualifierSynchronizer == null){
             this.qualifierSynchronizer = new CvTermSynchronizer(this, IntactUtils.QUALIFIER_OBJCLASS);
             this.qualifierSynchronizer.setListener(this.listener);
@@ -191,7 +192,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return qualifierSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTopicSynchronizer() {
+    public IntactCvSynchronizer getTopicSynchronizer() {
         if (this.topicSynchronizer == null){
             this.topicSynchronizer = new CvTermSynchronizer(this, IntactUtils.TOPIC_OBJCLASS);
             this.topicSynchronizer.setListener(this.listener);
@@ -199,7 +200,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return topicSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getAliasTypeSynchronizer() {
+    public IntactCvSynchronizer getAliasTypeSynchronizer() {
         if (this.aliasTypeSynchronizer == null){
             this.aliasTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.ALIAS_TYPE_OBJCLASS);
             this.aliasTypeSynchronizer.setListener(this.listener);
@@ -207,7 +208,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return aliasTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getUnitSynchronizer() {
+    public IntactCvSynchronizer getUnitSynchronizer() {
         if (this.unitSynchronizer == null){
             this.unitSynchronizer = new CvTermSynchronizer(this, IntactUtils.UNIT_OBJCLASS);
             this.unitSynchronizer.setListener(this.listener);
@@ -215,7 +216,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return unitSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getFeatureTypeSynchronizer() {
+    public IntactCvSynchronizer getFeatureTypeSynchronizer() {
         if (this.featureTypeSynchronizer == null){
             this.featureTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.FEATURE_TYPE_OBJCLASS);
             this.featureTypeSynchronizer.setListener(listener);
@@ -223,7 +224,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return featureTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalRoleSynchronizer() {
+    public IntactCvSynchronizer getExperimentalRoleSynchronizer() {
         if (this.experimentalRoleSynchronizer == null){
             this.experimentalRoleSynchronizer = new CvTermSynchronizer(this, IntactUtils.EXPERIMENTAL_ROLE_OBJCLASS);
             this.experimentalRoleSynchronizer.setListener(listener);
@@ -231,7 +232,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return experimentalRoleSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getBiologicalRoleSynchronizer() {
+    public IntactCvSynchronizer getBiologicalRoleSynchronizer() {
         if (this.biologicalRoleSynchronizer == null){
             this.biologicalRoleSynchronizer = new CvTermSynchronizer(this, IntactUtils.BIOLOGICAL_ROLE_OBJCLASS);
             this.biologicalRoleSynchronizer.setListener(listener);
@@ -239,7 +240,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return biologicalRoleSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractionDetectionMethodSynchronizer() {
+    public IntactCvSynchronizer getInteractionDetectionMethodSynchronizer() {
         if (this.interactionDetectionMethodSynchronizer == null){
             this.interactionDetectionMethodSynchronizer = new CvTermSynchronizer(this, IntactUtils.INTERACTION_DETECTION_METHOD_OBJCLASS);
             this.interactionDetectionMethodSynchronizer.setListener(listener);
@@ -247,7 +248,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return interactionDetectionMethodSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractionTypeSynchronizer() {
+    public IntactCvSynchronizer getInteractionTypeSynchronizer() {
         if (this.interactionTypeSynchronizer == null){
             this.interactionTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.INTERACTION_TYPE_OBJCLASS);
             this.interactionTypeSynchronizer.setListener(listener);
@@ -255,7 +256,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return interactionTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getParticipantDetectionMethodSynchronizer() {
+    public IntactCvSynchronizer getParticipantDetectionMethodSynchronizer() {
         if (this.participantDetectionMethodSynchronizer == null){
             this.participantDetectionMethodSynchronizer = new CvTermSynchronizer(this, IntactUtils.PARTICIPANT_DETECTION_METHOD_OBJCLASS);
             this.participantDetectionMethodSynchronizer.setListener(listener);
@@ -263,7 +264,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return participantDetectionMethodSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalPreparationSynchronizer() {
+    public IntactCvSynchronizer getExperimentalPreparationSynchronizer() {
         if (this.experimentalPreparationSynchronizer == null){
             this.experimentalPreparationSynchronizer = new CvTermSynchronizer(this, IntactUtils.PARTICIPANT_EXPERIMENTAL_PREPARATION_OBJCLASS);
             this.experimentalPreparationSynchronizer.setListener(listener);
@@ -271,7 +272,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return experimentalPreparationSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractorTypeSynchronizer() {
+    public IntactCvSynchronizer getInteractorTypeSynchronizer() {
         if (this.interactorTypeSynchronizer == null){
             this.interactorTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.INTERACTOR_TYPE_OBJCLASS);
             this.interactorTypeSynchronizer.setListener(listener);
@@ -279,7 +280,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return interactorTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getRangeStatusSynchronizer() {
+    public IntactCvSynchronizer getRangeStatusSynchronizer() {
         if (this.rangeStatusSynchronizer == null){
             this.rangeStatusSynchronizer = new CvTermSynchronizer(this, IntactUtils.RANGE_STATUS_OBJCLASS);
             this.rangeStatusSynchronizer.setListener(listener);
@@ -287,7 +288,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return rangeStatusSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getConfidenceTypeSynchronizer() {
+    public IntactCvSynchronizer getConfidenceTypeSynchronizer() {
         if (this.confidenceTypeSynchronizer == null){
             this.confidenceTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.CONFIDENCE_TYPE_OBJCLASS);
             this.confidenceTypeSynchronizer.setListener(listener);
@@ -295,7 +296,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return confidenceTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getParameterTypeSynchronizer() {
+    public IntactCvSynchronizer getParameterTypeSynchronizer() {
         if (this.parameterTypeSynchronizer == null){
             this.parameterTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.PARAMETER_TYPE_OBJCLASS);
             this.parameterTypeSynchronizer.setListener(listener);
@@ -303,7 +304,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return parameterTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCellTypeSynchronizer() {
+    public IntactCvSynchronizer getCellTypeSynchronizer() {
         if (this.cellTypeSynchronizer == null){
             this.cellTypeSynchronizer = new CvTermSynchronizer(this, IntactUtils.CELL_TYPE_OBJCLASS);
             this.cellTypeSynchronizer.setListener(listener);
@@ -311,7 +312,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return cellTypeSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTissueSynchronizer() {
+    public IntactCvSynchronizer getTissueSynchronizer() {
         if (this.tissueSynchronizer == null){
             this.tissueSynchronizer = new CvTermSynchronizer(this, IntactUtils.TISSUE_OBJCLASS);
             this.tissueSynchronizer.setListener(listener);
@@ -319,7 +320,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return tissueSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getFeatureDetectionMethodSynchronizer() {
+    public IntactCvSynchronizer getFeatureDetectionMethodSynchronizer() {
         if (this.featureDetectionMethodSynchronizer == null){
             this.featureDetectionMethodSynchronizer = new CvTermSynchronizer(this, IntactUtils.FEATURE_METHOD_OBJCLASS);
             this.featureDetectionMethodSynchronizer.setListener(listener);
@@ -327,7 +328,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return featureDetectionMethodSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getLifecycleStatusSynchronizer() {
+    public IntactCvSynchronizer getLifecycleStatusSynchronizer() {
         if (this.lifecycleStatusSynchronizer == null){
             this.lifecycleStatusSynchronizer = new CvTermSynchronizer(this, IntactUtils.PUBLICATION_STATUS_OBJCLASS);
             this.lifecycleStatusSynchronizer.setListener(listener);
@@ -335,7 +336,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return lifecycleStatusSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getLifecycleEventSynchronizer() {
+    public IntactCvSynchronizer getLifecycleEventSynchronizer() {
         if (this.lifecycleEventSynchronizer == null){
             this.lifecycleEventSynchronizer = new CvTermSynchronizer(this, IntactUtils.LIFECYCLE_EVENT_OBJCLASS);
             this.lifecycleEventSynchronizer.setListener(listener);
@@ -796,9 +797,9 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return publicationSynchronizer;
     }
 
-    public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer() {
+    public IntactExperimentSynchronizer getExperimentSynchronizer() {
         if (this.experimentSynchronizer == null){
-            this.experimentSynchronizer = new ExperimentSynchronizer(this);
+            this.experimentSynchronizer = new uk.ac.ebi.intact.jami.synchronizer.impl.ExperimentSynchronizer(this);
             this.experimentSynchronizer.setListener(listener);
         }
         return experimentSynchronizer;
@@ -1083,7 +1084,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         clearCache(this.applicationPropertySynchronizer);
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer() {
+    public IntactCvSynchronizer getGeneralCvSynchronizer() {
         if (this.generalCvSynchronizer == null){
             this.generalCvSynchronizer = new CvTermSynchronizer(this);
             this.generalCvSynchronizer.setListener(listener);
@@ -1092,7 +1093,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.generalCvSynchronizer;
     }
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer(String objclass) {
+    public IntactCvSynchronizer getCvSynchronizer(String objclass) {
         if (this.generalCvSynchronizer == null){
             this.generalCvSynchronizer = new CvTermSynchronizer(this);
             this.generalCvSynchronizer.setListener(listener);

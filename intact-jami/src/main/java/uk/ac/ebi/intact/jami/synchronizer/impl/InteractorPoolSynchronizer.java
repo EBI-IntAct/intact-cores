@@ -13,6 +13,8 @@ import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorPoolEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactInteractorPoolComparator;
 
@@ -32,6 +34,11 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
 
     public InteractorPoolSynchronizer(SynchronizerContext context) {
         super(context, IntactInteractorPool.class);
+    }
+
+    @Override
+    protected DbInteractorEnricherListener<InteractorPool> initDefaultEnricherListener() {
+        return new DbInteractorPoolEnricherListener(getContext(), this);
     }
 
     @Override
@@ -177,14 +184,5 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
         IntactInteractorPool newInteractor = new IntactInteractorPool(object.getShortName());
         InteractorCloner.copyAndOverrideBasicInteractorPoolProperties(object, newInteractor);
         return newInteractor;
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractorPool objectInCache, IntactInteractorPool originalObject) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalObject);
-        // synchronize subInteractors if not done
-        IntactEnricherUtils.synchronizeInteractorsToEnrich(originalObject,
-                objectInCache,
-                getContext().getInteractorSynchronizer());
     }
 }

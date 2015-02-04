@@ -12,5 +12,6 @@ import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
  */
 
 public interface InteractorSynchronizer<I extends Interactor, T extends IntactInteractor> extends IntactDbSynchronizer<I, T>{
+    public void prepareAndSynchronizeShortLabel(T interactor) throws SynchronizerException ;
 
 }

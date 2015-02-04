@@ -9,7 +9,8 @@ import uk.ac.ebi.intact.jami.model.extension.ModelledResultingSequence;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.AbstractDbFeatureEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbModelledFeatureEnricherListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -31,6 +32,10 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
 
     public void clearCache() {
         super.clearCache();
+    }
+
+    protected AbstractDbFeatureEnricherListener<ModelledFeature> instantiateDefaultEnricherlistener() {
+        return new DbModelledFeatureEnricherListener(getContext(), this);
     }
 
     @Override
@@ -147,32 +152,5 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                 intactFeature.getAliases().add(featureAlias);
             }
         }
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledFeature objectInCache, IntactModelledFeature originalFeature) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalFeature);
-        // then check aliases
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalFeature.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getModelledFeatureAliasSynchronizer());
-
-        // then check annotations
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalFeature.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getModelledFeatureAnnotationSynchronizer());
-
-        // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getModelledFeatureXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalFeature.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getCvXrefSynchronizer());
-
-        // then check ranges
-        IntactEnricherUtils.synchronizeRangesToEnrich(originalFeature.getRanges(),
-                objectInCache.getRanges(),
-                getContext().getModelledRangeSynchronizer());
     }
 }

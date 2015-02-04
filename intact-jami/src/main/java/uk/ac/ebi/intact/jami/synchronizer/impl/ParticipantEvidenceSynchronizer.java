@@ -290,10 +290,6 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                 objectInCache.getExperimentalPreparations(),
                 getContext().getExperimentalPreparationSynchronizer());
 
-        // then check confidences
-        IntactEnricherUtils.synchronizeConfidencesToEnrich(originalParticipant.getConfidences(),
-                objectInCache.getConfidences(),
-                getContext().getParticipantEvidenceConfidenceSynchronizer());
 
         // then check parameters
         IntactEnricherUtils.synchronizeParametersToEnrich(originalParticipant.getParameters(),

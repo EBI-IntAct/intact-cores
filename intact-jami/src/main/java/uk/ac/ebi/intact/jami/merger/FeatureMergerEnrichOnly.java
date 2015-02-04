@@ -47,7 +47,7 @@ public class FeatureMergerEnrichOnly<F extends Feature, I extends AbstractIntact
     }
 
     public FeatureEnricherListener<F> getFeatureEnricherListener() {
-        return null;
+        return getBasicEnricher().getFeatureEnricherListener();
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
@@ -56,7 +56,7 @@ public class FeatureMergerEnrichOnly<F extends Feature, I extends AbstractIntact
 
     @Override
     public void setFeatureEnricherListener(FeatureEnricherListener<F> listener) {
-
+        getBasicEnricher().setFeatureEnricherListener(listener);
     }
 
     @Override

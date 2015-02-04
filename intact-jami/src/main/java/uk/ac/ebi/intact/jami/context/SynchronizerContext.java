@@ -40,51 +40,51 @@ public interface SynchronizerContext {
      */
     public void clearCache();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getGeneralCvSynchronizer();
+    public IntactCvSynchronizer getGeneralCvSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCvSynchronizer(String objclass);
+    public IntactCvSynchronizer getCvSynchronizer(String objclass);
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getDatabaseSynchronizer();
+    public IntactCvSynchronizer getDatabaseSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getQualifierSynchronizer();
+    public IntactCvSynchronizer getQualifierSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTopicSynchronizer();
+    public IntactCvSynchronizer getTopicSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getAliasTypeSynchronizer();
+    public IntactCvSynchronizer getAliasTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getUnitSynchronizer();
+    public IntactCvSynchronizer getUnitSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getFeatureTypeSynchronizer();
+    public IntactCvSynchronizer getFeatureTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalRoleSynchronizer();
+    public IntactCvSynchronizer getExperimentalRoleSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getBiologicalRoleSynchronizer();
+    public IntactCvSynchronizer getBiologicalRoleSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractionDetectionMethodSynchronizer();
+    public IntactCvSynchronizer getInteractionDetectionMethodSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractionTypeSynchronizer();
+    public IntactCvSynchronizer getInteractionTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getParticipantDetectionMethodSynchronizer();
+    public IntactCvSynchronizer getParticipantDetectionMethodSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getExperimentalPreparationSynchronizer();
+    public IntactCvSynchronizer getExperimentalPreparationSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getInteractorTypeSynchronizer();
+    public IntactCvSynchronizer getInteractorTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getRangeStatusSynchronizer();
+    public IntactCvSynchronizer getRangeStatusSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getConfidenceTypeSynchronizer();
+    public IntactCvSynchronizer getConfidenceTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getParameterTypeSynchronizer();
+    public IntactCvSynchronizer getParameterTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getCellTypeSynchronizer();
+    public IntactCvSynchronizer getCellTypeSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getTissueSynchronizer();
+    public IntactCvSynchronizer getTissueSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getFeatureDetectionMethodSynchronizer();
+    public IntactCvSynchronizer getFeatureDetectionMethodSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getLifecycleStatusSynchronizer();
+    public IntactCvSynchronizer getLifecycleStatusSynchronizer();
 
-    public IntactDbSynchronizer<CvTerm, IntactCvTerm> getLifecycleEventSynchronizer();
+    public IntactCvSynchronizer getLifecycleEventSynchronizer();
 
     public <A extends AbstractIntactAlias> AliasSynchronizer<A> getAliasSynchronizer(Class<A> aliasclass);
 
@@ -230,7 +230,7 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer();
 
-    public IntactDbSynchronizer<Experiment, IntactExperiment> getExperimentSynchronizer();
+    public IntactExperimentSynchronizer getExperimentSynchronizer();
 
     public IntactDbSynchronizer<LifeCycleEvent, ComplexLifeCycleEvent> getComplexLifecycleSynchronizer();
 

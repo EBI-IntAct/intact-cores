@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.jami.merger;
 
 import psidev.psi.mi.jami.enricher.InteractorPoolEnricher;
 import psidev.psi.mi.jami.enricher.impl.CompositeInteractorEnricher;
-import psidev.psi.mi.jami.enricher.impl.full.FullInteractorPoolEnricher;
+import psidev.psi.mi.jami.enricher.impl.full.FullInteractorPoolUpdater;
 import psidev.psi.mi.jami.model.Interactor;
 import psidev.psi.mi.jami.model.InteractorPool;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
@@ -23,7 +23,7 @@ public class InteractorPoolMergerOverride extends InteractorBaseMergerOverride<I
 implements InteractorPoolEnricher{
 
     public InteractorPoolMergerOverride(InteractorPoolSynchronizer intactSynchronizer){
-        super(new FullInteractorPoolEnricher(intactSynchronizer));
+        super(new FullInteractorPoolUpdater(intactSynchronizer));
     }
 
     @Override

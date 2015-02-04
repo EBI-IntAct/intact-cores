@@ -9,6 +9,8 @@ import psidev.psi.mi.jami.model.Complex;
 import psidev.psi.mi.jami.model.CvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactComplex;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.user.User;
+import uk.ac.ebi.intact.jami.synchronizer.listener.IntactComplexEnricherListener;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +48,7 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
     }
 
     public InteractorEnricherListener<Complex> getListener() {
-        return null;
+        return getBasicEnricher().getListener();
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
@@ -59,7 +61,7 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
 
     @Override
     public void setListener(InteractorEnricherListener<Complex> listener) {
-
+         getBasicEnricher().setListener(listener);
     }
 
     @Override
@@ -102,25 +104,37 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
 
         // merge status
         if (mergedComplex.getCvStatus() == null && obj1.getCvStatus() != null){
+            CvTerm oldStatus = mergedComplex.getCvStatus();
             mergedComplex.setCvStatus(obj1.getCvStatus());
+            if (getListener() instanceof IntactComplexEnricherListener){
+                ((IntactComplexEnricherListener) getListener()).onStatusUpdate(mergedComplex, oldStatus);
+            }
         }
         // merge curator
         if (mergedComplex.getCurrentOwner() == null && obj1.getCurrentOwner() != null){
+            User oldUser = mergedComplex.getCurrentOwner();
             mergedComplex.setCurrentOwner(obj1.getCurrentOwner());
+            if (getListener() instanceof IntactComplexEnricherListener){
+                ((IntactComplexEnricherListener) getListener()).onCurrentOwnerUpdate(mergedComplex, oldUser);
+            }
         }
         // merge reviewer
         if (mergedComplex.getCurrentReviewer() == null && obj1.getCurrentReviewer() != null){
+            User oldUser = mergedComplex.getCurrentReviewer();
             mergedComplex.setCurrentReviewer(obj1.getCurrentReviewer());
+            if (getListener() instanceof IntactComplexEnricherListener){
+                ((IntactComplexEnricherListener) getListener()).onCurrentReviewerUpdate(mergedComplex, oldUser);
+            }
         }
         // merge lifecycle
         if (obj1.areLifeCycleEventsInitialized()){
-            mergeLifeCycleEvents(mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
+            mergeLifeCycleEvents(mergedComplex, mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
 
         return mergedComplex;
     }
 
-    private void mergeLifeCycleEvents(List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
+    private void mergeLifeCycleEvents(IntactComplex mergedComplex, List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
 
         Iterator<LifeCycleEvent> eventIterator = toEnrichEvents.iterator();
         while(eventIterator.hasNext()){
@@ -135,6 +149,9 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
             // remove events not in second list
             if (!containsEvent){
                 eventIterator.remove();
+                if (getListener() instanceof IntactComplexEnricherListener){
+                    ((IntactComplexEnricherListener) getListener()).onRemovedLifeCycleEvent(mergedComplex, event);
+                }
             }
         }
 
@@ -153,6 +170,9 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
             // add missing xref not in second list
             if (!containsEvent){
                 toEnrichEvents.add(index, event);
+                if (getListener() instanceof IntactComplexEnricherListener){
+                    ((IntactComplexEnricherListener) getListener()).onAddedLifeCycleEvent(mergedComplex, null);
+                }
             }
             index++;
         }
