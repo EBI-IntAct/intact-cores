@@ -8,7 +8,8 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.AbstractDbParticipantEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbModelledParticipantEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,10 +25,16 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemplate<ModelledParticipant, IntactModelledParticipant> {
+public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemplate<ModelledParticipant, IntactModelledParticipant, ModelledFeature> {
 
     public ModelledParticipantSynchronizer(SynchronizerContext context){
         super(context, IntactModelledParticipant.class);
+    }
+
+
+    @Override
+    protected AbstractDbParticipantEnricherListener<ModelledParticipant, ModelledFeature> instantiateDefaultEnricherListener() {
+        return new DbModelledParticipantEnricherListener(getContext(), this);
     }
 
     @Override
@@ -182,30 +189,6 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
         IntactModelledParticipant newParticipant = new IntactModelledParticipant(object.getInteractor());
         ParticipantCloner.copyAndOverrideModelledParticipantProperties(object, newParticipant, false);
         return newParticipant;
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactModelledParticipant objectInCache, IntactModelledParticipant originalParticipant) throws SynchronizerException, PersisterException, FinderException {
-        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalParticipant);
-        // then check aliases
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalParticipant.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getModelledParticipantAliasSynchronizer());
-
-        // then check annotations
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalParticipant.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getModelledParticipantAnnotationSynchronizer());
-
-        // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalParticipant.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getModelledParticipantXrefSynchronizer());
-
-        // then check causal relationships
-        IntactEnricherUtils.synchronizeCausalRelationshipsToEnrich(originalParticipant.getCausalRelationships(),
-                objectInCache.getCausalRelationships(),
-                getContext().getModelledCausalRelationshipSynchronizer());
     }
 }
 

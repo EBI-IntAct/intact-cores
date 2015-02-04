@@ -479,12 +479,4 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new OrganismMergerEnrichOnly(this));
     }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactOrganism objectInCache, IntactOrganism originalOrganism) throws FinderException, PersisterException, SynchronizerException {
-        // then check aliases if new aliases
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalOrganism.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getOrganismAliasSynchronizer());
-    }
 }

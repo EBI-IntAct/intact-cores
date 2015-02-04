@@ -767,35 +767,4 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     protected void synchronizePropertiesAfterMerge(IntactPublication mergedObject) throws SynchronizerException, PersisterException, FinderException {
         prepareAndSynchronizeShortLabel(mergedObject);
     }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactPublication objectInCache, IntactPublication originalInstance) throws FinderException, PersisterException, SynchronizerException {
-        // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getPublicationXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalInstance.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getCvXrefSynchronizer());
-
-        // then check experiments
-        IntactEnricherUtils.synchronizeExperimentsToEnrich(originalInstance.getExperiments(),
-                objectInCache.getExperiments(),
-                getContext().getExperimentSynchronizer());
-
-        // then check publication lifecycle
-        IntactEnricherUtils.synchronizeLifeCycleEventsToEnrich(originalInstance.getLifecycleEvents(),
-                objectInCache.getLifecycleEvents(),
-                getContext().getPublicationLifecycleSynchronizer());
-
-        // then check authors
-        if (!CollectionUtils.isEqualCollection(objectInCache.getAuthors(), originalInstance.getAuthors())){
-            preparePublicationAuthors(objectInCache);
-        }
-
-        // then check annotations
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalInstance.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getPublicationAnnotationSynchronizer());
-    }
 }

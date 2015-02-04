@@ -517,25 +517,4 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new SourceMergerEnrichOnly(this));
     }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactSource objectInCache, IntactSource originalSource) throws SynchronizerException, PersisterException, FinderException {
-        // then check aliases
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalSource.getSynonyms(),
-                objectInCache.getSynonyms(),
-                getContext().getSourceAliasSynchronizer());
-
-        // then check annotations
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalSource.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getSourceAnnotationSynchronizer());
-
-        // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalSource.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getSourceXrefSynchronizer());
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalSource.getIdentifiers(),
-                objectInCache.getIdentifiers(),
-                getContext().getCvXrefSynchronizer());
-    }
 }

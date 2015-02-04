@@ -114,7 +114,11 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
                     List<ParticipantEvidence> synchronizedParticipants = IntactEnricherUtils.synchronizeParticipantsToEnrich(updates.getAddedParticipants(),
                             context.getParticipantEvidenceSynchronizer());
                     object.getParticipants().removeAll(updates.getAddedParticipants());
-                    object.getParticipants().addAll(synchronizedParticipants);
+                    for (ParticipantEvidence f : synchronizedParticipants){
+                        if (!object.getParticipants().contains(f)){
+                            object.getParticipants().add(f);
+                        }
+                    }
                 }
                 if (!updates.getAddedVariableParameterSets().isEmpty()){
 
@@ -190,7 +194,11 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
                     List<ParticipantEvidence> synchronizedParticipants = IntactEnricherUtils.synchronizeParticipantsToEnrich(updates.getAddedParticipants(),
                             context.getParticipantEvidenceSynchronizer());
                     object.getParticipants().removeAll(updates.getAddedParticipants());
-                    object.getParticipants().addAll(synchronizedParticipants);
+                    for (ParticipantEvidence f : synchronizedParticipants){
+                        if (!object.getParticipants().contains(f)){
+                            object.getParticipants().add(f);
+                        }
+                    }
                 }
                 if (!updates.getAddedVariableParameterSets().isEmpty()){
 

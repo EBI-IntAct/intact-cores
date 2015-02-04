@@ -57,7 +57,11 @@ public class DbComplexEnricherListener extends DbInteractorEnricherListener<Comp
                 List<ModelledParticipant> synchronizedParticipants = IntactEnricherUtils.synchronizeParticipantsToEnrich(updates.getAddedParticipants(),
                         getContext().getModelledParticipantSynchronizer());
                 object.getParticipants().removeAll(updates.getAddedParticipants());
-                object.getParticipants().addAll(synchronizedParticipants);
+                for (ModelledParticipant f : synchronizedParticipants){
+                    if (!object.getParticipants().contains(f)){
+                        object.getParticipants().add(f);
+                    }
+                }
             }
             if (!updates.getAddedLyfeCycleEvents().isEmpty()){
                 IntactComplex intactComplex = (IntactComplex)object;
@@ -97,7 +101,11 @@ public class DbComplexEnricherListener extends DbInteractorEnricherListener<Comp
                 List<ModelledParticipant> synchronizedParticipants = IntactEnricherUtils.synchronizeParticipantsToEnrich(updates.getAddedParticipants(),
                         getContext().getModelledParticipantSynchronizer());
                 object.getParticipants().removeAll(updates.getAddedParticipants());
-                object.getParticipants().addAll(synchronizedParticipants);
+                for (ModelledParticipant f : synchronizedParticipants){
+                    if (!object.getParticipants().contains(f)){
+                        object.getParticipants().add(f);
+                    }
+                }
             }
             if (!updates.getAddedLyfeCycleEvents().isEmpty()){
                 IntactComplex intactComplex = (IntactComplex)object;

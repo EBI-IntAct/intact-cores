@@ -771,6 +771,29 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize causal relationships that are not present in the causal relationships to enrich
+     * @param crToBeAdded : the collection of causal relationships to be enriched
+     * @param crSynchronizer : the causal relationships synchronizer to be used
+     * @return the synchronized causal relationships which will be added to the causal relationships to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static <F extends CausalRelationship> List<F> synchronizeCausalRelationshipsToEnrich(Collection<F> crToBeAdded,
+                                                                                             IntactDbSynchronizer crSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<F> synchronizedCr = new ArrayList<F>(crToBeAdded.size());
+        for (F para : crToBeAdded){
+            // do not persist or merge causal relationships because of cascades
+            F expInteraction = (F)crSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedCr.add(expInteraction);
+        }
+
+        return synchronizedCr;
+    }
+
+    /**
      * Method which will synchronize lifecycle that are not present in the lifecycle to enrich
      * @param lcToEnrich : the collection of lifecycle to be enriched
      * @param enrichedLs : the collections of lifecycle fully enriched

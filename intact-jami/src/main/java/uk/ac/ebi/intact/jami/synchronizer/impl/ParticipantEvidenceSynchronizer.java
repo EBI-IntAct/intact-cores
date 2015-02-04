@@ -9,7 +9,8 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.AbstractDbParticipantEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbParticipantEvidenceEnricherListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -24,10 +25,15 @@ import java.util.List;
  * @since <pre>28/01/14</pre>
  */
 
-public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemplate<ParticipantEvidence, IntactParticipantEvidence> {
+public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemplate<ParticipantEvidence, IntactParticipantEvidence, FeatureEvidence> {
 
     public ParticipantEvidenceSynchronizer(SynchronizerContext context){
         super(context, IntactParticipantEvidence.class);
+    }
+
+    @Override
+    protected AbstractDbParticipantEnricherListener<ParticipantEvidence, FeatureEvidence> instantiateDefaultEnricherListener() {
+        return new DbParticipantEvidenceEnricherListener(getContext(), this);
     }
 
     public void synchronizeProperties(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {
@@ -255,46 +261,6 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
 
         // after persistence, re-attach dependent objects to avoid internal loops when participants are called by each other
         existingInstance.getCausalRelationships().addAll(relationships);
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactParticipantEvidence objectInCache, IntactParticipantEvidence originalParticipant) throws FinderException, PersisterException, SynchronizerException {
-        super.synchronizePropertiesBeforeCacheMerge(objectInCache, originalParticipant);
-        // then check aliases
-        IntactEnricherUtils.synchronizeAliasesToEnrich(originalParticipant.getAliases(),
-                objectInCache.getAliases(),
-                getContext().getParticipantEvidenceAliasSynchronizer());
-
-        // then check annotations
-        IntactEnricherUtils.synchronizeAnnotationsToEnrich(originalParticipant.getAnnotations(),
-                objectInCache.getAnnotations(),
-                getContext().getParticipantEvidenceAnnotationSynchronizer());
-
-        // then check xrefs
-        IntactEnricherUtils.synchronizeXrefsToEnrich(originalParticipant.getXrefs(),
-                objectInCache.getXrefs(),
-                getContext().getParticipantEvidenceXrefSynchronizer());
-
-        // then check causal relationships
-        IntactEnricherUtils.synchronizeCausalRelationshipsToEnrich(originalParticipant.getCausalRelationships(),
-                objectInCache.getCausalRelationships(),
-                getContext().getExperimentalCausalRelationshipSynchronizer());
-
-        // then check participant identification methods
-        IntactEnricherUtils.synchronizeCvsToEnrich(originalParticipant.getIdentificationMethods(),
-                objectInCache.getIdentificationMethods(),
-                getContext().getParticipantDetectionMethodSynchronizer());
-
-        // then check experimental preparations
-        IntactEnricherUtils.synchronizeCvsToEnrich(originalParticipant.getExperimentalPreparations(),
-                objectInCache.getExperimentalPreparations(),
-                getContext().getExperimentalPreparationSynchronizer());
-
-
-        // then check parameters
-        IntactEnricherUtils.synchronizeParametersToEnrich(originalParticipant.getParameters(),
-                objectInCache.getParameters(),
-                getContext().getParticipantEvidenceParameterSynchronizer());
     }
 }
 

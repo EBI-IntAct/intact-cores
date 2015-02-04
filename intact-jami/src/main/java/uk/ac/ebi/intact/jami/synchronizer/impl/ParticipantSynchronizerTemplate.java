@@ -3,14 +3,17 @@ package uk.ac.ebi.intact.jami.synchronizer.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.jami.enricher.ParticipantEnricher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.ParticipantCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.ParticipantMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.AbstractIntactParticipant;
 import uk.ac.ebi.intact.jami.model.extension.IntactStoichiometry;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.AbstractDbParticipantEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbParticipantEnricherListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -23,10 +26,12 @@ import java.util.*;
  * @since <pre>28/01/14</pre>
  */
 
-public class ParticipantSynchronizerTemplate<T extends Participant, I extends AbstractIntactParticipant> extends AbstractIntactDbSynchronizer<T, I>
+public class ParticipantSynchronizerTemplate<T extends Participant, I extends AbstractIntactParticipant, F extends Feature> extends AbstractIntactDbSynchronizer<T, I>
         implements ParticipantSynchronizer<T,I> {
     private Map<T, I> persistedObjects;
     private Map<T, I> convertedObjects;
+
+    private AbstractDbParticipantEnricherListener<T,F> enricherListener;
 
     private static final Log log = LogFactory.getLog(ParticipantSynchronizerTemplate.class);
 
@@ -35,6 +40,12 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         // to keep track of persisted cvs
         this.persistedObjects = new IdentityMap();
         this.convertedObjects = new IdentityMap();
+        this.enricherListener = instantiateDefaultEnricherListener();
+    }
+
+    protected AbstractDbParticipantEnricherListener<T, F> instantiateDefaultEnricherListener() {
+
+        return new DbParticipantEnricherListener<T,F>(getContext(), this);
     }
 
     public I find(T term) throws FinderException {
@@ -84,6 +95,7 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.enricherListener.getParticipantUpdates().clear();
     }
 
     @Override
@@ -197,7 +209,17 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new ParticipantMergerEnrichOnly<T,I,Feature>());
+        ParticipantMergerEnrichOnly<T,I,Feature> merger =new ParticipantMergerEnrichOnly<T,I,Feature>();
+        merger.setParticipantEnricherListener(enricherListener);
+        super.setIntactMerger(merger);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<T, I> intactMerger) {
+        if (intactMerger instanceof ParticipantEnricher){
+            ((ParticipantEnricher)intactMerger).setParticipantEnricherListener(enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 
     protected IntactDbSynchronizer getFeatureSynchronizer() {
@@ -210,13 +232,5 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
             getFeatureSynchronizer().delete(f);
         }
         intactParticipant.getFeatures().clear();
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(I objectInCache, I originalParticipant) throws FinderException, PersisterException, SynchronizerException {
-        // then check features
-        IntactEnricherUtils.synchronizeFeaturesToEnrich(originalParticipant.getFeatures(),
-                objectInCache.getFeatures(),
-                getFeatureSynchronizer());
     }
 }

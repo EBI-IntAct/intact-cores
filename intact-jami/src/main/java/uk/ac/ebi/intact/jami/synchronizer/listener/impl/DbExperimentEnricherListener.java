@@ -194,7 +194,11 @@ public class DbExperimentEnricherListener implements IntactExperimentEnricherLis
                     List<InteractionEvidence> synchronizedEvidences = IntactEnricherUtils.synchronizeInteractionsToEnrich(updates.getAddedInteractions(),
                             context.getInteractionSynchronizer());
                     object.getInteractionEvidences().removeAll(updates.getAddedInteractions());
-                    object.getInteractionEvidences().addAll(synchronizedEvidences);
+                    for (InteractionEvidence f : synchronizedEvidences){
+                        if (!object.getInteractionEvidences().contains(f)){
+                            object.getInteractionEvidences().add(f);
+                        }
+                    }
                 }
                 experimentUpdates.remove(object);
             } catch (PersisterException e) {
@@ -241,7 +245,11 @@ public class DbExperimentEnricherListener implements IntactExperimentEnricherLis
                     List<InteractionEvidence> synchronizedEvidences = IntactEnricherUtils.synchronizeInteractionsToEnrich(updates.getAddedInteractions(),
                             context.getInteractionSynchronizer());
                     object.getInteractionEvidences().removeAll(updates.getAddedInteractions());
-                    object.getInteractionEvidences().addAll(synchronizedEvidences);
+                    for (InteractionEvidence f : synchronizedEvidences){
+                        if (!object.getInteractionEvidences().contains(f)){
+                            object.getInteractionEvidences().add(f);
+                        }
+                    }
                 }
                 experimentUpdates.remove(object);
             } catch (PersisterException e2) {

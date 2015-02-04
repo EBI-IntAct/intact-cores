@@ -101,7 +101,11 @@ public abstract class AbstractDbFeatureEnricherListener<T extends Feature> imple
                     List<T> synchronizedFeatures = IntactEnricherUtils.synchronizeFeaturesToEnrich(updates.getAddedLinkedFeatures(),
                             getDbSynchronizer());
                     object.getLinkedFeatures().removeAll(updates.getAddedLinkedFeatures());
-                    object.getLinkedFeatures().addAll(synchronizedFeatures);
+                    for (T f : synchronizedFeatures){
+                        if (!object.getLinkedFeatures().contains(f)){
+                            object.getLinkedFeatures().add(f);
+                        }
+                    }
                 }
                 processOtherUpdates(object, status, message);
                 featureUpdates.remove(object);
@@ -166,7 +170,11 @@ public abstract class AbstractDbFeatureEnricherListener<T extends Feature> imple
                     List<T> synchronizedFeatures = IntactEnricherUtils.synchronizeFeaturesToEnrich(updates.getAddedLinkedFeatures(),
                             getDbSynchronizer());
                     object.getLinkedFeatures().removeAll(updates.getAddedLinkedFeatures());
-                    object.getLinkedFeatures().addAll(synchronizedFeatures);
+                    for (T f : synchronizedFeatures){
+                        if (!object.getLinkedFeatures().contains(f)){
+                            object.getLinkedFeatures().add(f);
+                        }
+                    }
                 }
                 processOtherUpdates(object, message, e);
                 featureUpdates.remove(object);

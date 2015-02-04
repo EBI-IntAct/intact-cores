@@ -220,15 +220,4 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         super.setIntactMerger(new UserMergerEnrichOnly());
     }
 
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(User objectInCache, User cached) throws FinderException, PersisterException, SynchronizerException {
-        // synchronize preferences
-        if (!CollectionUtils.isEqualCollection(objectInCache.getPreferences(), cached.getPreferences())){
-            preparePreferences(objectInCache, true);
-        }
-        // synchronize roles
-        if (!CollectionUtils.isEqualCollection(objectInCache.getRoles(), cached.getRoles())){
-            prepareRoles(objectInCache, true);
-        }
-    }
 }

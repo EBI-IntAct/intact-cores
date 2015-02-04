@@ -388,31 +388,26 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
-                // synchronize before merging
-                if (needToSynchronizeProperties && existingInstance != persistentObject){
-                    // synchronize properties after cache merge
-                    // store object and intact object in a identity cache so no lazy properties can be called before synchronization
-                    storeObjectInIdentityCache(originalObject, existingInstance);
-                    if (originalObject != existingInstance){
-                        storeObjectInIdentityCache((I)existingInstance, existingInstance);
-                    }
-                    if (originalObject != persistentObject){
-                        storeObjectInIdentityCache((I)persistentObject, existingInstance);
-                    }
-                    // synchronize properties
-                    synchronizePropertiesBeforeCacheMerge(persistentObject, existingInstance);
-                    // remove object and intact object from identity cache as not dirty anymore
-                    removeObjectInstanceFromIdentityCache(originalObject);
-                    if (originalObject != existingInstance){
-                        removeObjectInstanceFromIdentityCache((I) existingInstance);
-                    }
-                    if (originalObject != persistentObject){
-                        removeObjectInstanceFromIdentityCache((I)persistentObject);
-                    }
+                // store object and intact object in a identity cache so no lazy properties can be called before synchronization
+                storeObjectInIdentityCache(originalObject, existingInstance);
+                if (originalObject != existingInstance){
+                    storeObjectInIdentityCache((I)existingInstance, existingInstance);
+                }
+                if (originalObject != persistentObject){
+                    storeObjectInIdentityCache((I)persistentObject, existingInstance);
                 }
 
                 // merge
                 T mergedObject = getIntactMerger().merge(persistentObject, existingInstance);
+
+                // remove object and intact object from identity cache as not dirty anymore
+                removeObjectInstanceFromIdentityCache(originalObject);
+                if (originalObject != existingInstance){
+                    removeObjectInstanceFromIdentityCache((I) existingInstance);
+                }
+                if (originalObject != persistentObject){
+                    removeObjectInstanceFromIdentityCache((I)persistentObject);
+                }
 
                 // then set userContext
                 mergedObject.setLocalUserContext(getContext().getUserContext());
@@ -473,9 +468,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             FinderException, SynchronizerException {
         // merge only if object instances are different
         if (object != existingInstance){
-            // first synchronize properties before merging with cache if necessary
-            if (needToSynchronizeProperties && existingInstance != intactEntity){
-                // synchronize properties after cache merge
+
+            // merge cached instance with original object
+            try {
                 // store object and intact object in a identity cache so no lazy properties can be called before synchronization
                 storeObjectInIdentityCache(object, existingInstance);
                 if (object != existingInstance){
@@ -484,8 +479,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 if (object != intactEntity){
                     storeObjectInIdentityCache((I)intactEntity, existingInstance);
                 }
-                // synchronize properties
-                synchronizePropertiesBeforeCacheMerge(intactEntity, existingInstance);
+                getIntactMerger().enrich((I)existingInstance, (I)intactEntity);
                 // remove object and intact object from identity cache as not dirty anymore
                 removeObjectInstanceFromIdentityCache(object);
                 if (object != existingInstance){
@@ -494,12 +488,15 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 if (object != intactEntity){
                     removeObjectInstanceFromIdentityCache((I)intactEntity);
                 }
-            }
-
-            // merge cached instance with original object
-            try {
-                getIntactMerger().enrich((I)existingInstance, (I)intactEntity);
             } catch (EnricherException e) {
+                // remove object and intact object from identity cache as not dirty anymore
+                removeObjectInstanceFromIdentityCache(object);
+                if (object != existingInstance){
+                    removeObjectInstanceFromIdentityCache((I) existingInstance);
+                }
+                if (object != intactEntity){
+                    removeObjectInstanceFromIdentityCache((I)intactEntity);
+                }
                 throw new SynchronizerException("Cannot merge "+intactEntity + " with "+existingInstance, e);
             }
 
@@ -507,19 +504,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             existingInstance.setLocalUserContext(getContext().getUserContext());
         }
         return existingInstance;
-    }
-
-    /**
-     * Method which synchronize the properties which can affect the merge withe the cached object
-     * @param objectInCache :
-     * @param originalObject : the original object in the cache
-     * @throws FinderException
-     * @throws PersisterException
-     * @throws SynchronizerException
-     */
-    protected void synchronizePropertiesBeforeCacheMerge(T objectInCache, T originalObject)
-            throws FinderException, PersisterException, SynchronizerException{
-
     }
 
     /**
