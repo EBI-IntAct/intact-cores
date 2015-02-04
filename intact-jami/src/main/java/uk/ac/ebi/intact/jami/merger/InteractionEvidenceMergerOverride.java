@@ -60,7 +60,7 @@ public class InteractionEvidenceMergerOverride extends IntactDbMergerOverride<In
     }
 
     public InteractionEnricherListener<InteractionEvidence> getInteractionEnricherListener() {
-        return null;
+        return getBasicEnricher().getInteractionEnricherListener();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class InteractionEvidenceMergerOverride extends IntactDbMergerOverride<In
 
     @Override
     public void setInteractionEnricherListener(InteractionEnricherListener<InteractionEvidence> listener) {
-
+        getBasicEnricher().setInteractionEnricherListener(listener);
     }
 }
 

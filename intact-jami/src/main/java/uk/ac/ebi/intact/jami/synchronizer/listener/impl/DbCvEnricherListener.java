@@ -83,7 +83,7 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getCvAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty()){

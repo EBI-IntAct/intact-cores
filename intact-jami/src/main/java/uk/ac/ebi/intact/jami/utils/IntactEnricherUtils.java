@@ -229,6 +229,30 @@ public class IntactEnricherUtils {
     }
 
     /**
+     * Method which will synchronize variable parameters that are not present in the variable parameters to enrich, only in the enriched variable parameters.
+     * It will refresh the enriched variable parameters to have fully initialised variable parameters before enrichment
+     * @param paramsToBweAdded : the collection of variable parameters to be enriched
+     * @param vPSynchronizer : the variable parameters synchronizer to be used
+     * @return the synchronized variable parameters which will be added to the variable parameters to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<VariableParameterValueSet> synchronizeVariableParameterValuesToEnrich(Collection<VariableParameterValueSet> paramsToBweAdded,
+                                                                                IntactDbSynchronizer vPSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<VariableParameterValueSet> synchronizedParameters = new ArrayList<VariableParameterValueSet>(paramsToBweAdded.size());
+        for (VariableParameterValueSet annotation : paramsToBweAdded){
+            // do not persist or merge variable parameters because of cascades
+            VariableParameterValueSet cpExp = (VariableParameterValueSet)vPSynchronizer.synchronize(annotation, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedParameters.add(cpExp);
+        }
+
+        return synchronizedParameters;
+    }
+
+    /**
      * Method which will synchronize cv parents that are not present in the aliases to enrich, only in the enriched cv parents.
      * It will refresh the enriched cv parents to have fully initialised cv parents before enrichment
      * @param parentsToEnrich : the collection of cv parents to be enriched

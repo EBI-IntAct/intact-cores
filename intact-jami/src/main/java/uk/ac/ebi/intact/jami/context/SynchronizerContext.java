@@ -236,7 +236,7 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<LifeCycleEvent, PublicationLifeCycleEvent> getPublicationLifecycleSynchronizer();
 
-    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionSynchronizer();
+    public IntactInteractionSynchronizer getInteractionSynchronizer();
 
     public IntactDbSynchronizer<Feature, AbstractIntactFeature> getFeatureSynchronizer();
 

@@ -119,7 +119,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactExperimentSynchronizer experimentSynchronizer;
 
     // interaction synchronizers
-    private IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> interactionEvidenceSynchronizer;
+    private IntactInteractionSynchronizer interactionEvidenceSynchronizer;
 
     // cooperativity evidence synchronizers
     private IntactDbSynchronizer<CooperativityEvidence, IntactCooperativityEvidence> cooperativityEvidenceSynchronizer;
@@ -805,7 +805,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return experimentSynchronizer;
     }
 
-    public IntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> getInteractionSynchronizer() {
+    public IntactInteractionSynchronizer getInteractionSynchronizer() {
         if (this.interactionEvidenceSynchronizer == null){
             this.interactionEvidenceSynchronizer = new InteractionEvidenceSynchronizer(this);
             this.interactionEvidenceSynchronizer.setListener(listener);

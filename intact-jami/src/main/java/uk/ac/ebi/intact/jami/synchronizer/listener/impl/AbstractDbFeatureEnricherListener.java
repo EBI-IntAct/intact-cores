@@ -79,7 +79,7 @@ public abstract class AbstractDbFeatureEnricherListener<T extends Feature> imple
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             getAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty() && getAliasSynchronizer() != null) {
@@ -144,7 +144,7 @@ public abstract class AbstractDbFeatureEnricherListener<T extends Feature> imple
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             getAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty()) {

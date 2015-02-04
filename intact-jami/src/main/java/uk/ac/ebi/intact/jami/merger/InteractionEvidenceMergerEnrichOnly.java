@@ -61,7 +61,7 @@ public class InteractionEvidenceMergerEnrichOnly extends IntactDbMergerEnrichOnl
     }
 
     public InteractionEnricherListener<InteractionEvidence> getInteractionEnricherListener() {
-        return null;
+        return getBasicEnricher().getInteractionEnricherListener();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class InteractionEvidenceMergerEnrichOnly extends IntactDbMergerEnrichOnl
 
     @Override
     public void setInteractionEnricherListener(InteractionEnricherListener<InteractionEvidence> listener) {
-
+        getBasicEnricher().setInteractionEnricherListener(listener);
     }
 }
 

@@ -1,16 +1,15 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
+import psidev.psi.mi.jami.enricher.InteractionEnricher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.InteractionCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.InteractionEvidenceMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractionEvidence;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractionEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,12 +23,15 @@ import java.util.*;
  * @since <pre>21/01/14</pre>
  */
 
-public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence> {
+public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronizer<InteractionEvidence, IntactInteractionEvidence>
+implements IntactInteractionSynchronizer{
 
     private Map<InteractionEvidence, IntactInteractionEvidence> persistedObjects;
     private Map<InteractionEvidence, IntactInteractionEvidence> convertedObjects;
 
     private Set<String> persistedNames;
+
+    private DbInteractionEnricherListener enricherListener;
 
     public InteractionEvidenceSynchronizer(SynchronizerContext context){
         super(context, IntactInteractionEvidence.class);
@@ -37,6 +39,8 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         this.persistedObjects = new IdentityMap();
         this.convertedObjects = new IdentityMap();
         this.persistedNames = new HashSet<String>();
+
+        enricherListener = new DbInteractionEnricherListener(getContext(), this);
     }
 
     public IntactInteractionEvidence find(InteractionEvidence interaction) throws FinderException {
@@ -95,6 +99,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         this.persistedObjects.clear();
         this.convertedObjects.clear();
         this.persistedNames.clear();
+        this.enricherListener.getInteractionUpdates().clear();
     }
 
     @Override
@@ -274,7 +279,7 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(IntactInteractionEvidence intactInteraction) throws SynchronizerException {
+    public void prepareAndSynchronizeShortLabel(IntactInteractionEvidence intactInteraction) throws SynchronizerException {
         // first initialise shortlabel if not done
         if (intactInteraction.getShortName() == null){
             intactInteraction.setShortName(IntactUtils.generateAutomaticInteractionEvidenceShortlabelFor(intactInteraction, IntactUtils.MAX_SHORT_LABEL_LEN));
@@ -287,7 +292,17 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new InteractionEvidenceMergerEnrichOnly());
+        InteractionEvidenceMergerEnrichOnly enricher = new InteractionEvidenceMergerEnrichOnly();
+        enricher.setInteractionEnricherListener(this.enricherListener);
+        super.setIntactMerger(enricher);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<InteractionEvidence, IntactInteractionEvidence> intactMerger) {
+        if (intactMerger instanceof InteractionEnricher){
+            ((InteractionEnricher)intactMerger).setInteractionEnricherListener(enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 
     @Override
@@ -296,33 +311,5 @@ public class InteractionEvidenceSynchronizer extends AbstractIntactDbSynchronize
             getContext().getParticipantEvidenceSynchronizer().delete((ParticipantEvidence)f);
         }
         intactParticipant.getParticipants().clear();
-    }
-
-    @Override
-    protected void synchronizePropertiesBeforeCacheMerge(IntactInteractionEvidence objectInCache, IntactInteractionEvidence originalObject) throws FinderException, PersisterException, SynchronizerException {
-        // then check new confidences if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getConfidences(), originalObject.getConfidences())){
-            prepareConfidences(objectInCache, true);
-        }
-        // then check new parameters if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getParameters(), originalObject.getParameters())){
-            prepareParameters(objectInCache, true);
-        }
-        // then check new annotations if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getAnnotations(), originalObject.getAnnotations())){
-            prepareAnnotations(objectInCache, true);
-        }
-        // then check new xrefs if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getDbXrefs(),originalObject.getDbXrefs())){
-            prepareXrefs(objectInCache, true);
-        }
-        // then check new interactions if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getParticipants(), originalObject.getParticipants())){
-            prepareParticipants(objectInCache, true);
-        }
-        // then check new variable parameters if any
-        if (!CollectionUtils.isEqualCollection(objectInCache.getVariableParameterValues(), originalObject.getVariableParameterValues())){
-            prepareVariableParametersValues(objectInCache, true);
-        }
     }
 }

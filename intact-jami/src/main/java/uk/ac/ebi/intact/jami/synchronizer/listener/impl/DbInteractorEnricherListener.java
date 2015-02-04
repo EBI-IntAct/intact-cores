@@ -4,6 +4,7 @@ import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.enricher.listener.EnrichmentStatus;
 import psidev.psi.mi.jami.enricher.listener.InteractorEnricherListener;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactMergerException;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
@@ -11,6 +12,8 @@ import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.synchronizer.listener.InteractorUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +87,7 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getInteractorAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty()){
@@ -93,6 +96,17 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
                             context.getInteractorAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
                     object.getAliases().addAll(synchronizedAliases);
+                }
+                if (!updates.getAddedChecksums().isEmpty() && object instanceof IntactInteractor){
+                    Collection<Annotation> createdAnnots = new ArrayList<Annotation>(updates.getAddedChecksums().size());
+                    for (Checksum c : updates.getAddedChecksums()){
+                        createdAnnots.addAll(AnnotationUtils.
+                                collectAllAnnotationsHavingTopic(((IntactInteractor) object).getDbAnnotations(), c.getMethod().getMIIdentifier(), c.getMethod().getShortName()));
+                    }
+                    List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(createdAnnots,
+                            context.getInteractorAnnotationSynchronizer());
+                    ((IntactInteractor) object).getDbAnnotations().removeAll(createdAnnots);
+                    ((IntactInteractor) object).getDbAnnotations().addAll(synchronizedAnnotations);
                 }
 
                 processOtherUpdates(object, status, message);
@@ -138,7 +152,7 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getInteractorAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty()){
@@ -148,7 +162,17 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
                     object.getAliases().removeAll(updates.getAddedAliases());
                     object.getAliases().addAll(synchronizedAliases);
                 }
-
+                if (!updates.getAddedChecksums().isEmpty() && object instanceof IntactInteractor){
+                    Collection<Annotation> createdAnnots = new ArrayList<Annotation>(updates.getAddedChecksums().size());
+                    for (Checksum c : updates.getAddedChecksums()){
+                        createdAnnots.addAll(AnnotationUtils.
+                                collectAllAnnotationsHavingTopic(((IntactInteractor) object).getDbAnnotations(), c.getMethod().getMIIdentifier(), c.getMethod().getShortName()));
+                    }
+                    List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(createdAnnots,
+                            context.getInteractorAnnotationSynchronizer());
+                    ((IntactInteractor) object).getDbAnnotations().removeAll(createdAnnots);
+                    ((IntactInteractor) object).getDbAnnotations().addAll(synchronizedAnnotations);
+                }
                 processOtherUpdates(object, message, e);
                 interactorUpdates.remove(object);
             } catch (PersisterException e2) {
