@@ -8,7 +8,7 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.InteractorSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.synchronizer.listener.InteractorUpdates;
+import uk.ac.ebi.intact.jami.synchronizer.listener.updates.InteractorUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.util.List;

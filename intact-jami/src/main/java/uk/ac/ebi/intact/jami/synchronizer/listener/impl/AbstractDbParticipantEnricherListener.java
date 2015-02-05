@@ -8,7 +8,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactMergerException;
 import uk.ac.ebi.intact.jami.model.extension.IntactStoichiometry;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.synchronizer.listener.ParticipantUpdates;
+import uk.ac.ebi.intact.jami.synchronizer.listener.updates.ParticipantUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.util.List;

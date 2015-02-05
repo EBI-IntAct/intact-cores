@@ -1,23 +1,21 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.OrganismFetcher;
+import psidev.psi.mi.jami.enricher.OrganismEnricher;
 import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Organism;
 import psidev.psi.mi.jami.utils.clone.OrganismCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbOrganismEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactOrganismComparator;
@@ -34,12 +32,14 @@ import java.util.*;
  * @since <pre>27/01/14</pre>
  */
 
-public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher{
+public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism, IntactOrganism> implements OrganismFetcher, IntactOrganismSynchronizer{
     private Map<Organism, IntactOrganism> persistedObjects;
     private Map<Organism, IntactOrganism> convertedObjects;
     private IntactComparator<Organism> organismComparator;
 
     private static final Log log = LogFactory.getLog(CvTermSynchronizer.class);
+
+    private DbOrganismEnricherListener enricherListener;
 
     public OrganismSynchronizer(SynchronizerContext context){
         super(context, IntactOrganism.class);
@@ -47,6 +47,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         // to keep track of persisted cvs
         this.persistedObjects = new TreeMap<Organism, IntactOrganism>(this.organismComparator);
         this.convertedObjects = new IdentityMap();
+        enricherListener = new DbOrganismEnricherListener(getContext(), this);
     }
 
     public IntactOrganism find(Organism term) throws FinderException {
@@ -289,6 +290,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.enricherListener.getOrganismUpdates().clear();
     }
 
     public IntactOrganism fetchByTaxID(int taxID) throws BridgeFailedException {
@@ -359,7 +361,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         }
     }
 
-    protected void prepareAndSynchronizeCommonName(IntactOrganism intactOrganism) {
+    public void prepareAndSynchronizeCommonName(IntactOrganism intactOrganism) {
         // set shortname if not done yet
         if (intactOrganism.getCommonName() == null){
             intactOrganism.setCommonName(intactOrganism.getScientificName() != null ? intactOrganism.getScientificName() : Integer.toString(intactOrganism.getTaxId()));
@@ -477,6 +479,16 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new OrganismMergerEnrichOnly(this));
+        OrganismMergerEnrichOnly mergerEnrichOnly = new OrganismMergerEnrichOnly(this);
+        mergerEnrichOnly.setOrganismEnricherListener(this.enricherListener);
+        super.setIntactMerger(mergerEnrichOnly);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<Organism, IntactOrganism> intactMerger) {
+        if (intactMerger instanceof OrganismEnricher){
+            ((OrganismEnricher)intactMerger).setOrganismEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 }

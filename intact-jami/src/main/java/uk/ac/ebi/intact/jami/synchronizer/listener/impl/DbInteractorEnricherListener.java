@@ -9,7 +9,7 @@ import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactMergerException;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.synchronizer.*;
-import uk.ac.ebi.intact.jami.synchronizer.listener.InteractorUpdates;
+import uk.ac.ebi.intact.jami.synchronizer.listener.updates.InteractorUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.util.ArrayList;

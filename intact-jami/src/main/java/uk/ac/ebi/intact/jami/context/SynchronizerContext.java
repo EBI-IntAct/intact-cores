@@ -104,7 +104,7 @@ public interface SynchronizerContext {
 
     public AnnotationSynchronizer<CvTermAnnotation> getCvAnnotationSynchronizer();
 
-    public IntactDbSynchronizer<Source, IntactSource> getSourceSynchronizer();
+    public IntactSourceSynchronizer getSourceSynchronizer();
 
     public AliasSynchronizer<SourceAlias> getSourceAliasSynchronizer();
 
@@ -228,7 +228,7 @@ public interface SynchronizerContext {
 
     public IntactDbSynchronizer<User, User> getUserReadOnlySynchronizer();
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer();
+    public IntactPublicationSynchronizer getPublicationSynchronizer();
 
     public IntactExperimentSynchronizer getExperimentSynchronizer();
 

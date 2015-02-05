@@ -1,28 +1,29 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.PublicationFetcher;
+import psidev.psi.mi.jami.enricher.OrganismEnricher;
+import psidev.psi.mi.jami.enricher.PublicationEnricher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.clone.PublicationCloner;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.PublicationMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
 import uk.ac.ebi.intact.jami.model.extension.PublicationAnnotation;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbPublicationEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactPublicationComparator;
@@ -40,12 +41,14 @@ import java.util.*;
  */
 
 public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Publication, IntactPublication>
-        implements PublicationFetcher{
+        implements PublicationFetcher, IntactPublicationSynchronizer{
 
     private Map<Publication, IntactPublication> persistedObjects;
     private Map<Publication, IntactPublication> convertedObjects;
 
     private IntactComparator<Publication> publicationComparator;
+
+    private DbPublicationEnricherListener enricherListener;
 
     private static final Log log = LogFactory.getLog(PublicationSynchronizer.class);
 
@@ -56,6 +59,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         this.persistedObjects = new TreeMap<Publication, IntactPublication>(this.publicationComparator);
         // to keep track of converted objects
         this.convertedObjects = new IdentityMap();
+        this.enricherListener = new DbPublicationEnricherListener(getContext(), this);
     }
 
     public IntactPublication find(Publication publication) throws FinderException {
@@ -215,9 +219,10 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();
+        this.enricherListener.getPublicationUpdates().clear();
     }
 
-    protected void prepareAndSynchronizeShortLabel(IntactPublication intactPublication) throws SynchronizerException {
+    public void prepareAndSynchronizeShortLabel(IntactPublication intactPublication) throws SynchronizerException {
         if (intactPublication.getAc() == null || getEntityManager().contains(intactPublication)){
             // first initialise shortlabel if not done
             String pubmed = intactPublication.getPubmedId();
@@ -684,7 +689,17 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new PublicationMergerEnrichOnly(this));
+        PublicationMergerEnrichOnly mergerEnrichOnly = new PublicationMergerEnrichOnly(this);
+        mergerEnrichOnly.setPublicationEnricherListener(this.enricherListener);
+        super.setIntactMerger(mergerEnrichOnly);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<Publication, IntactPublication> intactMerger) {
+        if (intactMerger instanceof PublicationEnricher){
+            ((PublicationEnricher)intactMerger).setPublicationEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 
     protected void prepareStatusAndCurators(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {

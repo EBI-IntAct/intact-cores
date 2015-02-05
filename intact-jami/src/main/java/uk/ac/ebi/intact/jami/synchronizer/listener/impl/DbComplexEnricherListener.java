@@ -9,7 +9,7 @@ import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.synchronizer.listener.IntactComplexEnricherListener;
-import uk.ac.ebi.intact.jami.synchronizer.listener.InteractorUpdates;
+import uk.ac.ebi.intact.jami.synchronizer.listener.updates.InteractorUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.util.Date;

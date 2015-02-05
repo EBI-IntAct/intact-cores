@@ -1,21 +1,23 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.bridges.exception.BridgeFailedException;
 import psidev.psi.mi.jami.bridges.fetcher.SourceFetcher;
+import psidev.psi.mi.jami.enricher.CvTermEnricher;
+import psidev.psi.mi.jami.enricher.OrganismEnricher;
+import psidev.psi.mi.jami.enricher.SourceEnricher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.clone.CvTermCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.merger.OrganismMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
 import uk.ac.ebi.intact.jami.model.extension.IntactSource;
-import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
-import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
-import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.synchronizer.*;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbSourceEnricherListener;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactSourceComparator;
@@ -32,12 +34,14 @@ import java.util.*;
  * @since <pre>23/01/14</pre>
  */
 
-public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements SourceFetcher {
+public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, IntactSource> implements SourceFetcher, IntactSourceSynchronizer {
     private Map<Source, IntactSource> persistedObjects;
     private Map<Source, IntactSource> convertedObjects;
     private Set<String> persistedNames;
 
     private IntactComparator<Source> sourceComparator;
+
+    private DbSourceEnricherListener enricherListener;
 
     private static final Log log = LogFactory.getLog(SourceSynchronizer.class);
 
@@ -168,6 +172,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         this.persistedObjects.clear();
         this.convertedObjects.clear();
         this.persistedNames.clear();
+        this.enricherListener.getSourceUpdates().clear();
     }
 
     public Source fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {
@@ -501,7 +506,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
     }
 
-    protected void prepareAndSynchronizeShortLabel(IntactSource intactSource) {
+    public void prepareAndSynchronizeShortLabel(IntactSource intactSource) {
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactSource.getShortName().length()){
             log.warn("Source shortLabel too long: "+intactSource.getShortName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
@@ -515,6 +520,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new SourceMergerEnrichOnly(this));
+        SourceMergerEnrichOnly mergerEnrichOnly = new SourceMergerEnrichOnly(this);
+        mergerEnrichOnly.setCvTermEnricherListener(this.enricherListener);
+        super.setIntactMerger(mergerEnrichOnly);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<Source, IntactSource> intactMerger) {
+        if (intactMerger instanceof CvTermEnricher){
+            ((CvTermEnricher)intactMerger).setCvTermEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 }

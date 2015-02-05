@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.jami.synchronizer.listener;
+package uk.ac.ebi.intact.jami.synchronizer.listener.updates;
 
 import psidev.psi.mi.jami.model.*;
 

@@ -63,7 +63,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactCvSynchronizer lifecycleEventSynchronizer;
 
     // source synchronizer
-    private IntactDbSynchronizer<Source, IntactSource> sourceSynchronizer;
+    private IntactSourceSynchronizer sourceSynchronizer;
 
     // aliases synchronizers
     private AliasSynchronizer aliasSynchronizer;
@@ -113,7 +113,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
     private IntactDbSynchronizer<User, User> userSynchronizer;
 
     // publication synchronizers
-    private IntactDbSynchronizer<Publication, IntactPublication> publicationSynchronizer;
+    private IntactPublicationSynchronizer publicationSynchronizer;
 
     // experiment synchronizers
     private IntactExperimentSynchronizer experimentSynchronizer;
@@ -398,7 +398,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return this.annotationSynchronizer;
     }
 
-    public IntactDbSynchronizer<Source, IntactSource> getSourceSynchronizer() {
+    public IntactSourceSynchronizer getSourceSynchronizer() {
         if (this.sourceSynchronizer == null){
             this.sourceSynchronizer = new SourceSynchronizer(this);
             this.sourceSynchronizer.setListener(listener);
@@ -789,7 +789,7 @@ public class DefaultSynchronizerContext implements SynchronizerContext {
         return userSynchronizer;
     }
 
-    public IntactDbSynchronizer<Publication, IntactPublication> getPublicationSynchronizer() {
+    public IntactPublicationSynchronizer getPublicationSynchronizer() {
         if (this.publicationSynchronizer == null){
             this.publicationSynchronizer = new PublicationSynchronizer(this);
             this.publicationSynchronizer.setListener(listener);

@@ -7,11 +7,14 @@ import psidev.psi.mi.jami.enricher.SourceEnricher;
 import psidev.psi.mi.jami.enricher.exception.EnricherException;
 import psidev.psi.mi.jami.enricher.impl.full.FullPublicationUpdater;
 import psidev.psi.mi.jami.enricher.listener.PublicationEnricherListener;
+import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Publication;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
+import uk.ac.ebi.intact.jami.model.user.User;
 import uk.ac.ebi.intact.jami.synchronizer.impl.PublicationSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.listener.IntactPublicationEnricherListener;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -51,12 +54,12 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
     }
 
     public PublicationEnricherListener getPublicationEnricherListener() {
-        return null;
+        return getBasicEnricher().getPublicationEnricherListener();
     }
 
     @Override
     public void setPublicationEnricherListener(PublicationEnricherListener listener) {
-
+        getBasicEnricher().setPublicationEnricherListener(listener);
     }
 
     @Override
@@ -65,19 +68,31 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
 
         // merge curator
         if (mergedPub.getCurrentOwner() != obj1.getCurrentOwner()){
+            User old = mergedPub.getCurrentOwner();
             mergedPub.setCurrentOwner(obj1.getCurrentOwner());
+            if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onCurrentOwnerUpdate(mergedPub, old);
+            }
         }
         // merge reviewer
         if (mergedPub.getCurrentReviewer() != obj1.getCurrentReviewer()){
+            User old = mergedPub.getCurrentReviewer();
             mergedPub.setCurrentReviewer(obj1.getCurrentReviewer());
+            if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onCurrentReviewerUpdate(mergedPub, old);
+            }
         }
         // merge status
         if (mergedPub.getCvStatus() != obj1.getCvStatus()){
+            CvTerm old = mergedPub.getCvStatus();
             mergedPub.setCvStatus(obj1.getCvStatus());
+            if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onStatusUpdate(mergedPub, old);
+            }
         }
         // merge lifecycle
         if (obj1.areLifeCycleEventsInitialized()){
-            mergeLifeCycleEvents(mergedPub.getLifecycleEvents(), obj1.getLifecycleEvents());
+            mergeLifeCycleEvents(mergedPub, mergedPub.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
         //merge experiments
         if (obj1.areExperimentsInitialized()){
@@ -102,6 +117,9 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
             // remove events not in second list
             if (!containsExperiment){
                 experimentIterator.remove();
+                if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                    ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onRemovedExperiment(mergedPub, experiment);
+                }
             }
         }
         experimentIterator = sourceExperiments.iterator();
@@ -118,6 +136,9 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
             // add missing xref not in second list
             if (!containsExperiment){
                 mergedPub.addExperiment(experiment);
+                if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                    ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onAddedExperiment(mergedPub, experiment);
+                }
             }
         }
     }
@@ -129,7 +150,7 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
      * sourceEvents
      *
      */
-    private void mergeLifeCycleEvents(List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
+    private void mergeLifeCycleEvents(IntactPublication merged, List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){
 
 
         Iterator<LifeCycleEvent> eventIterator = toEnrichEvents.iterator();
@@ -145,6 +166,9 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
             // remove events not in second list
             if (!containsEvent){
                 eventIterator.remove();
+                if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                    ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onRemovedLifeCycleEvent(merged, event);
+                }
             }
         }
 
@@ -163,6 +187,9 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
             // add missing xref not in second list
             if (!containsEvent){
                 toEnrichEvents.add(index, event);
+                if (getPublicationEnricherListener() instanceof IntactPublicationEnricherListener){
+                    ((IntactPublicationEnricherListener) getPublicationEnricherListener()).onAddedLifeCycleEvent(merged, event);
+                }
             }
             index++;
         }

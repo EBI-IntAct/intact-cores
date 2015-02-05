@@ -14,10 +14,7 @@ import uk.ac.ebi.intact.jami.context.IntactContext;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.CvTermMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
-import uk.ac.ebi.intact.jami.model.extension.CvTermAlias;
-import uk.ac.ebi.intact.jami.model.extension.CvTermAnnotation;
-import uk.ac.ebi.intact.jami.model.extension.CvTermXref;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.sequence.SequenceManager;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.synchronizer.listener.IntactCvEnricherListener;
@@ -716,5 +713,10 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             children.getParents().remove(intactObject);
         }
         intactObject.getChildren().clear();
+    }
+
+    @Override
+    protected void synchronizePropertiesAfterMerge(IntactCvTerm mergedObject) throws SynchronizerException, PersisterException, FinderException {
+        initialiseIdentifier(mergedObject);
     }
 }

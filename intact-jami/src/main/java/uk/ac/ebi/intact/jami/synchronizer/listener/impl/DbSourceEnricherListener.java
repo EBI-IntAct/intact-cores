@@ -2,16 +2,17 @@ package uk.ac.ebi.intact.jami.synchronizer.listener.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.enricher.listener.EnrichmentStatus;
+import psidev.psi.mi.jami.enricher.listener.SourceEnricherListener;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactMergerException;
-import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
-import uk.ac.ebi.intact.jami.synchronizer.IntactCvSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.IntactSourceSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.synchronizer.listener.updates.CvUpdates;
-import uk.ac.ebi.intact.jami.synchronizer.listener.IntactCvEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.updates.SourceUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.util.List;
@@ -25,32 +26,32 @@ import java.util.Map;
  * @since <pre>04/02/15</pre>
  */
 
-public class DbCvEnricherListener implements IntactCvEnricherListener {
-    private Map<CvTerm, CvUpdates> cvUpdates;
+public class DbSourceEnricherListener implements SourceEnricherListener {
+    private Map<Source, SourceUpdates> sourceUpdates;
     private SynchronizerContext context;
-    private IntactCvSynchronizer dbSynchronizer;
+    private IntactSourceSynchronizer dbSynchronizer;
 
-    public DbCvEnricherListener(SynchronizerContext context, IntactCvSynchronizer dbSynchronizer) {
+    public DbSourceEnricherListener(SynchronizerContext context, IntactSourceSynchronizer dbSynchronizer) {
         if (context == null){
             throw new IllegalArgumentException("The listener needs a non null synchronizer context");
         }
         this.context = context;
         if (dbSynchronizer == null){
-            throw new IllegalArgumentException("The listener needs a non null cv synchronizer");
+            throw new IllegalArgumentException("The listener needs a non null source synchronizer");
         }
         this.dbSynchronizer = dbSynchronizer;
-        this.cvUpdates = new IdentityMap();
+        this.sourceUpdates = new IdentityMap();
     }
 
     @Override
     public void onAddedAnnotation(CvTerm interactor, Annotation annotation) {
-        if (this.cvUpdates.containsKey(interactor)){
-            this.cvUpdates.get(interactor).getAddedAnnotations().add(annotation);
+        if (this.sourceUpdates.containsKey(interactor)){
+            this.sourceUpdates.get(interactor).getAddedAnnotations().add(annotation);
         }
         else{
-            CvUpdates updates = new CvUpdates();
+            SourceUpdates updates = new SourceUpdates();
             updates.getAddedAnnotations().add(annotation);
-            this.cvUpdates.put(interactor, updates);
+            this.sourceUpdates.put((Source)interactor, updates);
         }
     }
 
@@ -61,124 +62,123 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
 
 
     @Override
-    public void onEnrichmentComplete(CvTerm object, EnrichmentStatus status, String message) {
-        if (cvUpdates.containsKey(object)){
-            CvUpdates updates = cvUpdates.get(object);
+    public void onEnrichmentComplete(Source object, EnrichmentStatus status, String message) {
+        if (sourceUpdates.containsKey(object)){
+            SourceUpdates updates = sourceUpdates.get(object);
             try {
                 if (!updates.getAddedXrefs().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
-                            context.getCvXrefSynchronizer());
+                            context.getSourceXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
                     object.getXrefs().addAll(synchronizedXrefs);
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
-                            context.getCvXrefSynchronizer());
+                            context.getSourceXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
                     object.getIdentifiers().addAll(synchronizedXrefs);
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
-                            context.getCvAnnotationSynchronizer());
+                            context.getSourceAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
-                            context.getCvAliasSynchronizer());
+                            context.getSourceAliasSynchronizer());
                     object.getSynonyms().removeAll(updates.getAddedAliases());
                     object.getSynonyms().addAll(synchronizedAliases);
                 }
-                if (!updates.getAddedParents().isEmpty()){
+                if (!updates.getAddedPrimaryXrefs().isEmpty()){
 
-                    List<OntologyTerm> synchronizedParents = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedParents(),
-                            dbSynchronizer);
-                    ((IntactCvTerm)object).getParents().removeAll(updates.getAddedParents());
-                    ((IntactCvTerm)object).getParents().addAll(synchronizedParents);
+                    List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedPrimaryXrefs(),
+                            context.getSourceXrefSynchronizer());
+                    object.getXrefs().removeAll(updates.getAddedPrimaryXrefs());
+                    object.getXrefs().addAll(synchronizedXrefs);
                 }
 
-                cvUpdates.remove(object);
+                sourceUpdates.remove(object);
             } catch (PersisterException e) {
-                cvUpdates.remove(object);
-                throw new IntactMergerException("Cannot synchronize merged cv", e);
+                sourceUpdates.remove(object);
+                throw new IntactMergerException("Cannot synchronize merged source", e);
             } catch (FinderException e) {
-                cvUpdates.remove(object);
-                throw new IntactMergerException("Cannot synchronize merged cv", e);
+                sourceUpdates.remove(object);
+                throw new IntactMergerException("Cannot synchronize merged source", e);
             } catch (SynchronizerException e) {
-                cvUpdates.remove(object);
-                throw new IntactMergerException("Cannot synchronize merged cv", e);
+                sourceUpdates.remove(object);
+                throw new IntactMergerException("Cannot synchronize merged source", e);
             }
         }
     }
 
     @Override
-    public void onEnrichmentError(CvTerm object, String message, Exception e) {
-        if (cvUpdates.containsKey(object)){
-            CvUpdates updates = cvUpdates.get(object);
+    public void onEnrichmentError(Source object, String message, Exception e) {
+        if (sourceUpdates.containsKey(object)){
+            SourceUpdates updates = sourceUpdates.get(object);
             try {
                 if (!updates.getAddedXrefs().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
-                            context.getCvXrefSynchronizer());
+                            context.getSourceXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
                     object.getXrefs().addAll(synchronizedXrefs);
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
-                            context.getCvXrefSynchronizer());
+                            context.getSourceXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
                     object.getIdentifiers().addAll(synchronizedXrefs);
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
-                            context.getCvAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
+                            context.getSourceAnnotationSynchronizer());
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
                     object.getAnnotations().addAll(synchronizedAnnotations);
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
-                            context.getCvAliasSynchronizer());
+                            context.getSourceAliasSynchronizer());
                     object.getSynonyms().removeAll(updates.getAddedAliases());
                     object.getSynonyms().addAll(synchronizedAliases);
                 }
-                if (!updates.getAddedParents().isEmpty()){
+                if (!updates.getAddedPrimaryXrefs().isEmpty()){
 
-                    List<OntologyTerm> synchronizedParents = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedParents(),
-                            dbSynchronizer);
-                    ((IntactCvTerm)object).getParents().removeAll(updates.getAddedParents());
-                    ((IntactCvTerm)object).getParents().addAll(synchronizedParents);
+                    List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedPrimaryXrefs(),
+                            context.getSourceXrefSynchronizer());
+                    object.getXrefs().removeAll(updates.getAddedPrimaryXrefs());
+                    object.getXrefs().addAll(synchronizedXrefs);
                 }
-
-                cvUpdates.remove(object);
+                sourceUpdates.remove(object);
             } catch (PersisterException e2) {
-                cvUpdates.remove(object);
-                throw new IntactMergerException("Cannot synchronize merged cv", e2);
+                sourceUpdates.remove(object);
+                throw new IntactMergerException("Cannot synchronize merged source", e2);
             } catch (FinderException e2) {
-                cvUpdates.remove(object);
-                throw new IntactMergerException("Cannot synchronize merged cv", e2);
+                sourceUpdates.remove(object);
+                throw new IntactMergerException("Cannot synchronize merged source", e2);
             } catch (SynchronizerException e2) {
-                cvUpdates.remove(object);
-                throw new IntactMergerException("Cannot synchronize merged cv", e2);
+                sourceUpdates.remove(object);
+                throw new IntactMergerException("Cannot synchronize merged source", e2);
             }
         }
     }
 
     @Override
     public void onAddedXref(CvTerm interactor, Xref xref) {
-        if (this.cvUpdates.containsKey(interactor)){
-            this.cvUpdates.get(interactor).getAddedXrefs().add(xref);
+        if (this.sourceUpdates.containsKey(interactor)){
+            this.sourceUpdates.get(interactor).getAddedXrefs().add(xref);
         }
         else{
-            CvUpdates updates = new CvUpdates();
+            SourceUpdates updates = new SourceUpdates();
             updates.getAddedXrefs().add(xref);
-            this.cvUpdates.put(interactor, updates);
+            this.sourceUpdates.put((Source)interactor, updates);
         }
     }
 
@@ -187,14 +187,14 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
         // nothing to do
     }
 
-    public Map<CvTerm, CvUpdates> getCvUpdates() {
-        return cvUpdates;
+    public Map<Source, SourceUpdates> getSourceUpdates() {
+        return sourceUpdates;
     }
 
     @Override
     public void onShortNameUpdate(CvTerm t, String s) {
         try {
-            this.dbSynchronizer.prepareAndSynchronizeShortLabel((IntactCvTerm)t);
+            this.dbSynchronizer.prepareAndSynchronizeShortLabel((IntactSource)t);
         } catch (SynchronizerException e) {
             throw new IntactMergerException("Cannot synchronize cv label", e);
         }
@@ -222,13 +222,13 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
 
     @Override
     public void onAddedAlias(CvTerm t, Alias alias) {
-        if (this.cvUpdates.containsKey(t)){
-            this.cvUpdates.get(t).getAddedAliases().add(alias);
+        if (this.sourceUpdates.containsKey(t)){
+            this.sourceUpdates.get(t).getAddedAliases().add(alias);
         }
         else{
-            CvUpdates updates = new CvUpdates();
+            SourceUpdates updates = new SourceUpdates();
             updates.getAddedAliases().add(alias);
-            this.cvUpdates.put(t, updates);
+            this.sourceUpdates.put((Source)t, updates);
         }
     }
 
@@ -239,13 +239,13 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
 
     @Override
     public void onAddedIdentifier(CvTerm t, Xref xref) {
-        if (this.cvUpdates.containsKey(t)){
-            this.cvUpdates.get(t).getAddedIdentifiers().add(xref);
+        if (this.sourceUpdates.containsKey(t)){
+            this.sourceUpdates.get(t).getAddedIdentifiers().add(xref);
         }
         else{
-            CvUpdates updates = new CvUpdates();
+            SourceUpdates updates = new SourceUpdates();
             updates.getAddedIdentifiers().add(xref);
-            this.cvUpdates.put(t, updates);
+            this.sourceUpdates.put((Source)t, updates);
         }
     }
 
@@ -258,24 +258,31 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
         return context;
     }
 
-    protected IntactCvSynchronizer getDbSynchronizer() {
+    protected IntactSourceSynchronizer getDbSynchronizer() {
         return dbSynchronizer;
     }
 
     @Override
-    public void onAddedParent(IntactCvTerm t, OntologyTerm added) {
-        if (this.cvUpdates.containsKey(t)){
-            this.cvUpdates.get(t).getAddedParents().add(added);
-        }
-        else{
-            CvUpdates updates = new CvUpdates();
-            updates.getAddedParents().add(added);
-            this.cvUpdates.put(t, updates);
-        }
+    public void onUrlUpdate(Source source, String s) {
+        // nothing to do
     }
 
     @Override
-    public void onRemovedParent(IntactCvTerm t, OntologyTerm removed) {
-         // nothing to do
+    public void onPostalAddressUpdate(Source source, String s) {
+        // nothing to do
+    }
+
+    @Override
+    public void onPublicationUpdate(Source t, Publication publication) {
+        if (t.getPublication() != null){
+            if (this.sourceUpdates.containsKey(t)){
+                this.sourceUpdates.get(t).getAddedPrimaryXrefs().addAll(XrefUtils.collectAllXrefsHavingQualifier(t.getXrefs(), Xref.PRIMARY_MI, Xref.PRIMARY));
+            }
+            else{
+                SourceUpdates updates = new SourceUpdates();
+                updates.getAddedPrimaryXrefs().addAll(XrefUtils.collectAllXrefsHavingQualifier(t.getXrefs(), Xref.PRIMARY_MI, Xref.PRIMARY));
+                this.sourceUpdates.put(t, updates);
+            }
+        }
     }
 }

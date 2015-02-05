@@ -35,7 +35,7 @@ public class OrganismMergerOverride extends IntactDbMergerOverride<Organism, Int
     }
 
     public OrganismEnricherListener getOrganismEnricherListener() {
-        return null;
+        return getBasicEnricher().getOrganismEnricherListener();
     }
 
     public CvTermEnricher<CvTerm> getCvTermEnricher() {
@@ -44,7 +44,7 @@ public class OrganismMergerOverride extends IntactDbMergerOverride<Organism, Int
 
     @Override
     public void setOrganismEnricherListener(OrganismEnricherListener listener) {
-
+        getBasicEnricher().setOrganismEnricherListener(listener);
     }
 
     @Override

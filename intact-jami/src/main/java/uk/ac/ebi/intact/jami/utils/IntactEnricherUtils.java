@@ -13,6 +13,7 @@ import psidev.psi.mi.jami.utils.comparator.xref.DefaultXrefComparator;
 import uk.ac.ebi.intact.jami.ApplicationContextProvider;
 import uk.ac.ebi.intact.jami.context.IntactConfiguration;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
+import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 
 import java.util.ArrayList;
@@ -94,6 +95,30 @@ public class IntactEnricherUtils {
         }
 
         return synchronizedAnnots;
+    }
+
+    /**
+     * Method which will synchronize roles that are not present in the roles to enrich, only in the enriched roles.
+     * It will refresh the enriched roles to have fully initialised roles before enrichment
+     * @param rolesToBeAdded : the collection of roles to be enriched
+     * @param roleSynchronizer : the role sycnrhonizer to be used
+     * @return the synchronized roles which will be added to the roles to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Role> synchronizeUserRolesToEnrich(Collection<Role> rolesToBeAdded,
+                                                                  IntactDbSynchronizer roleSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Role> synchronizedRoles = new ArrayList<Role>(rolesToBeAdded.size());
+        for (Role role : rolesToBeAdded){
+            // do not persist or merge annotations because of cascades
+            Role expAnnotation = (Role)roleSynchronizer.synchronize(role, true);
+            // we have a different instance because needed to be synchronized
+            synchronizedRoles.add(expAnnotation);
+        }
+
+        return synchronizedRoles;
     }
 
     /**
@@ -638,6 +663,29 @@ public class IntactEnricherUtils {
         // remove experiments which have been synchronized from original object
         enrichedExperiments.removeAll(experimentsToBeAdded);
         enrichedExperiments.addAll(synchronizedInteractions);
+    }
+
+    /**
+     * Method which will synchronize experiments that are not present in the experiments to enrich
+     * @param experimentsToBeAdded : the collection of experiments to be enriched
+     * @param experimentSynchronizer : the experiments synchronizer to be used
+     * @return the synchronized experiments which will be added to the experiments to enrich
+     * @throws PersisterException
+     * @throws FinderException
+     * @throws SynchronizerException
+     */
+    public static List<Experiment> synchronizeExperimentsToEnrich(Collection<Experiment> experimentsToBeAdded,
+                                                      IntactDbSynchronizer experimentSynchronizer) throws PersisterException, FinderException, SynchronizerException {
+
+        List<Experiment> synchronizedInteractions = new ArrayList<Experiment>(experimentsToBeAdded.size());
+        for (Experiment para : experimentsToBeAdded){
+            // do not persist or merge experiments because of cascades
+            Experiment expInteraction = (Experiment)experimentSynchronizer.synchronize(para, false);
+            // we have a different instance because needed to be synchronized
+            synchronizedInteractions.add(expInteraction);
+        }
+
+        return synchronizedInteractions;
     }
 
     /**

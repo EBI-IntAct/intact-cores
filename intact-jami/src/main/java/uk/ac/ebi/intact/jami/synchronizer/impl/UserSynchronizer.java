@@ -4,8 +4,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.jami.enricher.CvTermEnricher;
+import psidev.psi.mi.jami.model.Source;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
+import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.UserEnricher;
 import uk.ac.ebi.intact.jami.merger.UserMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.model.extension.IntactSource;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -13,6 +19,7 @@ import uk.ac.ebi.intact.jami.synchronizer.AbstractIntactDbSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
+import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbUserEnricherListener;
 
 import javax.persistence.Query;
 import java.lang.reflect.InvocationTargetException;
@@ -35,12 +42,15 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     private Map<User, User> persistedUsers;
     private Map<User, User> convertedUsers;
 
+    private DbUserEnricherListener enricherListener;
+
     private static final Log log = LogFactory.getLog(UserSynchronizer.class);
 
     public UserSynchronizer(SynchronizerContext context){
         super(context, User.class);
         this.persistedUsers = new HashMap<User, User>();
         this.convertedUsers = new IdentityMap();
+        this.enricherListener = new DbUserEnricherListener(getContext(), this);
     }
 
     public User find(User user) throws FinderException {
@@ -117,6 +127,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     public void clearCache() {
         this.persistedUsers.clear();
         this.convertedUsers.clear();
+        this.enricherListener.getUserUpdates().clear();
     }
 
     protected void prepareRoles(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
@@ -217,7 +228,16 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new UserMergerEnrichOnly());
+        UserMergerEnrichOnly mergerEnrichOnly = new UserMergerEnrichOnly();
+        mergerEnrichOnly.setUserEnricherListener(this.enricherListener);
+        super.setIntactMerger(mergerEnrichOnly);
     }
 
+    @Override
+    public void setIntactMerger(IntactDbMerger<User, User> intactMerger) {
+        if (intactMerger instanceof UserEnricher){
+            ((UserEnricher)intactMerger).setUserEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
+    }
 }

@@ -1,9 +1,9 @@
-package uk.ac.ebi.intact.jami.synchronizer.listener;
+package uk.ac.ebi.intact.jami.synchronizer.listener.updates;
 
-import psidev.psi.mi.jami.model.Alias;
 import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.OntologyTerm;
+import psidev.psi.mi.jami.model.Experiment;
 import psidev.psi.mi.jami.model.Xref;
+import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +16,14 @@ import java.util.List;
  * @since <pre>04/02/15</pre>
  */
 
-public class CvUpdates {
+public class PublicationUpdates {
     private List<Xref> addedXrefs = new ArrayList<Xref>();
     private List<Annotation> addedAnnotations = new ArrayList<Annotation>();
-    private List<Alias> addedAliases = new ArrayList<Alias>();
+    private List<Annotation> addedOtherDbAnnotations = new ArrayList<Annotation>();
     private List<Xref> addedIdentifiers = new ArrayList<Xref>();
 
-    private List<OntologyTerm> addedParents = new ArrayList<OntologyTerm>();
+    private List<Experiment> addedExperiments = new ArrayList<Experiment>();
+    private List<LifeCycleEvent> addedLifeCycleEvents = new ArrayList<LifeCycleEvent>();
 
     public List<Xref> getAddedXrefs() {
         return addedXrefs;
@@ -32,15 +33,19 @@ public class CvUpdates {
         return addedAnnotations;
     }
 
-    public List<Alias> getAddedAliases() {
-        return addedAliases;
-    }
-
     public List<Xref> getAddedIdentifiers() {
         return addedIdentifiers;
     }
 
-    public List<OntologyTerm> getAddedParents() {
-        return addedParents;
+    public List<Experiment> getAddedExperiments() {
+        return addedExperiments;
+    }
+
+    public List<LifeCycleEvent> getAddedLifeCycleEvents() {
+        return addedLifeCycleEvents;
+    }
+
+    public List<Annotation> getAddedOtherDbAnnotations() {
+        return addedOtherDbAnnotations;
     }
 }
