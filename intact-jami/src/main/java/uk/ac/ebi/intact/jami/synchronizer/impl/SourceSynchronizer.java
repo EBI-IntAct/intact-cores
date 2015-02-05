@@ -514,9 +514,17 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             intactSource.setShortName(intactSource.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
+        String oldLabel = intactSource.getShortName();
+
         IntactUtils.synchronizeSourceShortName(intactSource, getEntityManager(), this.persistedNames);
 
-        this.persistedNames.add(intactSource.getShortName());
+        // only add name as persisted name if new object persisted or update in shortlabel
+        if (intactSource.getAc() == null){
+            this.persistedNames.add(intactSource.getShortName());
+        }
+        else if (!oldLabel.equals(intactSource.getShortName())){
+            this.persistedNames.add(intactSource.getShortName());
+        }
     }
 
     @Override

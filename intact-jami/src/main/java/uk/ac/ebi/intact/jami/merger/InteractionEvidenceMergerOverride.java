@@ -44,11 +44,10 @@ public class InteractionEvidenceMergerOverride extends IntactDbMergerOverride<In
     }
 
     @Override
-    public IntactInteractionEvidence merge(IntactInteractionEvidence int1, IntactInteractionEvidence int2) {
+    protected void mergeOtherProperties(IntactInteractionEvidence obj1, IntactInteractionEvidence obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // reset parent to source parent
-        int2.setExperiment(int1.getExperiment());
-
-        return super.merge(int1, int2);
+        obj2.setExperiment(obj1.getExperiment());
     }
 
     public ParticipantEnricher getParticipantEnricher() {

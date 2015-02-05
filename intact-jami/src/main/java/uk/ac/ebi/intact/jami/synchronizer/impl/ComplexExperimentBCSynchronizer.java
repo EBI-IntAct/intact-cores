@@ -386,10 +386,18 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                     IntactUtils.generateAutomaticExperimentShortlabelFor(intactExperiment, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
+        String oldLabel = intactExperiment.getShortLabel();
+
         // then synchronize with database
         IntactUtils.synchronizeExperimentComplexShortLabel(intactExperiment, getEntityManager(), this.persistedNames);
 
-        this.persistedNames.add(intactExperiment.getShortLabel());
+        // only add name as persisted name if new object persisted or update in shortlabel
+        if (intactExperiment.getAc() == null){
+            this.persistedNames.add(intactExperiment.getShortLabel());
+        }
+        else if (!oldLabel.equals(intactExperiment.getShortLabel())){
+            this.persistedNames.add(intactExperiment.getShortLabel());
+        }
     }
 
     @Override

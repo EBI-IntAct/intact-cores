@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.jami.merger;
 
+import psidev.psi.mi.jami.enricher.listener.EnrichmentStatus;
 import uk.ac.ebi.intact.jami.model.user.Preference;
 import uk.ac.ebi.intact.jami.model.user.Role;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -25,9 +26,10 @@ public class UserMergerOverride extends IntactDbMergerEnrichOnly<User, User> imp
     }
 
     @Override
-    public User merge(User obj1, User obj2) {
+    protected void mergeOtherProperties(User obj1, User obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // obj2 is mergedUser
-        User mergedUser = super.merge(obj1, obj2);
+        User mergedUser = obj2;
 
         // merge last login
         if ((mergedUser.getLastLogin() == null && obj1.getLastLogin() != null) ||
@@ -42,7 +44,9 @@ public class UserMergerOverride extends IntactDbMergerEnrichOnly<User, User> imp
         if (obj1.arePreferencesInitialized()){
             mergePreferences(mergedUser, mergedUser.getPreferences(), obj1.getPreferences());
         }
-        return mergedUser;
+        if (getUserEnricherListener() != null){
+            getUserEnricherListener().onEnrichmentComplete(mergedUser, EnrichmentStatus.SUCCESS, "user enriched");
+        }
     }
 
     private void mergeRoles(User userToEnrich, Collection<Role> toEnrichRoles, Collection<Role> sourceRoles) {

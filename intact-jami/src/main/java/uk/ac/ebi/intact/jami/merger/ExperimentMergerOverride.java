@@ -73,12 +73,13 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
     }
 
     @Override
-    public IntactExperiment merge(IntactExperiment exp1, IntactExperiment exp2) {
+    protected void mergeOtherProperties(IntactExperiment exp1, IntactExperiment exp2) {
+        super.mergeOtherProperties(exp1, exp2);
         // reset parent to source parent
         exp2.setPublication(exp1.getPublication());
 
         // obj2 is mergedExp
-        IntactExperiment mergedExp = super.merge(exp1, exp2);
+        IntactExperiment mergedExp = exp2;
 
         // merge shortLabel
         if ((mergedExp.getShortLabel() != null && !mergedExp.getShortLabel().equals(exp1.getShortLabel()))
@@ -101,8 +102,6 @@ public class ExperimentMergerOverride extends IntactDbMergerOverride<Experiment,
         if (exp1.areInteractionEvidencesInitialized()){
             mergeInteractions(mergedExp, mergedExp.getInteractionEvidences(), exp1.getInteractionEvidences());
         }
-
-        return mergedExp;
     }
 
     private void mergeInteractions(Experiment exp, Collection<InteractionEvidence> toEnrichInteractions, Collection<InteractionEvidence> sourceInteractions) {

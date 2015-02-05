@@ -18,15 +18,15 @@ public class RoleMerger extends IntactDbMergerEnrichOnly<Role, Role> {
     }
 
     @Override
-    public Role merge(Role obj1, Role obj2) {
+    protected void mergeOtherProperties(Role obj1, Role obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // obj2 is mergedRole
-        Role mergedRole = super.merge(obj1, obj2);
+        Role mergedRole = obj2;
 
         // merge name
         if ((mergedRole.getName() == null && obj1.getName() != null) ||
                 (mergedRole.getName() != null && !mergedRole.getName().equals(obj1.getName()))){
             mergedRole.setName(obj1.getName());
         }
-        return mergedRole;
     }
 }

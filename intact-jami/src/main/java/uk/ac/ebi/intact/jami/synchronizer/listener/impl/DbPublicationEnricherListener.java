@@ -4,6 +4,7 @@ import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.enricher.listener.EnrichmentStatus;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
+import psidev.psi.mi.jami.utils.XrefUtils;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactMergerException;
 import uk.ac.ebi.intact.jami.model.extension.IntactPublication;
@@ -80,7 +81,16 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             getContext().getPublicationXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref id : synchronizedXrefs){
+                        // ignore pubmed id as identity for Backward compatibility
+                        if (XrefUtils.doesXrefHaveQualifier(id, Xref.IDENTITY_MI, Xref.IDENTITY)
+                                && object.getPubmedId() != null && id.equals(object.getPubmedId())){
+                             // do nothing
+                        }
+                        else{
+                            object.getIdentifiers().add(id);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 

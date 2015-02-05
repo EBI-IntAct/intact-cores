@@ -63,8 +63,9 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
     }
 
     @Override
-    public IntactPublication merge(IntactPublication obj1, IntactPublication obj2) {
-        IntactPublication mergedPub = super.merge(obj1, obj2);
+    protected void mergeOtherProperties(IntactPublication obj1, IntactPublication obj2) {
+        super.mergeOtherProperties(obj1, obj2);
+        IntactPublication mergedPub = obj2;
 
         // merge curator
         if (mergedPub.getCurrentOwner() != obj1.getCurrentOwner()){
@@ -98,8 +99,6 @@ public class PublicationMergerOverride extends IntactDbMergerOverride<Publicatio
         if (obj1.areExperimentsInitialized()){
             mergeExperiments(mergedPub, mergedPub.getExperiments(), obj1.getExperiments());
         }
-
-        return mergedPub;
     }
 
     private void mergeExperiments(Publication mergedPub, Collection<Experiment> toEnrichExperiments, Collection<Experiment> sourceExperiments) {

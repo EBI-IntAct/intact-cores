@@ -74,7 +74,7 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
     }
 
     public InteractionEnricherListener<Complex> getInteractionEnricherListener() {
-        return null;
+        return getBasicEnricher().getInteractionEnricherListener();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
 
     @Override
     public void setInteractionEnricherListener(InteractionEnricherListener<Complex> listener) {
-
+         getBasicEnricher().setInteractionEnricherListener(listener);
     }
 
     public SourceEnricher getSourceEnricher() {
@@ -97,15 +97,16 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
     }
 
     @Override
-    public IntactComplex merge(IntactComplex obj1, IntactComplex obj2) {
+    protected void mergeOtherProperties(IntactComplex obj1, IntactComplex obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // obj2 is mergedComplex
-        IntactComplex mergedComplex = super.merge(obj1, obj2);
+        IntactComplex mergedComplex = obj2;
 
         // merge status
         if (mergedComplex.getCvStatus() == null && obj1.getCvStatus() != null){
             mergedComplex.setCvStatus(obj1.getCvStatus());
             if (getListener() instanceof IntactComplexEnricherListener){
-                 ((IntactComplexEnricherListener) getListener()).onStatusUpdate(mergedComplex, null);
+                ((IntactComplexEnricherListener) getListener()).onStatusUpdate(mergedComplex, null);
             }
         }
         // merge curator
@@ -126,8 +127,6 @@ public class ComplexMergerEnrichOnly extends InteractorBaseMergerEnrichOnly<Comp
         if (obj1.areLifeCycleEventsInitialized()){
             mergeLifeCycleEvents(mergedComplex, mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
-
-        return mergedComplex;
     }
 
     private void mergeLifeCycleEvents(IntactComplex mergedComplex, List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){

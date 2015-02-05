@@ -61,9 +61,10 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
     }
 
     @Override
-    public IntactPublication merge(IntactPublication obj1, IntactPublication obj2) {
+    protected void mergeOtherProperties(IntactPublication obj1, IntactPublication obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // obj2 is mergedPub
-        IntactPublication mergedPub = super.merge(obj1, obj2);
+        IntactPublication mergedPub = obj2;
 
         // merge shortLabel
         if (mergedPub.getShortLabel() == null){
@@ -98,7 +99,6 @@ public class PublicationMergerEnrichOnly extends IntactDbMergerEnrichOnly<Public
         if (obj1.areExperimentsInitialized()){
             mergeExperiments(mergedPub, mergedPub.getExperiments(), obj1.getExperiments());
         }
-        return mergedPub;
     }
 
     private void mergeExperiments(Publication pubToEnrich, Collection<Experiment> toEnrichExperiments, Collection<Experiment> sourceExperiments) {

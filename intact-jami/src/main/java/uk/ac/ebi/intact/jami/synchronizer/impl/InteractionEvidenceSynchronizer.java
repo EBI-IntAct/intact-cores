@@ -285,9 +285,17 @@ implements IntactInteractionSynchronizer{
             intactInteraction.setShortName(IntactUtils.generateAutomaticInteractionEvidenceShortlabelFor(intactInteraction, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
+        String oldLabel = intactInteraction.getShortName();
+
         IntactUtils.synchronizeInteractionEvidenceShortName(intactInteraction, getEntityManager(), this.persistedNames);
 
-        this.persistedNames.add(intactInteraction.getShortName());
+        // only add name as persisted name if new object persisted or update in shortlabel
+        if (intactInteraction.getAc() == null){
+            this.persistedNames.add(intactInteraction.getShortName());
+        }
+        else if (!oldLabel.equals(intactInteraction.getShortName())){
+            this.persistedNames.add(intactInteraction.getShortName());
+        }
     }
 
     @Override

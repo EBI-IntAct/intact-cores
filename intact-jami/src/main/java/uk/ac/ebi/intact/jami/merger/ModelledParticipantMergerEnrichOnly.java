@@ -35,12 +35,9 @@ public class ModelledParticipantMergerEnrichOnly<E extends ModelledParticipant, 
     }
 
     @Override
-    public I merge(I exp1, I exp2) {
-
+    protected void mergeOtherProperties(I obj1, I obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // reset parent
-        exp2.setInteraction(exp1.getInteraction());
-
-        // obj2 is mergedExp
-        return super.merge(exp1, exp2);
+        obj2.setInteraction(obj1.getInteraction());
     }
 }

@@ -75,7 +75,7 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
     }
 
     public InteractionEnricherListener<Complex> getInteractionEnricherListener() {
-        return null;
+        return getBasicEnricher().getInteractionEnricherListener();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
 
     @Override
     public void setInteractionEnricherListener(InteractionEnricherListener<Complex> listener) {
-
+        getBasicEnricher().setInteractionEnricherListener(listener);
     }
 
     public SourceEnricher getSourceEnricher() {
@@ -98,9 +98,10 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
     }
 
     @Override
-    public IntactComplex merge(IntactComplex obj1, IntactComplex obj2) {
+    protected void mergeOtherProperties(IntactComplex obj1, IntactComplex obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // obj2 is mergedComplex
-        IntactComplex mergedComplex = super.merge(obj1, obj2);
+        IntactComplex mergedComplex = obj2;
 
         // merge status
         if (mergedComplex.getCvStatus() == null && obj1.getCvStatus() != null){
@@ -130,8 +131,6 @@ public class ComplexMergerOverride extends InteractorBaseMergerOverride<Complex,
         if (obj1.areLifeCycleEventsInitialized()){
             mergeLifeCycleEvents(mergedComplex, mergedComplex.getLifecycleEvents(), obj1.getLifecycleEvents());
         }
-
-        return mergedComplex;
     }
 
     private void mergeLifeCycleEvents(IntactComplex mergedComplex, List<LifeCycleEvent> toEnrichEvents, List<LifeCycleEvent> sourceEvents){

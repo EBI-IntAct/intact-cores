@@ -461,9 +461,17 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             intactInteractor.setShortName(intactInteractor.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
+        String oldLabel = intactInteractor.getShortName();
+
         IntactUtils.synchronizeInteractorShortName(intactInteractor, getEntityManager(), persistedNames);
 
-        this.persistedNames.add(intactInteractor.getShortName());
+        // only add name as persisted name if new object persisted or update in shortlabel
+        if (intactInteractor.getAc() == null){
+            this.persistedNames.add(intactInteractor.getShortName());
+        }
+        else if (!oldLabel.equals(intactInteractor.getShortName())){
+            this.persistedNames.add(intactInteractor.getShortName());
+        }
     }
 
     protected Collection<I> findByIdentifier(T term, IntactOrganism existingOrganism, IntactCvTerm existingType) throws FinderException {

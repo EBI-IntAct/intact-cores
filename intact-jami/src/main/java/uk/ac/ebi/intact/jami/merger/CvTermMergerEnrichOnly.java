@@ -46,9 +46,10 @@ public class CvTermMergerEnrichOnly extends IntactDbMergerEnrichOnly<CvTerm, Int
     }
 
     @Override
-    public IntactCvTerm merge(IntactCvTerm obj1, IntactCvTerm obj2) {
+    protected void mergeOtherProperties(IntactCvTerm obj1, IntactCvTerm obj2) {
+        super.mergeOtherProperties(obj1, obj2);
         // obj2 is mergedCv
-        IntactCvTerm mergedCv = super.merge(obj1, obj2);
+        IntactCvTerm mergedCv = obj2;
 
         //merge parents
         if (obj1.areParentsInitialized()){
@@ -58,7 +59,6 @@ public class CvTermMergerEnrichOnly extends IntactDbMergerEnrichOnly<CvTerm, Int
         if (mergedCv.getDefinition() == null && obj1.getDefinition() != null){
             mergedCv.setDefinition(obj1.getDefinition());
         }
-        return mergedCv;
     }
 
     private void mergeParents(IntactCvTerm cvToEnrich, Collection<OntologyTerm> toEnrichParents, Collection<OntologyTerm> sourceParents) {

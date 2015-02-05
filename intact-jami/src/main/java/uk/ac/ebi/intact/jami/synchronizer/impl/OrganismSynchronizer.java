@@ -41,6 +41,8 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
 
     private DbOrganismEnricherListener enricherListener;
 
+    private Set<String> persistedNames;
+
     public OrganismSynchronizer(SynchronizerContext context){
         super(context, IntactOrganism.class);
         this.organismComparator = new IntactOrganismComparator();
@@ -48,6 +50,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         this.persistedObjects = new TreeMap<Organism, IntactOrganism>(this.organismComparator);
         this.convertedObjects = new IdentityMap();
         enricherListener = new DbOrganismEnricherListener(getContext(), this);
+        persistedNames = new HashSet<String>();
     }
 
     public IntactOrganism find(Organism term) throws FinderException {
@@ -291,6 +294,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         this.persistedObjects.clear();
         this.convertedObjects.clear();
         this.enricherListener.getOrganismUpdates().clear();
+        this.persistedNames.clear();
     }
 
     public IntactOrganism fetchByTaxID(int taxID) throws BridgeFailedException {
@@ -375,41 +379,22 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                 intactOrganism.setCommonName(intactOrganism.getCommonName()+"-"+intactOrganism.getCompartment().getShortName());
             }
         }
+        String oldLabel = intactOrganism.getCommonName();
         // truncate if necessary
         if (IntactUtils.MAX_SHORT_LABEL_LEN < intactOrganism.getCommonName().length()){
             log.warn("Organism shortLabel too long: "+intactOrganism.getCommonName()+", will be truncated to "+ IntactUtils.MAX_SHORT_LABEL_LEN+" characters.");
             intactOrganism.setCommonName(intactOrganism.getCommonName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
-        String name;
-        List<String> existingOrganism;
-        do{
-            name = intactOrganism.getCommonName().trim().toLowerCase();
 
-            // check if short name already exist, if yes, synchronize with existing label
-            Query query = getEntityManager().createQuery("select o.commonName from IntactOrganism o " +
-                    "where (o.commonName = :name or (o.commonName like :nameWithSuffix and o.commonName not like :nameWithCellTissue) ) "
-                    + (intactOrganism.getAc() != null ? "and o.ac <> :organismAc" : ""));
-            query.setParameter("name", name);
-            query.setParameter("nameWithSuffix", name+"-%");
-            query.setParameter("nameWithCellTissue", name+"-%-%");
-            if (intactOrganism.getAc() != null){
-                query.setParameter("organismAc", intactOrganism.getAc());
-            }
-            existingOrganism = query.getResultList();
-            if (!existingOrganism.isEmpty()){
-                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingOrganism, IntactUtils.MAX_SHORT_LABEL_LEN, false);
-                if (!nameInSync.equals(name)){
-                    intactOrganism.setCommonName(nameInSync);
-                }
-                else{
-                    break;
-                }
-            }
-            else{
-                intactOrganism.setCommonName(name);
-            }
+        IntactUtils.synchronizeOrganismShortName(intactOrganism, getEntityManager(), this.persistedNames);
+
+        // only add name as persisted name if new object persisted or update in shortlabel
+        if (intactOrganism.getAc() == null){
+            this.persistedNames.add(intactOrganism.getCommonName());
         }
-        while(!existingOrganism.isEmpty());
+        else if (!oldLabel.equals(intactOrganism.getCommonName())){
+            this.persistedNames.add(intactOrganism.getCommonName());
+        }
     }
 
     @Override

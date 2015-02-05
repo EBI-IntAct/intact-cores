@@ -669,6 +669,63 @@ public class IntactUtils {
         while(!existingSource.isEmpty());
     }
 
+    public static void synchronizeOrganismShortName(IntactOrganism intactOrganism, EntityManager manager,
+                                                  Set<String> persistedNames){
+        if (intactOrganism.getCommonName() == null){
+            return;
+        }
+        String name = null;
+        Set<String> existingSource = Collections.EMPTY_SET;
+        Set<String> cachedLabels = new HashSet<String>();
+        do{
+
+            name = intactOrganism.getCommonName().trim();
+
+            // check if short name already exist, if yes, synchronize with existing label
+            Query query = manager.createQuery("select o.commonName from IntactOrganism o " +
+                    "where (o.commonName = :name) "
+                    + (intactOrganism.getAc() != null ? "and o.ac <> :organismAc" : ""));
+            query.setParameter("name", name);
+            if (intactOrganism.getAc() != null){
+                query.setParameter("organismAc", intactOrganism.getAc());
+            }
+            existingSource = new HashSet<String>(query.getResultList());
+            if (persistedNames.contains(name)){
+                existingSource.add(name);
+                cachedLabels.add(name);
+            }
+            if (!existingSource.isEmpty()){
+                // we have a synchronized label, so we need first to extract original label before (last -)
+                if (name.matches(".*-\\d+$")){
+                    name = excludeLastNumberInShortLabel(name);
+                }
+                // check if short name already exist, if yes, synchronize with existing label
+                query = manager.createQuery("select o.commonName from IntactOrganism o " +
+                        "where (o.commonName = :name or (o.commonName like :nameWithSuffix and o.commonName not like :nameWithCellTissue) ) "
+                        + (intactOrganism.getAc() != null ? "and o.ac <> :organismAc" : ""));
+                query.setParameter("name", name);
+                query.setParameter("nameWithSuffix", name+"-%");
+                query.setParameter("nameWithCellTissue", name+"-%-%");
+                if (intactOrganism.getAc() != null){
+                    query.setParameter("organismAc", intactOrganism.getAc());
+                }
+                existingSource.addAll(query.getResultList());
+                if (persistedNames.contains(name)){
+                    cachedLabels.add(name);
+                }
+                existingSource.addAll(cachedLabels);
+                String nameInSync = IntactUtils.synchronizeShortlabel(name, existingSource, IntactUtils.MAX_SHORT_LABEL_LEN, false);
+                if (!nameInSync.equals(name)){
+                    intactOrganism.setCommonName(nameInSync);
+                }
+            }
+            else{
+                intactOrganism.setCommonName(name);
+            }
+        }
+        while(!existingSource.isEmpty());
+    }
+
     public static String generateAutomaticExperimentShortlabelFor(IntactExperiment intactExperiment, int maxLength){
         String label = null;
         String yearString = null;

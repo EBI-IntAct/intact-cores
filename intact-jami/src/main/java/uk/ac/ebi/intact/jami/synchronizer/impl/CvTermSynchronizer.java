@@ -351,9 +351,17 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             intactCv.setShortName(intactCv.getShortName().substring(0, IntactUtils.MAX_SHORT_LABEL_LEN));
         }
 
+        String oldLabel = intactCv.getShortName();
+
         IntactUtils.synchronizeCvTermShortName(intactCv, getEntityManager(), this.objClass, this.persistedNames);
 
-        this.persistedNames.add(intactCv.getShortName());
+        // only add name as persisted name if new object persisted or update in shortlabel
+        if (intactCv.getAc() == null){
+            this.persistedNames.add(intactCv.getShortName());
+        }
+        else if (!oldLabel.equals(intactCv.getShortName())){
+            this.persistedNames.add(intactCv.getShortName());
+        }
     }
 
     protected IntactCvTerm fetchByIdentifier(String termIdentifier, String miOntologyName, boolean checkAc) throws BridgeFailedException {
