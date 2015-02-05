@@ -37,12 +37,12 @@ public class CvTermMergerEnrichOnly extends IntactDbMergerEnrichOnly<CvTerm, Int
     }
 
     public CvTermEnricherListener<CvTerm> getCvTermEnricherListener() {
-        return null;
+        return getBasicEnricher().getCvTermEnricherListener();
     }
 
     @Override
     public void setCvTermEnricherListener(CvTermEnricherListener<CvTerm> listener) {
-
+         getBasicEnricher().setCvTermEnricherListener(listener);
     }
 
     @Override
