@@ -52,6 +52,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         this.persistedObjects = new TreeMap<Source, IntactSource>(this.sourceComparator);
         this.convertedObjects = new IdentityMap();
         persistedNames = new HashSet<String>();
+        this.enricherListener = new DbSourceEnricherListener(getContext(), this);
     }
 
     public IntactSource find(Source term) throws FinderException {
