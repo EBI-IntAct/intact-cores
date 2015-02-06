@@ -73,7 +73,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // store in cache
         storeInCache((I)object, object, null);
         // synchronize properties
-        synchronizeProperties(object);
+        synchronizePartiallyInitialisedProperties((I)object, object);
         // then set userContext
         object.setLocalUserContext(getContext().getUserContext());
         // persist the object
@@ -161,7 +161,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 storeInCache(object, intactObject, intactObject);
                 // synchronize properties if needed
                 if (needToSynchronizeProperties){
-                    synchronizeProperties(intactObject);
+                    synchronizePartiallyInitialisedProperties(object, intactObject);
                 }
                 // then set userContext
                 intactObject.setLocalUserContext(getContext().getUserContext());
@@ -389,25 +389,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // we merge the existing instance with the new instance if possible
             if (getIntactMerger() != null){
                 // store object and intact object in a identity cache so no lazy properties can be called before synchronization
-                storeObjectInIdentityCache(originalObject, existingInstance);
-                if (originalObject != existingInstance){
-                    storeObjectInIdentityCache((I)existingInstance, existingInstance);
-                }
-                if (originalObject != persistentObject){
-                    storeObjectInIdentityCache((I)persistentObject, existingInstance);
-                }
+                registerObjectBeforeProcessing(originalObject, persistentObject, existingInstance);
 
                 // merge
                 T mergedObject = getIntactMerger().merge(persistentObject, existingInstance);
 
                 // remove object and intact object from identity cache as not dirty anymore
-                removeObjectInstanceFromIdentityCache(originalObject);
-                if (originalObject != existingInstance){
-                    removeObjectInstanceFromIdentityCache((I) existingInstance);
-                }
-                if (originalObject != persistentObject){
-                    removeObjectInstanceFromIdentityCache((I)persistentObject);
-                }
+                unregisterObjectAfterProcessing(originalObject, persistentObject, existingInstance);
 
                 // then set userContext
                 mergedObject.setLocalUserContext(getContext().getUserContext());
@@ -435,13 +423,23 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             persistentObject.setLocalUserContext(getContext().getUserContext());
             // synchronize before persisting
             if (needToSynchronizeProperties){
-                synchronizeProperties(persistentObject);
+                synchronizePartiallyInitialisedProperties(originalObject, persistentObject);
             }
             // persist object if allowed
             if (persist){
                 persistObject(persistentObject);
             }
             return persistentObject;
+        }
+    }
+
+    private void unregisterObjectAfterProcessing(I originalObject, T persistentObject, T existingInstance) {
+        removeObjectInstanceFromIdentityCache(originalObject);
+        if (originalObject != existingInstance){
+            removeObjectInstanceFromIdentityCache((I)existingInstance);
+        }
+        if (originalObject != persistentObject){
+            removeObjectInstanceFromIdentityCache((I)persistentObject);
         }
     }
 
@@ -472,31 +470,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // merge cached instance with original object
             try {
                 // store object and intact object in a identity cache so no lazy properties can be called before synchronization
-                storeObjectInIdentityCache(object, existingInstance);
-                if (object != existingInstance){
-                    storeObjectInIdentityCache((I)existingInstance, existingInstance);
-                }
-                if (object != intactEntity){
-                    storeObjectInIdentityCache((I)intactEntity, existingInstance);
-                }
+                registerObjectBeforeProcessing(object, intactEntity, existingInstance);
                 getIntactMerger().enrich((I)existingInstance, (I)intactEntity);
                 // remove object and intact object from identity cache as not dirty anymore
-                removeObjectInstanceFromIdentityCache(object);
-                if (object != existingInstance){
-                    removeObjectInstanceFromIdentityCache((I) existingInstance);
-                }
-                if (object != intactEntity){
-                    removeObjectInstanceFromIdentityCache((I)intactEntity);
-                }
+                unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
             } catch (EnricherException e) {
                 // remove object and intact object from identity cache as not dirty anymore
-                removeObjectInstanceFromIdentityCache(object);
-                if (object != existingInstance){
-                    removeObjectInstanceFromIdentityCache((I) existingInstance);
-                }
-                if (object != intactEntity){
-                    removeObjectInstanceFromIdentityCache((I)intactEntity);
-                }
+                unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
                 throw new SynchronizerException("Cannot merge "+intactEntity + " with "+existingInstance, e);
             }
 
@@ -506,8 +486,18 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         return existingInstance;
     }
 
+    private void registerObjectBeforeProcessing(I object, T intactEntity, T existingInstance) {
+        storeObjectInIdentityCache(object, existingInstance);
+        if (object != existingInstance){
+            storeObjectInIdentityCache((I)existingInstance, existingInstance);
+        }
+        if (object != intactEntity){
+            storeObjectInIdentityCache((I)intactEntity, existingInstance);
+        }
+    }
+
     /**
-     * This method will synchronize the properties of the object which is partially initialised
+     * This method will synchronize the properties of the object which may be partially initialised
      * @param object : object (lazy initialised collections, object maybe detached from session)
      * @param intactObject : intact instance
      * @throws FinderException
@@ -516,13 +506,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      */
     protected void synchronizePartiallyInitialisedProperties(I object, T intactObject) throws FinderException, PersisterException, SynchronizerException {
         // store object and intact object in a identity cache so no lazy properties can be called before synchronization
-        storeObjectInIdentityCache(object, intactObject);
-        storeObjectInIdentityCache((I)intactObject, intactObject);
+        registerObjectBeforeProcessing(object, intactObject, intactObject);
         // synchronize properties
         synchronizeProperties(intactObject);
         // remove object and intact object from identity cache as not dirty anymore
-        removeObjectInstanceFromIdentityCache(object);
-        removeObjectInstanceFromIdentityCache((I)intactObject);
+        unregisterObjectAfterProcessing(object, intactObject, intactObject);
     }
 
     /**
