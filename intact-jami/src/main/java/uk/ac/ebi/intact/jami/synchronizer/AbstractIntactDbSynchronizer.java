@@ -465,7 +465,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected T mergeWithCachedObject(I object, T intactEntity, T existingInstance, boolean needToSynchronizeProperties) throws PersisterException,
             FinderException, SynchronizerException {
         // merge only if object instances are different
-        if (object != existingInstance){
+        if (object != existingInstance && getIntactMerger() != null){
 
             // merge cached instance with original object
             try {
