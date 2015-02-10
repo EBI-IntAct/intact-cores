@@ -325,8 +325,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 mergedObject = this.entityManager.merge(intactObject);
             }
             else{
-                this.entityManager.persist(intactObject);
+                LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
+                        +" but cannot be found in the database. It is considered as transsient and will be persisted");
+                // no cached object, process the transient instance and synchronize with database
+                return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
             }
+
             if (listener != null
                     && intactObject instanceof IntactPrimaryObject){
                 listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)mergedObject);
