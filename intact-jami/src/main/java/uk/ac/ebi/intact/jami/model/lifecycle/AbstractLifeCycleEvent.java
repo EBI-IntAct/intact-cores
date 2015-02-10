@@ -196,7 +196,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
     @Override
     public int hashCode() {
         int hashcode = 31;
-        hashcode = 31*hashcode + this.event.hashCode();
+        hashcode = 31*hashcode + getEvent().hashCode();
         if (this.note != null){
             hashcode = 31*hashcode + this.note.hashCode();
         }
