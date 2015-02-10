@@ -290,10 +290,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier, boolean synchronizeProperties, FlushModeType mode) throws FinderException,
             PersisterException, SynchronizerException {
 
+        // reload existing instance from DB
+        T reloaded = getEntityManager().find(getIntactClass(), identifier);
         // do not merge existing instance with db instance if the merger is a merger ignoring source. Just return the existing instance in the DB
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
-            // reload existing instance from DB
-            T reloaded = getEntityManager().find(getIntactClass(), identifier);
             // the reloaded object is not null and is the one that should be used in the cache because we ignore local changes
             if (reloaded != null){
                 // cache object to persist if allowed
@@ -319,8 +319,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // cache object to persist if allowed
                 synchronizePartiallyInitialisedProperties((I) intactObject, intactObject);
             }
-            // merge
-            T mergedObject = this.entityManager.merge(intactObject);
+            // merge or persist
+            T mergedObject = intactObject;
+            if (reloaded != null){
+                mergedObject = this.entityManager.merge(intactObject);
+            }
+            else{
+                this.entityManager.persist(intactObject);
+            }
             if (listener != null
                     && intactObject instanceof IntactPrimaryObject){
                 listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)mergedObject);
