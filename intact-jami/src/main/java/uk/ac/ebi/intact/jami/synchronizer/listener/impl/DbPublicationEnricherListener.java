@@ -383,7 +383,7 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
 
     @Override
     public void onCurationDepthUpdate(Publication t, CurationDepth curationDepth) {
-        if (t.getJournal() != null && t instanceof IntactPublication){
+        if (t.getCurationDepth() != null && t.getCurationDepth() != CurationDepth.undefined && t instanceof IntactPublication){
             if (this.publicationUpdates.containsKey(t)){
                 this.publicationUpdates.get(t).getAddedOtherDbAnnotations().addAll(
                         AnnotationUtils.collectAllAnnotationsHavingTopic(((IntactPublication) t).getDbAnnotations(),
@@ -400,7 +400,7 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
 
     @Override
     public void onPublicationDateUpdated(Publication t, Date date) {
-        if (t.getJournal() != null && t instanceof IntactPublication){
+        if (t.getPublicationDate() != null && t instanceof IntactPublication){
             if (this.publicationUpdates.containsKey(t)){
                 this.publicationUpdates.get(t).getAddedOtherDbAnnotations().addAll(
                         AnnotationUtils.collectAllAnnotationsHavingTopic(((IntactPublication) t).getDbAnnotations(),
@@ -417,7 +417,7 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
 
     @Override
     public void onAuthorAdded(Publication t, String s) {
-        if (t.getJournal() != null && t instanceof IntactPublication){
+        if (!t.getAuthors().isEmpty() && t instanceof IntactPublication){
             if (this.publicationUpdates.containsKey(t)){
                 this.publicationUpdates.get(t).getAddedOtherDbAnnotations().addAll(
                         AnnotationUtils.collectAllAnnotationsHavingTopic(((IntactPublication) t).getDbAnnotations(),

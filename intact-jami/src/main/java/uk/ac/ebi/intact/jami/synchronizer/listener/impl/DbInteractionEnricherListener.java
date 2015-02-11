@@ -358,7 +358,7 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
 
     @Override
     public void onNegativePropertyUpdate(InteractionEvidence evidence, boolean b) {
-        if (evidence instanceof IntactInteractionEvidence){
+        if (evidence instanceof IntactInteractionEvidence && evidence.isNegative()){
             IntactInteractionEvidence ev = (IntactInteractionEvidence)evidence;
             Collection<Annotation> negativeAnnots = AnnotationUtils.collectAllAnnotationsHavingTopic(ev.getDbAnnotations(), null, "negative");
             if (this.interactionUpdates.containsKey(ev)){
