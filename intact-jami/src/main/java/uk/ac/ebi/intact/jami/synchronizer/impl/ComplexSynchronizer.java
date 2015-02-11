@@ -54,7 +54,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     }
 
     @Override
-    protected IntactComplex postFilter(Complex term, Collection<IntactComplex> results) {
+    protected IntactComplex postFilter(Complex term, Collection<IntactComplex> results) throws FinderException {
         Collection<IntactComplex> filteredResults = new ArrayList<IntactComplex>(results.size());
         for (IntactComplex complex : results){
             // we accept empty participants when finding complexes
@@ -69,6 +69,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
         if (filteredResults.size() == 1){
             return filteredResults.iterator().next();
+        }
+        else if (filteredResults.size() > 1){
+            throw new FinderException("The complex "+term + " can match "+filteredResults.size()+" complexes in the database and we cannot determine which one is valid.");
         }
         else{
             return null;

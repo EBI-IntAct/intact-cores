@@ -97,12 +97,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
             }
 
             I retrievedInstance = postFilter(term, results);
-            if (retrievedInstance != null){
-                return retrievedInstance;
-            }
-            else if (results.size() > 1){
-                throw new FinderException("The interactor "+term + " can match "+results.size()+" interactors in the database and we cannot determine which one is valid.");
-            }
+
             return retrievedInstance;
         }
     }
@@ -192,9 +187,12 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     // nothing to do here
-    protected I postFilter(T term, Collection<I> results) {
+    protected I postFilter(T term, Collection<I> results) throws FinderException {
         if (results.size() == 1){
             return results.iterator().next();
+        }
+        else if (results.size() > 1){
+            throw new FinderException("The interactor "+term + " can match "+results.size()+" interactors in the database and we cannot determine which one is valid.");
         }
         return null;
     }

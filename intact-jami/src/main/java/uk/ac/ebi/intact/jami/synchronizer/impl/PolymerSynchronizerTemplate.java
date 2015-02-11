@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.PolymerMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactPolymer;
+import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactPolymerComparator;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,7 +26,7 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
     }
 
     @Override
-    protected P postFilter(T term, Collection<P> results) {
+    protected P postFilter(T term, Collection<P> results) throws FinderException {
         Collection<P> filteredResults = new ArrayList<P>(results.size());
         for (P interactor : results){
             if (term.getSequence() != null && term.getSequence().equalsIgnoreCase(interactor.getSequence())){
@@ -39,6 +40,9 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
 
         if (filteredResults.size() == 1){
             return filteredResults.iterator().next();
+        }
+        else if (filteredResults.size() > 1){
+            throw new FinderException("The interactor "+term + " can match "+results.size()+" interactors in the database and we cannot determine which one is valid.");
         }
         else{
             return null;

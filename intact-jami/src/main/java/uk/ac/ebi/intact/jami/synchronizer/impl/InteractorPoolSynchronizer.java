@@ -90,7 +90,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
     }
 
     @Override
-    protected IntactInteractorPool postFilter(InteractorPool term, Collection<IntactInteractorPool> results) {
+    protected IntactInteractorPool postFilter(InteractorPool term, Collection<IntactInteractorPool> results) throws FinderException {
         Collection<IntactInteractorPool> filteredResults = new ArrayList<IntactInteractorPool>(results.size());
         for (IntactInteractorPool interactor : results){
             if (DefaultInteractorPoolComparator.areEquals(term, interactor)){
@@ -100,6 +100,9 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
 
         if (filteredResults.size() == 1){
             return filteredResults.iterator().next();
+        }
+        else if (filteredResults.size() > 1){
+            throw new FinderException("The interactor "+term + " can match "+filteredResults.size()+" interactors in the database and we cannot determine which one is valid.");
         }
         else{
             return null;
