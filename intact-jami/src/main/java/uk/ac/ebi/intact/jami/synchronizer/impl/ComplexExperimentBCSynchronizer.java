@@ -343,13 +343,25 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         if (intactExperiment.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactExperiment.getXrefs());
             intactExperiment.getXrefs().clear();
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref expRef = enableSynchronization ?
-                        getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
-                        getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
-                // we have a different instance because needed to be synchronized
-                intactExperiment.getXrefs().add(expRef);
+            int index = 0;
+            try{
+                for (Xref xref : xrefsToPersist){
+                    // do not persist or merge xrefs because of cascades
+                    Xref expRef = enableSynchronization ?
+                            getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
+                            getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
+                    // we have a different instance because needed to be synchronized
+                    intactExperiment.getXrefs().add(expRef);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < xrefsToPersist.size() - 1){
+                    for (int i = index; i < xrefsToPersist.size(); i++){
+                        intactExperiment.getXrefs().add(xrefsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -358,13 +370,25 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         if (intactExperiment.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactExperiment.getAnnotations());
             intactExperiment.getAnnotations().clear();
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation expAnnotation = enableSynchronization ?
-                        getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
-                        getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
-                // we have a different instance because needed to be synchronized
-                intactExperiment.getAnnotations().add(expAnnotation);
+            int index = 0;
+            try{
+                for (Annotation annotation : annotationsToPersist){
+                    // do not persist or merge annotations because of cascades
+                    Annotation expAnnotation = enableSynchronization ?
+                            getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
+                            getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
+                    // we have a different instance because needed to be synchronized
+                    intactExperiment.getAnnotations().add(expAnnotation);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < annotationsToPersist.size() - 1){
+                    for (int i = index; i < annotationsToPersist.size(); i++){
+                        intactExperiment.getAnnotations().add(annotationsToPersist.get(i));
+                    }
+                }
             }
         }
     }

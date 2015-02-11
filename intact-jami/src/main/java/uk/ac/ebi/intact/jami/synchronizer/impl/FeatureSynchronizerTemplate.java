@@ -130,14 +130,26 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         if (intactFeature.areLinkedFeaturesInitialized()){
             List<F> featureToSynchronize = new ArrayList<F>(intactFeature.getDbLinkedFeatures());
             intactFeature.getDbLinkedFeatures().clear();
-            for (F feature : featureToSynchronize){
-                if (intactFeature != feature){
-                    // do not persist or merge features because of cascades
-                    I linkedFeature = enableSynchronization ?
-                            synchronize((F) feature, false) :
-                            convertToPersistentObject((F)feature);
-                    // we have a different instance because needed to be synchronized
-                    intactFeature.getDbLinkedFeatures().add(linkedFeature);
+            int index = 0;
+            try{
+                for (F feature : featureToSynchronize){
+                    if (intactFeature != feature){
+                        // do not persist or merge features because of cascades
+                        I linkedFeature = enableSynchronization ?
+                                synchronize((F) feature, false) :
+                                convertToPersistentObject((F)feature);
+                        // we have a different instance because needed to be synchronized
+                        intactFeature.getDbLinkedFeatures().add(linkedFeature);
+                        index++;
+                    }
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < featureToSynchronize.size() - 1){
+                    for (int i = index; i < featureToSynchronize.size(); i++){
+                        intactFeature.getDbLinkedFeatures().add(featureToSynchronize.get(i));
+                    }
                 }
             }
         }
@@ -245,10 +257,13 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         existingInstance.getDbLinkedFeatures().clear();
         existingInstance.setBinds(null);
 
-        super.persistObject(existingInstance);
-
-        // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
-        existingInstance.getDbLinkedFeatures().addAll(linkedFeatures);
-        existingInstance.setBinds(bind);
+        try{
+            super.persistObject(existingInstance);
+        }
+        finally {
+            // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
+            existingInstance.getDbLinkedFeatures().addAll(linkedFeatures);
+            existingInstance.setBinds(bind);
+        }
     }
 }

@@ -606,12 +606,24 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areParentsInitialized()){
             List<OntologyTerm> termsToPersist = new ArrayList<OntologyTerm>(intactCv.getParents());
             intactCv.getParents().clear();
-            for (OntologyTerm term : termsToPersist){
-                IntactCvTerm cvParent = enableSynchronization ?
-                        synchronize(term, true) :
-                        convertToPersistentObject(term);
-                // we have a different instance because needed to be synchronized
-                intactCv.addParent(cvParent);
+            int index = 0;
+            try{
+                for (OntologyTerm term : termsToPersist){
+                    IntactCvTerm cvParent = enableSynchronization ?
+                            synchronize(term, true) :
+                            convertToPersistentObject(term);
+                    // we have a different instance because needed to be synchronized
+                    intactCv.addParent(cvParent);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < termsToPersist.size() - 1){
+                    for (int i = index; i < termsToPersist.size(); i++){
+                        intactCv.addParent(termsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -620,13 +632,25 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactCv.getDbXrefs());
             intactCv.getDbXrefs().clear();
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                CvTermXref cvXref = enableSynchronization ?
-                        getContext().getCvXrefSynchronizer().synchronize(xref, false) :
-                        getContext().getCvXrefSynchronizer().convertToPersistentObject(xref);
-                // we have a different instance because needed to be synchronized
-                intactCv.getDbXrefs().add(cvXref);
+            int index = 0;
+            try{
+                for (Xref xref : xrefsToPersist){
+                    // do not persist or merge xrefs because of cascades
+                    CvTermXref cvXref = enableSynchronization ?
+                            getContext().getCvXrefSynchronizer().synchronize(xref, false) :
+                            getContext().getCvXrefSynchronizer().convertToPersistentObject(xref);
+                    // we have a different instance because needed to be synchronized
+                    intactCv.getDbXrefs().add(cvXref);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < xrefsToPersist.size() - 1){
+                    for (int i = index; i < xrefsToPersist.size(); i++){
+                        intactCv.getDbXrefs().add(xrefsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -635,13 +659,25 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactCv.getDbAnnotations());
             intactCv.getDbAnnotations().clear();
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                CvTermAnnotation cvAnnotation = enableSynchronization ?
-                        getContext().getCvAnnotationSynchronizer().synchronize(annotation, false):
-                        getContext().getCvAnnotationSynchronizer().convertToPersistentObject(annotation);
-                // we have a different instance because needed to be synchronized
-                intactCv.getDbAnnotations().add(cvAnnotation);
+            int index = 0;
+            try{
+                for (Annotation annotation : annotationsToPersist){
+                    // do not persist or merge annotations because of cascades
+                    CvTermAnnotation cvAnnotation = enableSynchronization ?
+                            getContext().getCvAnnotationSynchronizer().synchronize(annotation, false):
+                            getContext().getCvAnnotationSynchronizer().convertToPersistentObject(annotation);
+                    // we have a different instance because needed to be synchronized
+                    intactCv.getDbAnnotations().add(cvAnnotation);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < annotationsToPersist.size() - 1){
+                    for (int i = index; i < annotationsToPersist.size(); i++){
+                        intactCv.getDbAnnotations().add(annotationsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -650,13 +686,25 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         if (intactCv.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactCv.getSynonyms());
             intactCv.getSynonyms().clear();
-            for (Alias alias : aliasesToPersist){
-                // do not persist or merge alias because of cascades
-                CvTermAlias cvAlias = enableSynchronization ?
-                        getContext().getCvAliasSynchronizer().synchronize(alias, false):
-                        getContext().getCvAliasSynchronizer().convertToPersistentObject(alias);
-                // we have a different instance because needed to be synchronized
-                intactCv.getSynonyms().add(cvAlias);
+            int index = 0;
+            try{
+                for (Alias alias : aliasesToPersist){
+                    // do not persist or merge alias because of cascades
+                    CvTermAlias cvAlias = enableSynchronization ?
+                            getContext().getCvAliasSynchronizer().synchronize(alias, false):
+                            getContext().getCvAliasSynchronizer().convertToPersistentObject(alias);
+                    // we have a different instance because needed to be synchronized
+                    intactCv.getSynonyms().add(cvAlias);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < aliasesToPersist.size() - 1){
+                    for (int i = index; i < aliasesToPersist.size(); i++){
+                        intactCv.getSynonyms().add(aliasesToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -700,14 +748,17 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         Collection<OntologyTerm> parents = new ArrayList<OntologyTerm>(existingInstance.getParents());
         existingInstance.getParents().clear();
 
-        super.persistObject(existingInstance);
-
-        // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
-        existingInstance.getSynonyms().addAll(cvAliases);
-        existingInstance.getDbXrefs().addAll(cvRefs);
-        existingInstance.getDbAnnotations().addAll(cvAnnotations);
-        existingInstance.getChildren().addAll(children);
-        existingInstance.getParents().addAll(parents);
+        try{
+            super.persistObject(existingInstance);
+        }
+        finally {
+            // after persistence, re-attach dependent objects to avoid internal loops when cvs are called by each other
+            existingInstance.getSynonyms().addAll(cvAliases);
+            existingInstance.getDbXrefs().addAll(cvRefs);
+            existingInstance.getDbAnnotations().addAll(cvAnnotations);
+            existingInstance.getChildren().addAll(children);
+            existingInstance.getParents().addAll(parents);
+        }
     }
 
     @Override

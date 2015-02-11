@@ -653,13 +653,25 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         if (intactPublication.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactPublication.getDbXrefs());
             intactPublication.getDbXrefs().clear();
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref pubRef = enableSynchronization ?
-                        getContext().getPublicationXrefSynchronizer().synchronize(xref, false) :
-                        getContext().getPublicationXrefSynchronizer().convertToPersistentObject(xref);
-                // we have a different instance because needed to be synchronized
-                intactPublication.getDbXrefs().add(pubRef);
+            int index = 0;
+            try{
+                for (Xref xref : xrefsToPersist){
+                    // do not persist or merge xrefs because of cascades
+                    Xref pubRef = enableSynchronization ?
+                            getContext().getPublicationXrefSynchronizer().synchronize(xref, false) :
+                            getContext().getPublicationXrefSynchronizer().convertToPersistentObject(xref);
+                    // we have a different instance because needed to be synchronized
+                    intactPublication.getDbXrefs().add(pubRef);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < xrefsToPersist.size() - 1) {
+                    for (int i = index; i < xrefsToPersist.size(); i++) {
+                        intactPublication.getDbXrefs().add(xrefsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -668,13 +680,25 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         if (intactPublication.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactPublication.getDbAnnotations());
             intactPublication.getDbAnnotations().clear();
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation pubAnnotation = enableSynchronization ?
-                        getContext().getPublicationAnnotationSynchronizer().synchronize(annotation, false) :
-                        getContext().getPublicationAnnotationSynchronizer().convertToPersistentObject(annotation);
-                // we have a different instance because needed to be synchronized
-                intactPublication.getDbAnnotations().add(pubAnnotation);
+            int index = 0;
+            try{
+                for (Annotation annotation : annotationsToPersist){
+                    // do not persist or merge annotations because of cascades
+                    Annotation pubAnnotation = enableSynchronization ?
+                            getContext().getPublicationAnnotationSynchronizer().synchronize(annotation, false) :
+                            getContext().getPublicationAnnotationSynchronizer().convertToPersistentObject(annotation);
+                    // we have a different instance because needed to be synchronized
+                    intactPublication.getDbAnnotations().add(pubAnnotation);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < annotationsToPersist.size() - 1) {
+                    for (int i = index; i < annotationsToPersist.size(); i++) {
+                        intactPublication.getDbAnnotations().add(annotationsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -741,13 +765,25 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         if (intactPublication.areLifeCycleEventsInitialized()){
             List<LifeCycleEvent> eventsToPersist = new ArrayList<LifeCycleEvent>(intactPublication.getLifecycleEvents());
             intactPublication.getLifecycleEvents().clear();
-            for (LifeCycleEvent event : eventsToPersist){
-                // do not persist or merge events because of cascades
-                LifeCycleEvent evt = enableSynchronization ?
-                        getContext().getPublicationLifecycleSynchronizer().synchronize(event, false) :
-                        getContext().getPublicationLifecycleSynchronizer().convertToPersistentObject(event);
-                // we have a different instance because needed to be synchronized
-                intactPublication.getLifecycleEvents().add(evt);
+            int index = 0;
+            try{
+                for (LifeCycleEvent event : eventsToPersist){
+                    // do not persist or merge events because of cascades
+                    LifeCycleEvent evt = enableSynchronization ?
+                            getContext().getPublicationLifecycleSynchronizer().synchronize(event, false) :
+                            getContext().getPublicationLifecycleSynchronizer().convertToPersistentObject(event);
+                    // we have a different instance because needed to be synchronized
+                    intactPublication.getLifecycleEvents().add(evt);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < eventsToPersist.size() - 1) {
+                    for (int i = index; i < eventsToPersist.size(); i++) {
+                        intactPublication.getLifecycleEvents().add(eventsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -757,14 +793,26 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             List<Experiment> experimentToPersist = new ArrayList<Experiment>(intactPublication.getExperiments());
             Set<Experiment> processedExperiments = new HashSet<Experiment>(intactPublication.getExperiments().size());
             intactPublication.getExperiments().clear();
-            for (Experiment experiment : experimentToPersist){
-                // do not persist or merge experiments because of cascades
-                Experiment pubExperiment = enableSynchronization ?
-                        getContext().getExperimentSynchronizer().synchronize(experiment, false) :
-                        getContext().getExperimentSynchronizer().convertToPersistentObject(experiment);
-                // we have a different instance because needed to be synchronized
-                if (processedExperiments.add(pubExperiment)){
-                    intactPublication.addExperiment(pubExperiment);
+            int index = 0;
+            try{
+                for (Experiment experiment : experimentToPersist){
+                    // do not persist or merge experiments because of cascades
+                    Experiment pubExperiment = enableSynchronization ?
+                            getContext().getExperimentSynchronizer().synchronize(experiment, false) :
+                            getContext().getExperimentSynchronizer().convertToPersistentObject(experiment);
+                    // we have a different instance because needed to be synchronized
+                    if (processedExperiments.add(pubExperiment)){
+                        intactPublication.addExperiment(pubExperiment);
+                    }
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < experimentToPersist.size() - 1) {
+                    for (int i = index; i < experimentToPersist.size(); i++) {
+                        intactPublication.getExperiments().add(experimentToPersist.get(i));
+                    }
                 }
             }
         }

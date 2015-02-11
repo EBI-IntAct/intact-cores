@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.jami.enricher.CvTermEnricher;
 import psidev.psi.mi.jami.model.Source;
+import psidev.psi.mi.jami.model.Xref;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.SourceMergerEnrichOnly;
@@ -134,12 +135,24 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         if (intactUser.areRolesInitialized()){
             List<Role> rolesToPersist = new ArrayList<Role>(intactUser.getRoles());
             intactUser.getRoles().clear();
-            for (Role role : rolesToPersist){
-                Role userRole = enableSynchronization ?
-                        getContext().getRoleSynchronizer().synchronize(role, true) :
-                        getContext().getRoleSynchronizer().convertToPersistentObject(role);
-                // we have a different instance because needed to be synchronized
-                intactUser.addRole(userRole);
+            int index = 0;
+            try{
+                for (Role role : rolesToPersist){
+                    Role userRole = enableSynchronization ?
+                            getContext().getRoleSynchronizer().synchronize(role, true) :
+                            getContext().getRoleSynchronizer().convertToPersistentObject(role);
+                    // we have a different instance because needed to be synchronized
+                    intactUser.addRole(userRole);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < rolesToPersist.size() - 1) {
+                    for (int i = index; i < rolesToPersist.size(); i++) {
+                        intactUser.addRole(rolesToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -148,13 +161,25 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         if (intactUser.arePreferencesInitialized()){
             List<Preference> preferencesToPersist = new ArrayList<Preference>(intactUser.getPreferences());
             intactUser.getPreferences().clear();
-            for (Preference pref : preferencesToPersist){
-                // do not persist or merge preferences because of cascades
-                Preference userPref = enableSynchronization ?
-                        getContext().getPreferenceSynchronizer().synchronize(pref, false) :
-                        getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
-                // we have a different instance because needed to be synchronized
-                intactUser.addPreference(userPref);
+            int index = 0;
+            try{
+                for (Preference pref : preferencesToPersist){
+                    // do not persist or merge preferences because of cascades
+                    Preference userPref = enableSynchronization ?
+                            getContext().getPreferenceSynchronizer().synchronize(pref, false) :
+                            getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
+                    // we have a different instance because needed to be synchronized
+                    intactUser.addPreference(userPref);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < preferencesToPersist.size() - 1) {
+                    for (int i = index; i < preferencesToPersist.size(); i++) {
+                        intactUser.addPreference(preferencesToPersist.get(i));
+                    }
+                }
             }
         }
     }

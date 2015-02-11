@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Default finder/synchronizer for cooperativity evidence
@@ -67,14 +68,26 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     protected void prepareEvidenceMethods(IntactCooperativityEvidence object, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (object.areEvidenceMethodsInitialized()){
-            Collection<CvTerm> parametersToPersist = new ArrayList<CvTerm>(object.getEvidenceMethods());
+            List<CvTerm> parametersToPersist = new ArrayList<CvTerm>(object.getEvidenceMethods());
             object.getEvidenceMethods().clear();
-            for (CvTerm param : parametersToPersist){
-                CvTerm expParam = enableSynchronization ?
-                        getContext().getTopicSynchronizer().synchronize(param, true) :
-                        getContext().getTopicSynchronizer().convertToPersistentObject(param);
-                // we have a different instance because needed to be synchronized
-                object.getEvidenceMethods().add(expParam);
+            int index = 0;
+            try{
+                for (CvTerm param : parametersToPersist){
+                    CvTerm expParam = enableSynchronization ?
+                            getContext().getTopicSynchronizer().synchronize(param, true) :
+                            getContext().getTopicSynchronizer().convertToPersistentObject(param);
+                    // we have a different instance because needed to be synchronized
+                    object.getEvidenceMethods().add(expParam);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < parametersToPersist.size() - 1){
+                    for (int i = index; i < parametersToPersist.size(); i++){
+                        object.getEvidenceMethods().add(parametersToPersist.get(i));
+                    }
+                }
             }
         }
     }

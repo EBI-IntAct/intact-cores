@@ -119,13 +119,24 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object.getVariableValues());
             object.getVariableValues().clear();
-            for (VariableParameterValue value : valuesToPersist){
-                VariableParameterValue valueCheck = enableSynchronization ?
-                        getContext().getVariableParameterValueSynchronizer().synchronize(value, false) :
-                        getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
-                // we have a different instance because needed to be synchronized
-                object.getVariableValues().add(valueCheck);
-
+            int index = 0;
+            try{
+                for (VariableParameterValue value : valuesToPersist){
+                    VariableParameterValue valueCheck = enableSynchronization ?
+                            getContext().getVariableParameterValueSynchronizer().synchronize(value, false) :
+                            getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
+                    // we have a different instance because needed to be synchronized
+                    object.getVariableValues().add(valueCheck);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < valuesToPersist.size() - 1) {
+                    for (int i = index; i < valuesToPersist.size(); i++) {
+                        object.getVariableValues().add(valuesToPersist.get(i));
+                    }
+                }
             }
         }
     }

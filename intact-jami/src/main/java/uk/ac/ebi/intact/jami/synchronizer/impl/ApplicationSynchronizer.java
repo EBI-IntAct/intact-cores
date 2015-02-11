@@ -61,13 +61,25 @@ public class ApplicationSynchronizer extends AbstractIntactDbSynchronizer<Applic
         if (intactUser.areApplicationPropertiesInitialised()){
             List<ApplicationProperty> propertiesToPersist = new ArrayList<ApplicationProperty>(intactUser.getProperties());
             intactUser.getProperties().clear();
-            for (ApplicationProperty pref : propertiesToPersist){
-                // do not persist or merge preferences because of cascades
-                ApplicationProperty userPref = enableSynchronization ?
-                        getContext().getApplicationPropertySynchronizer().synchronize(pref, false) :
-                        getContext().getApplicationPropertySynchronizer().convertToPersistentObject(pref);
-                // we have a different instance because needed to be synchronized
-                intactUser.addProperty(userPref);
+            int index = 0;
+            try {
+                for (ApplicationProperty pref : propertiesToPersist){
+                    // do not persist or merge preferences because of cascades
+                    ApplicationProperty userPref = enableSynchronization ?
+                            getContext().getApplicationPropertySynchronizer().synchronize(pref, false) :
+                            getContext().getApplicationPropertySynchronizer().convertToPersistentObject(pref);
+                    // we have a different instance because needed to be synchronized
+                    intactUser.addProperty(userPref);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                 if (index < propertiesToPersist.size() - 1){
+                      for (int i = index; i < propertiesToPersist.size(); i++){
+                          intactUser.addProperty(propertiesToPersist.get(i));
+                      }
+                 }
             }
         }
     }

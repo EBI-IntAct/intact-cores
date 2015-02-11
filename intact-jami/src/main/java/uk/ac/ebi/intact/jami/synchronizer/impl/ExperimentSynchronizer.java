@@ -416,31 +416,54 @@ private Map<Experiment, IntactExperiment> persistedObjects;
     protected void prepareVariableParameters(IntactExperiment intactExperiment, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         if (intactExperiment.areVariableParametersInitialized()){
-            Collection<VariableParameter> parametersToPersist = new ArrayList<VariableParameter>(intactExperiment.getVariableParameters());
+            List<VariableParameter> parametersToPersist = new ArrayList<VariableParameter>(intactExperiment.getVariableParameters());
             intactExperiment.getVariableParameters().clear();
-            for (VariableParameter param : parametersToPersist){
-                // do not persist or merge parameters because of cascades
-                VariableParameter expParam = enableSynchronization ?
-                        getContext().getVariableParameterSynchronizer().synchronize(param, false) :
-                        getContext().getVariableParameterSynchronizer().convertToPersistentObject(param);
-                // we have a different instance because needed to be synchronized
-                intactExperiment.addVariableParameter(expParam);
-
+            int index = 0;
+            try{
+                for (VariableParameter param : parametersToPersist){
+                    // do not persist or merge parameters because of cascades
+                    VariableParameter expParam = enableSynchronization ?
+                            getContext().getVariableParameterSynchronizer().synchronize(param, false) :
+                            getContext().getVariableParameterSynchronizer().convertToPersistentObject(param);
+                    // we have a different instance because needed to be synchronized
+                    intactExperiment.addVariableParameter(expParam);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < parametersToPersist.size() - 1){
+                    for (int i = index; i < parametersToPersist.size(); i++){
+                        intactExperiment.addVariableParameter(parametersToPersist.get(i));
+                    }
+                }
             }
         }
     }
 
     protected void prepareInteractions(IntactExperiment intactExperiment, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactExperiment.areInteractionEvidencesInitialized()){
-            Collection<InteractionEvidence> interactionsToPersist = new ArrayList<InteractionEvidence>(intactExperiment.getInteractionEvidences());
+            List<InteractionEvidence> interactionsToPersist = new ArrayList<InteractionEvidence>(intactExperiment.getInteractionEvidences());
             intactExperiment.getInteractionEvidences().clear();
-            for (InteractionEvidence interaction : interactionsToPersist){
-                // do not persist or merge interactions because of cascades
-                InteractionEvidence expInter = enableSynchronization ?
-                        getContext().getInteractionSynchronizer().synchronize(interaction, false) :
-                        getContext().getInteractionSynchronizer().convertToPersistentObject(interaction);
-                // we have a different instance because needed to be synchronized
-                intactExperiment.addInteractionEvidence(expInter);
+            int index = 0;
+            try{
+                for (InteractionEvidence interaction : interactionsToPersist){
+                    // do not persist or merge interactions because of cascades
+                    InteractionEvidence expInter = enableSynchronization ?
+                            getContext().getInteractionSynchronizer().synchronize(interaction, false) :
+                            getContext().getInteractionSynchronizer().convertToPersistentObject(interaction);
+                    // we have a different instance because needed to be synchronized
+                    intactExperiment.addInteractionEvidence(expInter);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < interactionsToPersist.size() - 1){
+                    for (int i = index; i < interactionsToPersist.size(); i++){
+                        intactExperiment.addInteractionEvidence(interactionsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -467,13 +490,25 @@ private Map<Experiment, IntactExperiment> persistedObjects;
         if (intactExperiment.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactExperiment.getXrefs());
             intactExperiment.getXrefs().clear();
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref expRef = enableSynchronization ?
-                        getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
-                        getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
-                // we have a different instance because needed to be synchronized
-                intactExperiment.getXrefs().add(expRef);
+            int index = 0;
+            try{
+                for (Xref xref : xrefsToPersist){
+                    // do not persist or merge xrefs because of cascades
+                    Xref expRef = enableSynchronization ?
+                            getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
+                            getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
+                    // we have a different instance because needed to be synchronized
+                    intactExperiment.getXrefs().add(expRef);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < xrefsToPersist.size() - 1){
+                    for (int i = index; i < xrefsToPersist.size(); i++){
+                        intactExperiment.getXrefs().add(xrefsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -482,13 +517,25 @@ private Map<Experiment, IntactExperiment> persistedObjects;
         if (intactExperiment.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactExperiment.getAnnotations());
             intactExperiment.getAnnotations().clear();
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation expAnnotation = enableSynchronization ?
-                        getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
-                        getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
-                // we have a different instance because needed to be synchronized
-                intactExperiment.getAnnotations().add(expAnnotation);
+            int index = 0;
+            try{
+                for (Annotation annotation : annotationsToPersist){
+                    // do not persist or merge annotations because of cascades
+                    Annotation expAnnotation = enableSynchronization ?
+                            getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
+                            getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
+                    // we have a different instance because needed to be synchronized
+                    intactExperiment.getAnnotations().add(expAnnotation);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < annotationsToPersist.size() - 1){
+                    for (int i = index; i < annotationsToPersist.size(); i++){
+                        intactExperiment.getAnnotations().add(annotationsToPersist.get(i));
+                    }
+                }
             }
         }
     }

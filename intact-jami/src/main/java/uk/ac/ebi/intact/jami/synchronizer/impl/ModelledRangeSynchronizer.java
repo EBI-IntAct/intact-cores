@@ -48,13 +48,25 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
             intactObj.getXrefs().clear();
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref objRef = enableSynchronization ?
-                        getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
-                        getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
-                // we have a different instance because needed to be synchronized
-                intactObj.getXrefs().add(objRef);
+            int index = 0;
+            try{
+                for (Xref xref : xrefsToPersist){
+                    // do not persist or merge xrefs because of cascades
+                    Xref objRef = enableSynchronization ?
+                            getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
+                            getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
+                    // we have a different instance because needed to be synchronized
+                    intactObj.getXrefs().add(objRef);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < xrefsToPersist.size() - 1) {
+                    for (int i = index; i < xrefsToPersist.size(); i++) {
+                        intactObj.getXrefs().add(xrefsToPersist.get(i));
+                    }
+                }
             }
         }
     }

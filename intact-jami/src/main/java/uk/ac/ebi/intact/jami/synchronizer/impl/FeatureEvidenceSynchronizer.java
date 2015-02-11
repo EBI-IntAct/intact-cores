@@ -78,12 +78,24 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactFeature.getParameters());
             intactFeature.getParameters().clear();
-            for (Parameter parameter : parametersToPersist){
-                Parameter persistentParameter = enableSynchronization ?
-                        getContext().getFeatureParameterSynchronizer().synchronize(parameter, false) :
-                        getContext().getFeatureParameterSynchronizer().convertToPersistentObject(parameter);
-                // we have a different instance because needed to be synchronized
-                intactFeature.getParameters().add(persistentParameter);
+            int index = 0;
+            try{
+                for (Parameter parameter : parametersToPersist){
+                    Parameter persistentParameter = enableSynchronization ?
+                            getContext().getFeatureParameterSynchronizer().synchronize(parameter, false) :
+                            getContext().getFeatureParameterSynchronizer().convertToPersistentObject(parameter);
+                    // we have a different instance because needed to be synchronized
+                    intactFeature.getParameters().add(persistentParameter);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < parametersToPersist.size() - 1){
+                    for (int i = index; i < parametersToPersist.size(); i++){
+                        intactFeature.getParameters().add(parametersToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -92,21 +104,33 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areRangesInitialized()){
             List<Range> rangesToPersist = new ArrayList<Range>(intactFeature.getRanges());
             intactFeature.getRanges().clear();
-            for (Range range : rangesToPersist){
-                // initialise resulting sequence
-                if (intactFeature.getParticipant() != null){
-                    Interactor interactor = intactFeature.getParticipant().getInteractor();
-                    if (interactor instanceof Polymer){
-                        prepareRangeResultingSequence((Polymer)interactor, range);
+            int index = 0;
+            try{
+                for (Range range : rangesToPersist){
+                    // initialise resulting sequence
+                    if (intactFeature.getParticipant() != null){
+                        Interactor interactor = intactFeature.getParticipant().getInteractor();
+                        if (interactor instanceof Polymer){
+                            prepareRangeResultingSequence((Polymer)interactor, range);
+                        }
+                    }
+
+                    // do not persist or merge ranges because of cascades
+                    Range featureRange = enableSynchronization ?
+                            getContext().getExperimentalRangeSynchronizer().synchronize(range, false) :
+                            getContext().getExperimentalRangeSynchronizer().convertToPersistentObject(range);
+                    // we have a different instance because needed to be synchronized
+                    intactFeature.getRanges().add(featureRange);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < rangesToPersist.size() - 1){
+                    for (int i = index; i < rangesToPersist.size(); i++){
+                        intactFeature.getRanges().add(rangesToPersist.get(i));
                     }
                 }
-
-                // do not persist or merge ranges because of cascades
-                Range featureRange = enableSynchronization ?
-                        getContext().getExperimentalRangeSynchronizer().synchronize(range, false) :
-                        getContext().getExperimentalRangeSynchronizer().convertToPersistentObject(range);
-                // we have a different instance because needed to be synchronized
-                intactFeature.getRanges().add(featureRange);
             }
         }
     }
@@ -135,12 +159,24 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areDetectionMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactFeature.getDbDetectionMethods());
             intactFeature.getDbDetectionMethods().clear();
-            for (CvTerm method : methodsToPersist){
-                CvTerm featureTerm = enableSynchronization ?
-                        getContext().getFeatureDetectionMethodSynchronizer().synchronize(method, true) :
-                        getContext().getFeatureDetectionMethodSynchronizer().convertToPersistentObject(method);
-                // we have a different instance because needed to be synchronized
-                intactFeature.getDbDetectionMethods().add(featureTerm);
+            int index = 0;
+            try{
+                for (CvTerm method : methodsToPersist){
+                    CvTerm featureTerm = enableSynchronization ?
+                            getContext().getFeatureDetectionMethodSynchronizer().synchronize(method, true) :
+                            getContext().getFeatureDetectionMethodSynchronizer().convertToPersistentObject(method);
+                    // we have a different instance because needed to be synchronized
+                    intactFeature.getDbDetectionMethods().add(featureTerm);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < methodsToPersist.size() - 1){
+                    for (int i = index; i < methodsToPersist.size(); i++){
+                        intactFeature.getDbDetectionMethods().add(methodsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -162,13 +198,25 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactFeature.getDbXrefs());
             intactFeature.getDbXrefs().clear();
-            for (Xref xref : xrefsToPersist){
-                // do not persist or merge xrefs because of cascades
-                Xref featureXref = enableSynchronization ?
-                        getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false) :
-                        getContext().getFeatureEvidenceXrefSynchronizer().convertToPersistentObject(xref);
-                // we have a different instance because needed to be synchronized
-                intactFeature.getDbXrefs().add(featureXref);
+            int index = 0;
+            try{
+                for (Xref xref : xrefsToPersist){
+                    // do not persist or merge xrefs because of cascades
+                    Xref featureXref = enableSynchronization ?
+                            getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false) :
+                            getContext().getFeatureEvidenceXrefSynchronizer().convertToPersistentObject(xref);
+                    // we have a different instance because needed to be synchronized
+                    intactFeature.getDbXrefs().add(featureXref);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < xrefsToPersist.size() - 1){
+                    for (int i = index; i < xrefsToPersist.size(); i++){
+                        intactFeature.getDbXrefs().add(xrefsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -177,13 +225,25 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactFeature.getAnnotations());
             intactFeature.getAnnotations().clear();
-            for (Annotation annotation : annotationsToPersist){
-                // do not persist or merge annotations because of cascades
-                Annotation featureAnnotation = enableSynchronization ?
-                        getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
-                        getContext().getFeatureEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
-                // we have a different instance because needed to be synchronized
-                intactFeature.getAnnotations().add(featureAnnotation);
+            int index = 0;
+            try{
+                for (Annotation annotation : annotationsToPersist){
+                    // do not persist or merge annotations because of cascades
+                    Annotation featureAnnotation = enableSynchronization ?
+                            getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
+                            getContext().getFeatureEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
+                    // we have a different instance because needed to be synchronized
+                    intactFeature.getAnnotations().add(featureAnnotation);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < annotationsToPersist.size() - 1){
+                    for (int i = index; i < annotationsToPersist.size(); i++){
+                        intactFeature.getAnnotations().add(annotationsToPersist.get(i));
+                    }
+                }
             }
         }
     }
@@ -192,13 +252,25 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
         if (intactFeature.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactFeature.getAliases());
             intactFeature.getAliases().clear();
-            for (Alias alias : aliasesToPersist){
-                // do not persist or merge alias because of cascades
-                Alias featureAlias = enableSynchronization ?
-                        getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false) :
-                        getContext().getFeatureEvidenceAliasSynchronizer().convertToPersistentObject(alias);
-                // we have a different instance because needed to be synchronized
-                intactFeature.getAliases().add(featureAlias);
+            int index = 0;
+            try{
+                for (Alias alias : aliasesToPersist){
+                    // do not persist or merge alias because of cascades
+                    Alias featureAlias = enableSynchronization ?
+                            getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false) :
+                            getContext().getFeatureEvidenceAliasSynchronizer().convertToPersistentObject(alias);
+                    // we have a different instance because needed to be synchronized
+                    intactFeature.getAliases().add(featureAlias);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < aliasesToPersist.size() - 1){
+                    for (int i = index; i < aliasesToPersist.size(); i++){
+                        intactFeature.getAliases().add(aliasesToPersist.get(i));
+                    }
+                }
             }
         }
     }

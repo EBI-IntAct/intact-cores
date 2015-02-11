@@ -178,15 +178,26 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         if (intactEntity.areFeaturesInitialized()) {
             List<Feature> featuresToPersist = new ArrayList<Feature>(intactEntity.getFeatures());
             intactEntity.getFeatures().clear();
-            for (Feature feature : featuresToPersist) {
-                feature.setParticipant(intactEntity);
-                // do not persist or merge features because of cascades
-                Feature persistentFeature = enableSynchronization ?
-                        (Feature)getFeatureSynchronizer().synchronize(feature, false) :
-                        (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
-                // we have a different instance because needed to be synchronized
-               intactEntity.addFeature(persistentFeature);
-
+            int index = 0;
+            try{
+                for (Feature feature : featuresToPersist) {
+                    feature.setParticipant(intactEntity);
+                    // do not persist or merge features because of cascades
+                    Feature persistentFeature = enableSynchronization ?
+                            (Feature)getFeatureSynchronizer().synchronize(feature, false) :
+                            (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
+                    // we have a different instance because needed to be synchronized
+                    intactEntity.addFeature(persistentFeature);
+                    index++;
+                }
+            }
+            finally {
+                // always add previous properties in case of exception
+                if (index < featuresToPersist.size() - 1) {
+                    for (int i = index; i < featuresToPersist.size(); i++) {
+                        intactEntity.addFeature(featuresToPersist.get(i));
+                    }
+                }
             }
         }
     }
