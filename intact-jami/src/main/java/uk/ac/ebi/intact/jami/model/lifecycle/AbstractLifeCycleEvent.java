@@ -138,6 +138,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
      */
     public void setCvEvent( CvTerm event ) {
         this.cvEvent = event;
+        this.event = null;
     }
 
     /**
