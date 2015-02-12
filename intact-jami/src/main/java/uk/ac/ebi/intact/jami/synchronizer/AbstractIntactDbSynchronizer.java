@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer;
 
-import psidev.psi.mi.jami.enricher.exception.EnricherException;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.merger.IntactDbMergerIgnoringLocalObject;
@@ -488,17 +487,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         if (object != existingInstance && getIntactMerger() != null){
 
             // merge cached instance with original object
-            try {
-                // store object and intact object in a identity cache so no lazy properties can be called before synchronization
-                registerObjectBeforeProcessing(object, intactEntity, existingInstance);
-                getIntactMerger().enrich((I)existingInstance, (I)intactEntity);
-                // remove object and intact object from identity cache as not dirty anymore
-                unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
-            } catch (EnricherException e) {
-                // remove object and intact object from identity cache as not dirty anymore
-                unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
-                throw new SynchronizerException("Cannot merge "+intactEntity + " with "+existingInstance, e);
-            }
+            // store object and intact object in a identity cache so no lazy properties can be called before synchronization
+            registerObjectBeforeProcessing(object, intactEntity, existingInstance);
+            getIntactMerger().merge(intactEntity, existingInstance);
+            // remove object and intact object from identity cache as not dirty anymore
+            unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
 
             // then set userContext
             existingInstance.setLocalUserContext(getContext().getUserContext());

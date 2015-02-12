@@ -75,10 +75,7 @@ public abstract class AbstractIntactDbMerger<I extends Object, A extends Auditab
     }
 
     public void enrich(I objectToEnrich, I objectSource) throws EnricherException {
-        if (intactClass.isAssignableFrom(objectToEnrich.getClass()) && intactClass.isAssignableFrom(objectSource.getClass())){
-            merge((A) objectSource, (A) objectToEnrich);
-        }
-        else if (this.basicEnricher != null){
+        if (this.basicEnricher != null){
             enrichBasicProperties(objectToEnrich, objectSource);
         }
     }

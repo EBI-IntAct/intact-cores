@@ -180,7 +180,7 @@ public abstract class AbstractLifeCycleEvent extends AbstractIntactPrimaryObject
         else if ((evt.getNote() == null && this.note != null) || (evt.getNote() == null && this.note != null)){
             return false;
         }
-        else if (!evt.getNote().equalsIgnoreCase(this.note)){
+        else if (evt.getNote() != null && !evt.getNote().equalsIgnoreCase(this.note)){
              return false;
         }
         else if (!evt.getWho().equals(this.who)){
