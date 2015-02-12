@@ -72,42 +72,66 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getContext().getInteractionXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             getContext().getInteractionXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getInteractionAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedNegative().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedNegative(),
                             context.getInteractionAnnotationSynchronizer());
                     ((IntactInteractionEvidence)object).getDbAnnotations().removeAll(updates.getAddedNegative());
-                    ((IntactInteractionEvidence)object).getDbAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactInteractionEvidence) object).getDbAnnotations().contains(obj)){
+                            ((IntactInteractionEvidence) object).getDbAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedConfidences().isEmpty()){
 
                     List<Confidence> synchronizedConfidences = IntactEnricherUtils.synchronizeConfidencesToEnrich(updates.getAddedConfidences(),
                             context.getInteractionConfidenceSynchronizer());
                     object.getConfidences().removeAll(updates.getAddedConfidences());
-                    object.getConfidences().addAll(synchronizedConfidences);
+                    for (Confidence obj : synchronizedConfidences){
+                        if (!object.getConfidences().contains(obj)){
+                            object.getConfidences().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedParameters().isEmpty()){
 
                     List<Parameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                             context.getInteractionParameterSynchronizer());
                     object.getParameters().removeAll(updates.getAddedParameters());
-                    object.getParameters().addAll(synchronizedParameters);
+                    for (Parameter obj : synchronizedParameters){
+                        if (!object.getParameters().contains(obj)){
+                            object.getParameters().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedParticipants().isEmpty()){
 
@@ -125,7 +149,11 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
                     List<VariableParameterValueSet> synchronizedValues = IntactEnricherUtils.synchronizeVariableParameterValuesToEnrich(updates.getAddedVariableParameterSets(),
                             context.getVariableParameterValueSetSynchronizer());
                     object.getVariableParameterValues().removeAll(updates.getAddedVariableParameterSets());
-                    object.getVariableParameterValues().addAll(synchronizedValues);
+                    for (VariableParameterValueSet obj : synchronizedValues){
+                        if (!object.getVariableParameterValues().contains(obj)){
+                            object.getVariableParameterValues().add(obj);
+                        }
+                    }
                 }
 
                 interactionUpdates.remove(object);
@@ -152,42 +180,66 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getContext().getInteractionXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             getContext().getInteractionXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getInteractionAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedNegative().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedNegative(),
                             context.getInteractionAnnotationSynchronizer());
                     ((IntactInteractionEvidence)object).getDbAnnotations().removeAll(updates.getAddedNegative());
-                    ((IntactInteractionEvidence)object).getDbAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactInteractionEvidence) object).getDbAnnotations().contains(obj)){
+                            ((IntactInteractionEvidence) object).getDbAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedConfidences().isEmpty()){
 
                     List<Confidence> synchronizedConfidences = IntactEnricherUtils.synchronizeConfidencesToEnrich(updates.getAddedConfidences(),
                             context.getInteractionConfidenceSynchronizer());
                     object.getConfidences().removeAll(updates.getAddedConfidences());
-                    object.getConfidences().addAll(synchronizedConfidences);
+                    for (Confidence obj : synchronizedConfidences){
+                        if (!object.getConfidences().contains(obj)){
+                            object.getConfidences().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedParameters().isEmpty()){
 
                     List<Parameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                             context.getInteractionParameterSynchronizer());
                     object.getParameters().removeAll(updates.getAddedParameters());
-                    object.getParameters().addAll(synchronizedParameters);
+                    for (Parameter obj : synchronizedParameters){
+                        if (!object.getParameters().contains(obj)){
+                            object.getParameters().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedParticipants().isEmpty()){
 
@@ -205,7 +257,11 @@ public class DbInteractionEnricherListener implements InteractionEvidenceEnriche
                     List<VariableParameterValueSet> synchronizedValues = IntactEnricherUtils.synchronizeVariableParameterValuesToEnrich(updates.getAddedVariableParameterSets(),
                             context.getVariableParameterValueSetSynchronizer());
                     object.getVariableParameterValues().removeAll(updates.getAddedVariableParameterSets());
-                    object.getVariableParameterValues().addAll(synchronizedValues);
+                    for (VariableParameterValueSet obj : synchronizedValues){
+                        if (!object.getVariableParameterValues().contains(obj)){
+                            object.getVariableParameterValues().add(obj);
+                        }
+                    }
                 }
 
                 interactionUpdates.remove(object);

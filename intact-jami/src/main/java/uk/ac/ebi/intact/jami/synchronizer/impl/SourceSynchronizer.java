@@ -203,7 +203,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             return cvs.iterator().next();
         }
         else if (cvs.size() > 1){
-            throw new BridgeFailedException("The source "+searchName + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid.");
+            throw new BridgeFailedException("The source "+searchName + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid: "+cvs);
         }
         return null;
     }
@@ -326,7 +326,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
             return cvs.iterator().next();
         }
         else if (cvs.size() > 1){
-            throw new BridgeFailedException("The source "+termIdentifier + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid.");
+            throw new BridgeFailedException("The source "+termIdentifier + " can match "+cvs.size()+" sources in the database and we cannot determine which one is valid: "+cvs);
         }
         return null;
     }
@@ -467,7 +467,9 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                             getContext().getSourceXrefSynchronizer().synchronize(xref, false) :
                             getContext().getSourceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactSource.getDbXrefs().add(cvXref);
+                    if (!intactSource.getDbXrefs().contains(cvXref)){
+                        intactSource.getDbXrefs().add(cvXref);
+                    }
                     index++;
                 }
             }
@@ -494,7 +496,9 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                             getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getSourceAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactSource.getDbAnnotations().add(cvAnnotation);
+                    if (!intactSource.getDbAnnotations().contains(cvAnnotation)){
+                        intactSource.getDbAnnotations().add(cvAnnotation);
+                    }
                     index++;
                 }
             }
@@ -521,7 +525,9 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                             getContext().getSourceAliasSynchronizer().synchronize(alias, false) :
                             getContext().getSourceAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    intactSource.getSynonyms().add(cvAlias);
+                    if (!intactSource.getSynonyms().contains(cvAlias)){
+                        intactSource.getSynonyms().add(cvAlias);
+                    }
                     index++;
                 }
             }

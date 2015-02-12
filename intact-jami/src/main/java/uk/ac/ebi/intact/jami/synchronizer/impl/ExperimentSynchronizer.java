@@ -137,7 +137,7 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                     return filteredResults.iterator().next();
                 }
                 else if (filteredResults.size() > 1){
-                    throw new FinderException("The experiment "+experiment.toString() + " can match "+filteredResults.size()+" experiments in the database and we cannot determine which one is valid.");
+                    throw new FinderException("The experiment "+experiment.toString() + " can match "+filteredResults.size()+" experiments in the database and we cannot determine which one is valid: "+filteredResults);
                 }
             }
             return null;
@@ -426,7 +426,9 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getVariableParameterSynchronizer().synchronize(param, false) :
                             getContext().getVariableParameterSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    intactExperiment.addVariableParameter(expParam);
+                    if (!intactExperiment.getVariableParameters().contains(expParam)){
+                        intactExperiment.addVariableParameter(expParam);
+                    }
                     index++;
                 }
             }
@@ -453,7 +455,9 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getInteractionSynchronizer().synchronize(interaction, false) :
                             getContext().getInteractionSynchronizer().convertToPersistentObject(interaction);
                     // we have a different instance because needed to be synchronized
-                    intactExperiment.addInteractionEvidence(expInter);
+                    if (!intactExperiment.getInteractionEvidences().contains(expInter)){
+                        intactExperiment.addInteractionEvidence(expInter);
+                    }
                     index++;
                 }
             }
@@ -498,7 +502,9 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
                             getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactExperiment.getXrefs().add(expRef);
+                    if (!intactExperiment.getXrefs().contains(expRef)){
+                        intactExperiment.getXrefs().add(expRef);
+                    }
                     index++;
                 }
             }
@@ -525,7 +531,9 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactExperiment.getAnnotations().add(expAnnotation);
+                    if (!intactExperiment.getAnnotations().contains(expAnnotation)){
+                        intactExperiment.getAnnotations().add(expAnnotation);
+                    }
                     index++;
                 }
             }

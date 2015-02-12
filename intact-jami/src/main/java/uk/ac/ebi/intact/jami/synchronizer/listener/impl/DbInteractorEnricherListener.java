@@ -11,11 +11,9 @@ import uk.ac.ebi.intact.jami.model.extension.IntactInteractor;
 import uk.ac.ebi.intact.jami.synchronizer.*;
 import uk.ac.ebi.intact.jami.synchronizer.listener.updates.InteractorUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexGoXrefComparator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Listener that will synchronize updates done to an existing object in the database
@@ -74,28 +72,45 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    Set<Xref> goReferences = new TreeSet<Xref>(new IntactComplexGoXrefComparator());
+                    for (Xref obj : synchronizedXrefs){
+                        if (goReferences.add(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             getXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getInteractorAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getInteractorAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
-                    object.getAliases().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getAliases().contains(obj)){
+                            object.getAliases().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedChecksums().isEmpty() && object instanceof IntactInteractor){
                     Collection<Annotation> createdAnnots = new ArrayList<Annotation>(updates.getAddedChecksums().size());
@@ -106,7 +121,11 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(createdAnnots,
                             context.getInteractorAnnotationSynchronizer());
                     ((IntactInteractor) object).getDbAnnotations().removeAll(createdAnnots);
-                    ((IntactInteractor) object).getDbAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactInteractor) object).getDbAnnotations().contains(obj)){
+                            ((IntactInteractor) object).getDbAnnotations().add(obj);
+                        }
+                    }
                 }
 
                 processOtherUpdates(object, status, message);
@@ -139,28 +158,45 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    Set<Xref> goReferences = new TreeSet<Xref>(new IntactComplexGoXrefComparator());
+                    for (Xref obj : synchronizedXrefs){
+                        if (goReferences.add(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             getXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getInteractorAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getInteractorAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
-                    object.getAliases().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getAliases().contains(obj)){
+                            object.getAliases().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedChecksums().isEmpty() && object instanceof IntactInteractor){
                     Collection<Annotation> createdAnnots = new ArrayList<Annotation>(updates.getAddedChecksums().size());
@@ -171,7 +207,11 @@ public class DbInteractorEnricherListener<T extends Interactor> implements Inter
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(createdAnnots,
                             context.getInteractorAnnotationSynchronizer());
                     ((IntactInteractor) object).getDbAnnotations().removeAll(createdAnnots);
-                    ((IntactInteractor) object).getDbAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactInteractor) object).getDbAnnotations().contains(obj)){
+                            ((IntactInteractor) object).getDbAnnotations().add(obj);
+                        }
+                    }
                 }
                 processOtherUpdates(object, message, e);
                 interactorUpdates.remove(object);

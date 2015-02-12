@@ -69,7 +69,9 @@ public class ApplicationSynchronizer extends AbstractIntactDbSynchronizer<Applic
                             getContext().getApplicationPropertySynchronizer().synchronize(pref, false) :
                             getContext().getApplicationPropertySynchronizer().convertToPersistentObject(pref);
                     // we have a different instance because needed to be synchronized
-                    intactUser.addProperty(userPref);
+                    if (!intactUser.getProperties().contains(pref)){
+                        intactUser.addProperty(userPref);
+                    }
                     index++;
                 }
             }

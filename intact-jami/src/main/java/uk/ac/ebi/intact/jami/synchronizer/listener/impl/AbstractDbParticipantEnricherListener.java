@@ -66,21 +66,32 @@ public abstract class AbstractDbParticipantEnricherListener<T extends Participan
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty() && getAnnotationSynchronizer() != null) {
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             getAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
-                }
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }                }
                 if (!updates.getAddedAliases().isEmpty() && getAliasSynchronizer() != null) {
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             getAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
-                    object.getAliases().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getAliases().contains(obj)){
+                            object.getAliases().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedCausalRelationships().isEmpty() && getCausalRelationshipSynchronizer() != null) {
 
@@ -132,21 +143,32 @@ public abstract class AbstractDbParticipantEnricherListener<T extends Participan
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty() && getAnnotationSynchronizer() != null) {
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             getAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
-                }
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }                }
                 if (!updates.getAddedAliases().isEmpty() && getAliasSynchronizer() != null) {
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             getAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
-                    object.getAliases().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getAliases().contains(obj)){
+                            object.getAliases().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedCausalRelationships().isEmpty() && getCausalRelationshipSynchronizer() != null) {
 

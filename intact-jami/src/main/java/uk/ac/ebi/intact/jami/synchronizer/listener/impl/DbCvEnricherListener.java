@@ -70,35 +70,55 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             context.getCvXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             context.getCvXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getCvAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getCvAliasSynchronizer());
                     object.getSynonyms().removeAll(updates.getAddedAliases());
-                    object.getSynonyms().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getSynonyms().contains(obj)){
+                            object.getSynonyms().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedParents().isEmpty()){
 
                     List<OntologyTerm> synchronizedParents = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedParents(),
                             dbSynchronizer);
                     ((IntactCvTerm)object).getParents().removeAll(updates.getAddedParents());
-                    ((IntactCvTerm)object).getParents().addAll(synchronizedParents);
+                    for (OntologyTerm obj : synchronizedParents){
+                        if (!((IntactCvTerm) object).getParents().contains(obj)){
+                            ((IntactCvTerm) object).getParents().add(obj);
+                        }
+                    }
                 }
 
                 cvUpdates.remove(object);
@@ -125,35 +145,55 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             context.getCvXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             context.getCvXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getCvAnnotationSynchronizer());
-                    object.getAnnotations().removeAll(updates.getAddedXrefs());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    object.getAnnotations().removeAll(updates.getAddedAnnotations());
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getCvAliasSynchronizer());
                     object.getSynonyms().removeAll(updates.getAddedAliases());
-                    object.getSynonyms().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getSynonyms().contains(obj)){
+                            object.getSynonyms().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedParents().isEmpty()){
 
                     List<OntologyTerm> synchronizedParents = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedParents(),
                             dbSynchronizer);
                     ((IntactCvTerm)object).getParents().removeAll(updates.getAddedParents());
-                    ((IntactCvTerm)object).getParents().addAll(synchronizedParents);
+                    for (OntologyTerm obj : synchronizedParents){
+                        if (!((IntactCvTerm) object).getParents().contains(obj)){
+                            ((IntactCvTerm) object).getParents().add(obj);
+                        }
+                    }
                 }
 
                 cvUpdates.remove(object);

@@ -74,7 +74,11 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getContext().getPublicationXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
@@ -88,7 +92,9 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                              // do nothing
                         }
                         else{
-                            object.getIdentifiers().add(id);
+                            if (!object.getIdentifiers().contains(id)){
+                                object.getIdentifiers().add(id);
+                            }
                         }
                     }
                 }
@@ -97,7 +103,11 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getPublicationAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedExperiments().isEmpty()){
 
@@ -115,8 +125,11 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedOtherDbAnnotations(),
                             context.getPublicationAnnotationSynchronizer());
                     ((IntactPublication)object).getDbAnnotations().removeAll(updates.getAddedOtherDbAnnotations());
-                    ((IntactPublication)object).getDbAnnotations().addAll(synchronizedAnnotations);
-                }
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactPublication) object).getDbAnnotations().contains(obj)){
+                            ((IntactPublication) object).getDbAnnotations().add(obj);
+                        }
+                    }                }
                 if (!updates.getAddedLifeCycleEvents().isEmpty()){
 
                     IntactPublication intactPublication = (IntactPublication)object;
@@ -155,21 +168,40 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             getContext().getPublicationXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             getContext().getPublicationXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref id : synchronizedXrefs){
+                        // ignore pubmed id as identity for Backward compatibility
+                        if (XrefUtils.doesXrefHaveQualifier(id, Xref.IDENTITY_MI, Xref.IDENTITY)
+                                && object.getPubmedId() != null && id.equals(object.getPubmedId())){
+                            // do nothing
+                        }
+                        else{
+                            if (!object.getIdentifiers().contains(id)){
+                                object.getIdentifiers().add(id);
+                            }
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getPublicationAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedExperiments().isEmpty()){
 
@@ -187,8 +219,11 @@ public class DbPublicationEnricherListener implements IntactPublicationEnricherL
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedOtherDbAnnotations(),
                             context.getPublicationAnnotationSynchronizer());
                     ((IntactPublication)object).getDbAnnotations().removeAll(updates.getAddedOtherDbAnnotations());
-                    ((IntactPublication)object).getDbAnnotations().addAll(synchronizedAnnotations);
-                }
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactPublication) object).getDbAnnotations().contains(obj)){
+                            ((IntactPublication) object).getDbAnnotations().add(obj);
+                        }
+                    }                }
                 if (!updates.getAddedLifeCycleEvents().isEmpty()){
 
                     IntactPublication intactPublication = (IntactPublication)object;

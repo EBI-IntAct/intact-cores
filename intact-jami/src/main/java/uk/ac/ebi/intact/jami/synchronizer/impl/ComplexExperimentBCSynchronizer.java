@@ -109,7 +109,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                 return results.iterator().next();
             }
             else if (results.size() > 1){
-                throw new FinderException("The experiment "+experiment.toString() + " can match "+results.size()+" experiments in the database and we cannot determine which one is valid.");
+                throw new FinderException("The experiment "+experiment.toString() + " can match "+results.size()+" experiments in the database and we cannot determine which one is valid: "+results);
             }
             return null;
         }
@@ -378,7 +378,9 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                             getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactExperiment.getAnnotations().add(expAnnotation);
+                    if (!intactExperiment.getAnnotations().contains(expAnnotation)){
+                        intactExperiment.getAnnotations().add(expAnnotation);
+                    }
                     index++;
                 }
             }

@@ -412,7 +412,9 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                             getContext().getInteractorXrefSynchronizer().synchronize(xref, false) :
                             getContext().getInteractorXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactInteractor.getDbXrefs().add(cvXref);
+                    if (!intactInteractor.getDbXrefs().contains(cvXref)){
+                        intactInteractor.getDbXrefs().add(cvXref);
+                    }
                     index++;
                 }
             }
@@ -439,7 +441,9 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                             getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getInteractorAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactInteractor.getDbAnnotations().add(cvAnnotation);
+                    if (!intactInteractor.getDbAnnotations().contains(cvAnnotation)){
+                        intactInteractor.getDbAnnotations().add(cvAnnotation);
+                    }
                     index++;
                 }
             }
@@ -466,7 +470,9 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                             getContext().getInteractorAliasSynchronizer().synchronize(alias, false) :
                             getContext().getInteractorAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    intactInteractor.getDbAliases().add(cvAlias);
+                    if (!intactInteractor.getDbAliases().contains(cvAlias)){
+                        intactInteractor.getDbAliases().add(cvAlias);
+                    }
                     index++;
                 }
             }

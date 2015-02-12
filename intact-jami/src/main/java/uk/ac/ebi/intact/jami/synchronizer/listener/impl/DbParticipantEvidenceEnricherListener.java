@@ -35,28 +35,42 @@ implements ParticipantEvidenceEnricherListener<ParticipantEvidence>{
                 List<CvTerm> synchronizedMethods = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedExperimentalPreparations(),
                         getContext().getExperimentalPreparationSynchronizer());
                 object.getExperimentalPreparations().removeAll(updates.getAddedExperimentalPreparations());
-                object.getExperimentalPreparations().addAll(synchronizedMethods);
+                for (CvTerm obj : synchronizedMethods){
+                    if (!object.getExperimentalPreparations().contains(obj)){
+                        object.getExperimentalPreparations().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedIdentificationMethods().isEmpty()) {
 
                 List<CvTerm> synchronizedMethods = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedIdentificationMethods(),
                         getContext().getParticipantDetectionMethodSynchronizer());
                 object.getIdentificationMethods().removeAll(updates.getAddedIdentificationMethods());
-                object.getIdentificationMethods().addAll(synchronizedMethods);
-            }
+                for (CvTerm obj : synchronizedMethods){
+                    if (!object.getIdentificationMethods().contains(obj)){
+                        object.getIdentificationMethods().add(obj);
+                    }
+                }            }
             if (!updates.getAddedParameters().isEmpty()) {
 
                 List<Parameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                         getContext().getParticipantEvidenceParameterSynchronizer());
                 object.getParameters().removeAll(updates.getAddedParameters());
-                object.getParameters().addAll(synchronizedParameters);
-            }
+                for (Parameter obj : synchronizedParameters){
+                    if (!object.getParameters().contains(obj)){
+                        object.getParameters().add(obj);
+                    }
+                }            }
             if (!updates.getAddedConfidences().isEmpty()) {
 
                 List<Confidence> synchronizedParameters = IntactEnricherUtils.synchronizeConfidencesToEnrich(updates.getAddedConfidences(),
                         getContext().getParticipantEvidenceConfidenceSynchronizer());
                 object.getConfidences().removeAll(updates.getAddedConfidences());
-                object.getConfidences().addAll(synchronizedParameters);
+                for (Confidence obj : synchronizedParameters){
+                    if (!object.getConfidences().contains(obj)){
+                        object.getConfidences().add(obj);
+                    }
+                }
             }
         }
     }
@@ -70,28 +84,42 @@ implements ParticipantEvidenceEnricherListener<ParticipantEvidence>{
                 List<CvTerm> synchronizedMethods = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedExperimentalPreparations(),
                         getContext().getExperimentalPreparationSynchronizer());
                 object.getExperimentalPreparations().removeAll(updates.getAddedExperimentalPreparations());
-                object.getExperimentalPreparations().addAll(synchronizedMethods);
+                for (CvTerm obj : synchronizedMethods){
+                    if (!object.getExperimentalPreparations().contains(obj)){
+                        object.getExperimentalPreparations().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedIdentificationMethods().isEmpty()) {
 
                 List<CvTerm> synchronizedMethods = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedIdentificationMethods(),
                         getContext().getParticipantDetectionMethodSynchronizer());
                 object.getIdentificationMethods().removeAll(updates.getAddedIdentificationMethods());
-                object.getIdentificationMethods().addAll(synchronizedMethods);
-            }
+                for (CvTerm obj : synchronizedMethods){
+                    if (!object.getIdentificationMethods().contains(obj)){
+                        object.getIdentificationMethods().add(obj);
+                    }
+                }            }
             if (!updates.getAddedParameters().isEmpty()) {
 
                 List<Parameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                         getContext().getParticipantEvidenceParameterSynchronizer());
                 object.getParameters().removeAll(updates.getAddedParameters());
-                object.getParameters().addAll(synchronizedParameters);
-            }
+                for (Parameter obj : synchronizedParameters){
+                    if (!object.getParameters().contains(obj)){
+                        object.getParameters().add(obj);
+                    }
+                }            }
             if (!updates.getAddedConfidences().isEmpty()) {
 
                 List<Confidence> synchronizedParameters = IntactEnricherUtils.synchronizeConfidencesToEnrich(updates.getAddedConfidences(),
                         getContext().getParticipantEvidenceConfidenceSynchronizer());
                 object.getConfidences().removeAll(updates.getAddedConfidences());
-                object.getConfidences().addAll(synchronizedParameters);
+                for (Confidence obj : synchronizedParameters){
+                    if (!object.getConfidences().contains(obj)){
+                        object.getConfidences().add(obj);
+                    }
+                }
             }
         }
     }

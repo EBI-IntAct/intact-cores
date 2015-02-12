@@ -43,14 +43,22 @@ public class DbComplexEnricherListener extends DbInteractorEnricherListener<Comp
                 List<ModelledConfidence> synchronizedConfidences = IntactEnricherUtils.synchronizeConfidencesToEnrich(updates.getAddedConfidences(),
                         getContext().getComplexConfidenceSynchronizer());
                 object.getModelledConfidences().removeAll(updates.getAddedConfidences());
-                object.getModelledConfidences().addAll(synchronizedConfidences);
+                for (ModelledConfidence obj : synchronizedConfidences){
+                    if (!object.getModelledConfidences().contains(obj)){
+                        object.getModelledConfidences().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedParameters().isEmpty()){
 
                 List<ModelledParameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                         getContext().getComplexParameterSynchronizer());
                 object.getModelledParameters().removeAll(updates.getAddedParameters());
-                object.getModelledParameters().addAll(synchronizedParameters);
+                for (ModelledParameter obj : synchronizedParameters){
+                    if (!object.getModelledParameters().contains(obj)){
+                        object.getModelledParameters().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedParticipants().isEmpty()){
 
@@ -87,14 +95,22 @@ public class DbComplexEnricherListener extends DbInteractorEnricherListener<Comp
                 List<ModelledConfidence> synchronizedConfidences = IntactEnricherUtils.synchronizeConfidencesToEnrich(updates.getAddedConfidences(),
                         getContext().getComplexConfidenceSynchronizer());
                 object.getModelledConfidences().removeAll(updates.getAddedConfidences());
-                object.getModelledConfidences().addAll(synchronizedConfidences);
+                for (ModelledConfidence obj : synchronizedConfidences){
+                    if (!object.getModelledConfidences().contains(obj)){
+                        object.getModelledConfidences().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedParameters().isEmpty()){
 
                 List<ModelledParameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                         getContext().getComplexParameterSynchronizer());
                 object.getModelledParameters().removeAll(updates.getAddedParameters());
-                object.getModelledParameters().addAll(synchronizedParameters);
+                for (ModelledParameter obj : synchronizedParameters){
+                    if (!object.getModelledParameters().contains(obj)){
+                        object.getModelledParameters().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedParticipants().isEmpty()){
 

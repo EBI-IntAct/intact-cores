@@ -35,14 +35,22 @@ public class DbFeatureEvidenceEnricherListener extends AbstractDbFeatureEnricher
                 List<CvTerm> synchronizedMethods = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedDetectionMethods(),
                         getContext().getFeatureDetectionMethodSynchronizer());
                 object.getDetectionMethods().removeAll(updates.getAddedDetectionMethods());
-                object.getDetectionMethods().addAll(synchronizedMethods);
+                for (CvTerm obj : synchronizedMethods){
+                    if (!object.getDetectionMethods().contains(obj)){
+                        object.getDetectionMethods().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedParameters().isEmpty()) {
 
                 List<Parameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                         getContext().getFeatureParameterSynchronizer());
                 object.getParameters().removeAll(updates.getAddedParameters());
-                object.getParameters().addAll(synchronizedParameters);
+                for (Parameter obj : synchronizedParameters){
+                    if (!object.getParameters().contains(obj)){
+                        object.getParameters().add(obj);
+                    }
+                }
             }
         }
 
@@ -57,14 +65,22 @@ public class DbFeatureEvidenceEnricherListener extends AbstractDbFeatureEnricher
                 List<CvTerm> synchronizedMethods = IntactEnricherUtils.synchronizeCvsToEnrich(updates.getAddedDetectionMethods(),
                         getContext().getFeatureDetectionMethodSynchronizer());
                 object.getDetectionMethods().removeAll(updates.getAddedDetectionMethods());
-                object.getDetectionMethods().addAll(synchronizedMethods);
+                for (CvTerm obj : synchronizedMethods){
+                    if (!object.getDetectionMethods().contains(obj)){
+                        object.getDetectionMethods().add(obj);
+                    }
+                }
             }
             if (!updates.getAddedParameters().isEmpty()) {
 
                 List<Parameter> synchronizedParameters = IntactEnricherUtils.synchronizeParametersToEnrich(updates.getAddedParameters(),
                         getContext().getFeatureParameterSynchronizer());
                 object.getParameters().removeAll(updates.getAddedParameters());
-                object.getParameters().addAll(synchronizedParameters);
+                for (Parameter obj : synchronizedParameters){
+                    if (!object.getParameters().contains(obj)){
+                        object.getParameters().add(obj);
+                    }
+                }
             }
         }
     }

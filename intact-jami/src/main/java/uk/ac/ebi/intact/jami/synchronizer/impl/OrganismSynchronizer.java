@@ -127,7 +127,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
             return organism.iterator().next();
         }
         else if (organism.size() > 1){
-            throw new FinderException("The organism "+term + " can match "+organism.size()+" organisms in the database and we cannot determine which one is valid.");
+            throw new FinderException("The organism "+term + " can match "+organism.size()+" organisms in the database and we cannot determine which one is valid: "+organism);
         }
         return null;
     }
@@ -354,7 +354,9 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                             getContext().getOrganismAliasSynchronizer().synchronize(alias, false) :
                             getContext().getOrganismAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    intactOrganism.getAliases().add(organismAlias);
+                    if (!intactOrganism.getAliases().contains(organismAlias)){
+                        intactOrganism.getAliases().add(organismAlias);
+                    }
                     index++;
                 }
             }

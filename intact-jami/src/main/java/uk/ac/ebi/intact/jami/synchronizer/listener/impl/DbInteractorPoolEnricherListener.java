@@ -36,7 +36,11 @@ public class DbInteractorPoolEnricherListener extends DbInteractorEnricherListen
                 List<Interactor> synchronizedInteractors = IntactEnricherUtils.synchronizeInteractorsToEnrich(updates.getAddedInteractors(),
                         getDbSynchronizer());
                 object.removeAll(updates.getAddedInteractors());
-                object.addAll(synchronizedInteractors);
+                for (Interactor obj : synchronizedInteractors){
+                    if (!object.contains(obj)){
+                        object.add(obj);
+                    }
+                }
             }
         }
     }
@@ -50,7 +54,11 @@ public class DbInteractorPoolEnricherListener extends DbInteractorEnricherListen
                 List<Interactor> synchronizedInteractors = IntactEnricherUtils.synchronizeInteractorsToEnrich(updates.getAddedInteractors(),
                         getDbSynchronizer());
                 object.removeAll(updates.getAddedInteractors());
-                object.addAll(synchronizedInteractors);
+                for (Interactor obj : synchronizedInteractors){
+                    if (!object.contains(obj)){
+                        object.add(obj);
+                    }
+                }
             }
         }
     }

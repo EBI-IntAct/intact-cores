@@ -56,7 +56,9 @@ public class ExperimentalRangeSynchronizer extends RangeSynchronizerTemplate<Exp
                             getContext().getExperimentalResultingSequenceXrefSynchronizer().synchronize(xref, false) :
                             getContext().getExperimentalResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactObj.getXrefs().add(objRef);
+                    if (!intactObj.getXrefs().contains(objRef)){
+                        intactObj.getXrefs().add(objRef);
+                    }
                     index++;
                 }
             }

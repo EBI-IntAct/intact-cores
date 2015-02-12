@@ -103,7 +103,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                 }
 
                 if (foundSeveral){
-                    throw new FinderException("The cv "+term.toString() + " has some identifiers that can match several terms in the database and we cannot determine which one is valid.");
+                    throw new FinderException("The cv "+term.toString() + " has some identifiers that can match several terms in the database and we cannot determine which one is valid ");
                 }
                 else{
                     return (IntactCvTerm)fetchByName(term.getShortName(), null);
@@ -226,7 +226,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             return cvs.iterator().next();
         }
         else if (cvs.size() > 1){
-            throw new BridgeFailedException("The cv "+searchName + " can match "+cvs.size()+" terms in the database and we cannot determine which one is valid.");
+            throw new BridgeFailedException("The cv "+searchName + " can match "+cvs.size()+" terms in the database and we cannot determine which one is valid: "+cvs);
         }
         return null;
     }
@@ -399,7 +399,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
             return cvs.iterator().next();
         }
         else if (cvs.size() > 1){
-            throw new BridgeFailedException("The cv "+termIdentifier + " can match "+cvs.size()+" terms in the database and we cannot determine which one is valid.");
+            throw new BridgeFailedException("The cv "+termIdentifier + " can match "+cvs.size()+" terms in the database and we cannot determine which one is valid: "+cvs);
         }
         return null;
     }
@@ -613,7 +613,9 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             synchronize(term, true) :
                             convertToPersistentObject(term);
                     // we have a different instance because needed to be synchronized
-                    intactCv.addParent(cvParent);
+                    if (!intactCv.getParents().contains(cvParent)){
+                        intactCv.addParent(cvParent);
+                    }
                     index++;
                 }
             }
@@ -640,7 +642,9 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             getContext().getCvXrefSynchronizer().synchronize(xref, false) :
                             getContext().getCvXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactCv.getDbXrefs().add(cvXref);
+                    if (!intactCv.getDbXrefs().contains(cvXref)){
+                        intactCv.getDbXrefs().add(cvXref);
+                    }
                     index++;
                 }
             }
@@ -667,7 +671,9 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             getContext().getCvAnnotationSynchronizer().synchronize(annotation, false):
                             getContext().getCvAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactCv.getDbAnnotations().add(cvAnnotation);
+                    if (!intactCv.getDbAnnotations().contains(cvAnnotation)){
+                        intactCv.getDbAnnotations().add(cvAnnotation);
+                    }
                     index++;
                 }
             }
@@ -694,7 +700,9 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             getContext().getCvAliasSynchronizer().synchronize(alias, false):
                             getContext().getCvAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    intactCv.getSynonyms().add(cvAlias);
+                    if (!intactCv.getSynonyms().contains(cvAlias)){
+                        intactCv.getSynonyms().add(cvAlias);
+                    }
                     index++;
                 }
             }

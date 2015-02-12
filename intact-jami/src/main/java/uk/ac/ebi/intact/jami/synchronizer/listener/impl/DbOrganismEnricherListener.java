@@ -55,7 +55,11 @@ public class DbOrganismEnricherListener implements OrganismEnricherListener {
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getOrganismAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
-                    object.getAliases().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getAliases().contains(obj)){
+                            object.getAliases().add(obj);
+                        }
+                    }
                 }
 
                 organismUpdates.remove(object);
@@ -82,7 +86,11 @@ public class DbOrganismEnricherListener implements OrganismEnricherListener {
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getOrganismAliasSynchronizer());
                     object.getAliases().removeAll(updates.getAddedAliases());
-                    object.getAliases().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getAliases().contains(obj)){
+                            object.getAliases().add(obj);
+                        }
+                    }
                 }
 
                 organismUpdates.remove(object);

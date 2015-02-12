@@ -73,7 +73,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
             return users.iterator().next();
         }
         else if (users.size() > 1){
-            throw new FinderException("The user "+user + " can match "+users.size()+" users in the database and we cannot determine which one is valid.");
+            throw new FinderException("The user "+user + " can match "+users.size()+" users in the database and we cannot determine which one is valid: "+users);
         }
         return null;
     }
@@ -142,7 +142,9 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
                             getContext().getRoleSynchronizer().synchronize(role, true) :
                             getContext().getRoleSynchronizer().convertToPersistentObject(role);
                     // we have a different instance because needed to be synchronized
-                    intactUser.addRole(userRole);
+                    if (!intactUser.getRoles().contains(userRole)){
+                        intactUser.addRole(userRole);
+                    }
                     index++;
                 }
             }
@@ -169,7 +171,9 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
                             getContext().getPreferenceSynchronizer().synchronize(pref, false) :
                             getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
                     // we have a different instance because needed to be synchronized
-                    intactUser.addPreference(userPref);
+                    if (!intactUser.getPreferences().contains(userPref)){
+                        intactUser.addPreference(userPref);
+                    }
                     index++;
                 }
             }

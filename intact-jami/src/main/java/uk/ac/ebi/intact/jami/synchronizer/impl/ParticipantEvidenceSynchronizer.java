@@ -103,7 +103,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getExperimentalCausalRelationshipSynchronizer().synchronize(causalRelationship, false) :
                             getContext().getExperimentalCausalRelationshipSynchronizer().convertToPersistentObject(causalRelationship);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getCausalRelationships().add(persistentRelationship);
+                    if (!intactEntity.getCausalRelationships().contains(persistentRelationship)){
+                        intactEntity.getCausalRelationships().add(persistentRelationship);
+                    }
                     index++;
                 }
             }
@@ -139,7 +141,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceConfidenceSynchronizer().synchronize(confidence, false) :
                             getContext().getParticipantEvidenceConfidenceSynchronizer().convertToPersistentObject(confidence);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getConfidences().add(persistentConfidence);
+                    if (!intactEntity.getConfidences().contains(persistentConfidence)){
+                        intactEntity.getConfidences().add(persistentConfidence);
+                    }
                     index++;
                 }
             }
@@ -165,7 +169,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getExperimentalPreparationSynchronizer().synchronize(preparation, true) :
                             getContext().getExperimentalPreparationSynchronizer().convertToPersistentObject(preparation);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getExperimentalPreparations().add(persistentPreparation);
+                    if (!intactEntity.getExperimentalPreparations().contains(persistentPreparation)){
+                        intactEntity.getExperimentalPreparations().add(persistentPreparation);
+                    }
                     index++;
                 }
             }
@@ -191,7 +197,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceParameterSynchronizer().synchronize(parameter, false) :
                             getContext().getParticipantEvidenceParameterSynchronizer().convertToPersistentObject(parameter);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getParameters().add(persistentParameter);
+                    if (!intactEntity.getParameters().contains(persistentParameter)){
+                        intactEntity.getParameters().add(persistentParameter);
+                    }
                     index++;
                 }
             }
@@ -217,7 +225,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantDetectionMethodSynchronizer().synchronize(term, true) :
                             getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(term);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getDbIdentificationMethods().add(persistentTerm);
+                    if (!intactEntity.getDbIdentificationMethods().contains(persistentTerm)){
+                        intactEntity.getDbIdentificationMethods().add(persistentTerm);
+                    }
                     index++;
                 }
             }
@@ -244,7 +254,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceXrefSynchronizer().synchronize(xref, false) :
                             getContext().getParticipantEvidenceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getXrefs().add(persistentXref);
+                    if (!intactEntity.getXrefs().contains(persistentXref)){
+                        intactEntity.getXrefs().add(persistentXref);
+                    }
                     index++;
                 }
             }
@@ -271,7 +283,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getParticipantEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getAnnotations().add(persistentAnnotation);
+                    if (!intactEntity.getAnnotations().contains(persistentAnnotation)){
+                        intactEntity.getAnnotations().add(persistentAnnotation);
+                    }
                     index++;
                 }
             }
@@ -298,7 +312,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceAliasSynchronizer().synchronize(alias, false) :
                             getContext().getParticipantEvidenceAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    intactEntity.getAliases().add(persistentAlias);
+                    if (!intactEntity.getAliases().contains(persistentAlias)){
+                        intactEntity.getAliases().add(persistentAlias);
+                    }
                     index++;
                 }
             }

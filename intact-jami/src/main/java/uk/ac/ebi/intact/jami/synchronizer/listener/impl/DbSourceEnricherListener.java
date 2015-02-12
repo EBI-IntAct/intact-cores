@@ -71,35 +71,55 @@ public class DbSourceEnricherListener implements SourceEnricherListener {
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             context.getSourceXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             context.getSourceXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getSourceAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getSourceAliasSynchronizer());
                     object.getSynonyms().removeAll(updates.getAddedAliases());
-                    object.getSynonyms().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getSynonyms().contains(obj)){
+                            object.getSynonyms().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedPrimaryXrefs().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedPrimaryXrefs(),
                             context.getSourceXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedPrimaryXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!((IntactSource)object).getDbXrefs().contains(obj)){
+                            ((IntactSource)object).getDbXrefs().add(obj);
+                        }
+                    }
                 }
 
                 sourceUpdates.remove(object);
@@ -126,35 +146,55 @@ public class DbSourceEnricherListener implements SourceEnricherListener {
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             context.getSourceXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedIdentifiers().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedIdentifiers(),
                             context.getSourceXrefSynchronizer());
                     object.getIdentifiers().removeAll(updates.getAddedIdentifiers());
-                    object.getIdentifiers().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getIdentifiers().contains(obj)){
+                            object.getIdentifiers().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getSourceAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedAnnotations());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
                             context.getSourceAliasSynchronizer());
                     object.getSynonyms().removeAll(updates.getAddedAliases());
-                    object.getSynonyms().addAll(synchronizedAliases);
+                    for (Alias obj : synchronizedAliases){
+                        if (!object.getSynonyms().contains(obj)){
+                            object.getSynonyms().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedPrimaryXrefs().isEmpty()){
 
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedPrimaryXrefs(),
                             context.getSourceXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedPrimaryXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!((IntactSource)object).getDbXrefs().contains(obj)){
+                            ((IntactSource)object).getDbXrefs().add(obj);
+                        }
+                    }
                 }
                 sourceUpdates.remove(object);
             } catch (PersisterException e2) {

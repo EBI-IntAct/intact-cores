@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
-import org.apache.commons.collections.CollectionUtils;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.AnnotationUtils;
 import psidev.psi.mi.jami.utils.XrefUtils;
@@ -16,10 +15,9 @@ import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
 import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbComplexEnricherListener;
 import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorEnricherListener;
-import uk.ac.ebi.intact.jami.synchronizer.listener.impl.DbInteractorPoolEnricherListener;
-import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexComparator;
+import uk.ac.ebi.intact.jami.utils.comparator.IntactComplexGoXrefComparator;
 import uk.ac.ebi.intact.jami.utils.comparator.IntactModelledParticipantComparator;
 
 import javax.persistence.Query;
@@ -71,7 +69,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
             return filteredResults.iterator().next();
         }
         else if (filteredResults.size() > 1){
-            throw new FinderException("The complex "+term + " can match "+filteredResults.size()+" complexes in the database and we cannot determine which one is valid.");
+            throw new FinderException("The complex "+term + " can match "+filteredResults.size()+" complexes in the database and we cannot determine which one is valid: "+filteredResults);
         }
         else{
             return null;
@@ -200,6 +198,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getDbXrefs());
             intactInteractor.getDbXrefs().clear();
             int index = 0;
+            Set<Xref> goReferences = new TreeSet<Xref>(new IntactComplexGoXrefComparator());
             try{
                 for (Xref xref : xrefsToPersist){
                     // do not persist or merge xrefs because of cascades
@@ -207,7 +206,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexXrefSynchronizer().synchronize(xref, false) :
                             getContext().getComplexXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactInteractor.getDbXrefs().add(cvXref);
+                    if (goReferences.add(cvXref)){
+                        intactInteractor.getDbXrefs().add(cvXref);
+                    }
                     index++;
                 }
             }
@@ -371,7 +372,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexLifecycleSynchronizer().synchronize(event, false) :
                             getContext().getComplexLifecycleSynchronizer().convertToPersistentObject(event);
                     // we have a different instance because needed to be synchronized
-                    intactComplex.getLifecycleEvents().add(evt);
+                    if (!intactComplex.getLifecycleEvents().contains(evt)){
+                        intactComplex.getLifecycleEvents().add(evt);
+                    }
                     index++;
                 }
             }
@@ -399,7 +402,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getCooperativeEffectSynchronizer().synchronize(param, false) :
                             getContext().getCooperativeEffectSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    intactInteraction.getCooperativeEffects().add(expParam);
+                    if (!intactInteraction.getCooperativeEffects().contains(expParam)){
+                        intactInteraction.getCooperativeEffects().add(expParam);
+                    }
                     index++;
                 }
             }
@@ -428,7 +433,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             (ModelledParticipant) getContext().getModelledParticipantSynchronizer().synchronize(participant, false) :
                             (ModelledParticipant) getContext().getModelledParticipantSynchronizer().convertToPersistentObject(participant);
                     // we have a different instance because needed to be synchronized
-                    intactInteraction.addParticipant(expPart);
+                    if (!intactInteraction.getParticipants().contains(expPart)){
+                        intactInteraction.addParticipant(expPart);
+                    }
                     index++;
                 }
             }
@@ -516,7 +523,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexParameterSynchronizer().synchronize(param, false) :
                             getContext().getComplexParameterSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    intactInteraction.getModelledParameters().add(expPar);
+                    if (!intactInteraction.getModelledParameters().contains(expPar)){
+                        intactInteraction.getModelledParameters().add(expPar);
+                    }
                     index++;
                 }
             }
@@ -543,7 +552,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexConfidenceSynchronizer().synchronize(confidence, false) :
                             getContext().getComplexConfidenceSynchronizer().convertToPersistentObject(confidence);
                     // we have a different instance because needed to be synchronized
-                    intactInteraction.getModelledConfidences().add(expConf);
+                    if (!intactInteraction.getModelledConfidences().contains(expConf)){
+                        intactInteraction.getModelledConfidences().add(expConf);
+                    }
                     index++;
                 }
             }

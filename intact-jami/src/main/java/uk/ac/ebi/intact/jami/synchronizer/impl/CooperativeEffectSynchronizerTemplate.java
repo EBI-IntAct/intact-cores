@@ -77,7 +77,9 @@ implements CooperativeEffectSynchronizer<T, C> {
                             getContext().getCooperativeEffectAnnotationSynchronizer().synchronize(annot, false) :
                             getContext().getCooperativeEffectAnnotationSynchronizer().convertToPersistentObject(annot);
                     // we have a different instance because needed to be synchronized
-                    object.getAnnotations().add(persistentAnnot);
+                    if (!object.getAnnotations().contains(persistentAnnot)){
+                        object.getAnnotations().add(persistentAnnot);
+                    }
                     index++;
                 }
             }
@@ -113,7 +115,9 @@ implements CooperativeEffectSynchronizer<T, C> {
                             getContext().getComplexSynchronizer().synchronize(convertedComplex, true) :
                             getContext().getComplexSynchronizer().convertToPersistentObject(convertedComplex);
                     // we have a different instance because needed to be synchronized
-                    object.getAffectedInteractions().add(persistentInteraction);
+                    if (!object.getAffectedInteractions().contains(persistentInteraction)){
+                        object.getAffectedInteractions().add(persistentInteraction);
+                    }
                     index++;
                 }
             }
@@ -139,7 +143,9 @@ implements CooperativeEffectSynchronizer<T, C> {
                             getContext().getCooperativityEvidenceSynchronizer().synchronize(param, false) :
                             getContext().getCooperativityEvidenceSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    object.getCooperativityEvidences().add(expParam);
+                    if (!object.getCooperativityEvidences().contains(expParam)){
+                        object.getCooperativityEvidences().add(expParam);
+                    }
                     index++;
                 }
             }

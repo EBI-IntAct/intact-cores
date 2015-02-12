@@ -42,7 +42,7 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
             return filteredResults.iterator().next();
         }
         else if (filteredResults.size() > 1){
-            throw new FinderException("The interactor "+term + " can match "+results.size()+" interactors in the database and we cannot determine which one is valid.");
+            throw new FinderException("The interactor "+term + " can match "+filteredResults.size()+" interactors in the database and we cannot determine which one is valid: "+filteredResults);
         }
         else{
             return null;

@@ -173,21 +173,33 @@ public class DbExperimentEnricherListener implements IntactExperimentEnricherLis
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             context.getExperimentXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getExperimentAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedXrefs());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedVariableParameters().isEmpty()){
 
                     List<VariableParameter> synchronizedParameters = IntactEnricherUtils.synchronizeVariableParametersToEnrich(updates.getAddedVariableParameters(),
                             context.getVariableParameterSynchronizer());
                     object.getVariableParameters().removeAll(updates.getAddedXrefs());
-                    object.getVariableParameters().addAll(synchronizedParameters);
+                    for (VariableParameter obj : synchronizedParameters){
+                        if (!object.getVariableParameters().contains(obj)){
+                            object.getVariableParameters().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedInteractions().isEmpty()){
 
@@ -224,21 +236,33 @@ public class DbExperimentEnricherListener implements IntactExperimentEnricherLis
                     List<Xref> synchronizedXrefs = IntactEnricherUtils.synchronizeXrefsToEnrich(updates.getAddedXrefs(),
                             context.getExperimentXrefSynchronizer());
                     object.getXrefs().removeAll(updates.getAddedXrefs());
-                    object.getXrefs().addAll(synchronizedXrefs);
+                    for (Xref obj : synchronizedXrefs){
+                        if (!object.getXrefs().contains(obj)){
+                            object.getXrefs().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedAnnotations().isEmpty()){
 
                     List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedAnnotations(),
                             context.getExperimentAnnotationSynchronizer());
                     object.getAnnotations().removeAll(updates.getAddedXrefs());
-                    object.getAnnotations().addAll(synchronizedAnnotations);
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!object.getAnnotations().contains(obj)){
+                            object.getAnnotations().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedVariableParameters().isEmpty()){
 
                     List<VariableParameter> synchronizedParameters = IntactEnricherUtils.synchronizeVariableParametersToEnrich(updates.getAddedVariableParameters(),
                             context.getVariableParameterSynchronizer());
                     object.getVariableParameters().removeAll(updates.getAddedXrefs());
-                    object.getVariableParameters().addAll(synchronizedParameters);
+                    for (VariableParameter obj : synchronizedParameters){
+                        if (!object.getVariableParameters().contains(obj)){
+                            object.getVariableParameters().add(obj);
+                        }
+                    }
                 }
                 if (!updates.getAddedInteractions().isEmpty()){
 

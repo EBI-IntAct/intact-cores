@@ -59,7 +59,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
             return roles.iterator().next();
         }
         else if (roles.size() > 1){
-            throw new FinderException("The role "+object + " can match "+roles.size()+" roles in the database and we cannot determine which one is valid.");
+            throw new FinderException("The role "+object + " can match "+roles.size()+" roles in the database and we cannot determine which one is valid: "+roles);
         }
         return null;
     }

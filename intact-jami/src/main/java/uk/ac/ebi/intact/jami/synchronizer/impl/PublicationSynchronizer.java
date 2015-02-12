@@ -94,7 +94,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                 }
 
                 if (foundSeveral){
-                    throw new FinderException("The publication "+publication.toString() + " has some identifiers that can match several publications in the database and we cannot determine which one is valid.");
+                    throw new FinderException("The publication "+publication.toString() + " has some identifiers that can match several publications in the database and we cannot determine which one is valid ");
                 }
                 else{
                     return fetchByTitleAndJournal(publication.getTitle(), publication.getJournal(), publication.getPublicationDate(), publication.getAuthors());
@@ -310,7 +310,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             return publications.iterator().next();
         }
         else if (publications.size() > 1){
-            throw new BridgeFailedException("The publication title, journal, publication date and authors can match "+publications.size()+" publications in the database and we cannot determine which one is valid.");
+            throw new BridgeFailedException("The publication title, journal, publication date and authors can match "+publications.size()+" publications in the database and we cannot determine which one is valid: "+publications);
         }
         return null;
     }
@@ -435,7 +435,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
             return publications.iterator().next();
         }
         else if (publications.size() > 1){
-            throw new BridgeFailedException("The publication "+identifier + " can match "+publications.size()+" publications in the database and we cannot determine which one is valid.");
+            throw new BridgeFailedException("The publication "+identifier + " can match "+publications.size()+" publications in the database and we cannot determine which one is valid: "+publications);
         }
         return null;
     }
@@ -661,7 +661,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                             getContext().getPublicationXrefSynchronizer().synchronize(xref, false) :
                             getContext().getPublicationXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactPublication.getDbXrefs().add(pubRef);
+                    if (!intactPublication.getDbXrefs().contains(pubRef)){
+                        intactPublication.getDbXrefs().add(pubRef);
+                    }
                     index++;
                 }
             }
@@ -688,7 +690,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                             getContext().getPublicationAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getPublicationAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    intactPublication.getDbAnnotations().add(pubAnnotation);
+                    if (!intactPublication.getDbAnnotations().contains(pubAnnotation)){
+                        intactPublication.getDbAnnotations().add(pubAnnotation);
+                    }
                     index++;
                 }
             }
@@ -773,7 +777,9 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
                             getContext().getPublicationLifecycleSynchronizer().synchronize(event, false) :
                             getContext().getPublicationLifecycleSynchronizer().convertToPersistentObject(event);
                     // we have a different instance because needed to be synchronized
-                    intactPublication.getLifecycleEvents().add(evt);
+                    if (!intactPublication.getLifecycleEvents().contains(evt)){
+                        intactPublication.getLifecycleEvents().add(evt);
+                    }
                     index++;
                 }
             }
