@@ -31,6 +31,11 @@ public class AnnotationSynchronizerTemplate<A extends AbstractIntactAnnotation> 
         super(context, annotationClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(A intactObject) {
+        intactObject.setAc(null);
+    }
+
     public A find(Annotation object) throws FinderException {
         return null;
     }

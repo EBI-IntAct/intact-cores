@@ -35,6 +35,11 @@ implements CooperativeEffectSynchronizer<T, C> {
         super(context, intactClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(C intactObject) {
+        intactObject.setId(null);
+    }
+
     public C find(T object) throws FinderException {
         return null;
     }

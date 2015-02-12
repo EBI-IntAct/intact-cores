@@ -109,6 +109,11 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
+    protected void resetObjectIdentity(Preference intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<Preference, Preference>(this));
     }

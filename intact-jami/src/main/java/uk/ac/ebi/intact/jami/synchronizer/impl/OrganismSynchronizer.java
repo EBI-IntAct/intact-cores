@@ -490,4 +490,9 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
         }
         super.setIntactMerger(intactMerger);
     }
+
+    @Override
+    protected void resetObjectIdentity(IntactOrganism intactObject) {
+        intactObject.setAc(null);
+    }
 }

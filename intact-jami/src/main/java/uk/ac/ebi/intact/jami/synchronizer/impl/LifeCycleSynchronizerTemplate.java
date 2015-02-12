@@ -28,6 +28,11 @@ implements LifecycleEventSynchronizer<A>{
         super(context, eventClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(A intactObject) {
+        intactObject.setAc(null);
+    }
+
     public A find(LifeCycleEvent object) throws FinderException {
         return null;
     }

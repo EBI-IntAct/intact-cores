@@ -759,4 +759,9 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         }
         super.setIntactMerger(intactMerger);
     }
+
+    @Override
+    protected void resetObjectIdentity(I intactObject) {
+        intactObject.setAc(null);
+    }
 }

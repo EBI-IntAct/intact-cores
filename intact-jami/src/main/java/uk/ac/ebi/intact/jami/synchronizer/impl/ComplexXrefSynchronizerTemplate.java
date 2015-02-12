@@ -61,6 +61,11 @@ public class ComplexXrefSynchronizerTemplate extends XrefSynchronizerTemplate<In
     }
 
     @Override
+    protected void resetObjectIdentity(InteractorXref intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void convertPersistableProperties(InteractorXref object) throws SynchronizerException, PersisterException, FinderException {
         super.convertPersistableProperties(object);
         if (object instanceof ComplexGOXref){

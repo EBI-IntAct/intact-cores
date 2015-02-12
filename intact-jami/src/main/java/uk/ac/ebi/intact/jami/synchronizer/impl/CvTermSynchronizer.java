@@ -783,6 +783,11 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
+    protected void resetObjectIdentity(IntactCvTerm intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void synchronizePropertiesAfterMerge(IntactCvTerm mergedObject) throws SynchronizerException, PersisterException, FinderException {
         initialiseIdentifier(mergedObject);
     }

@@ -269,4 +269,9 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
         }
         super.setIntactMerger(intactMerger);
     }
+
+    @Override
+    protected void resetObjectIdentity(User intactObject) {
+        intactObject.setAc(null);
+    }
 }

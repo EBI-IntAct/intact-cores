@@ -158,6 +158,11 @@ public class VariableParameterValueSynchronizer extends AbstractIntactDbSynchron
     }
 
     @Override
+    protected void resetObjectIdentity(IntactVariableParameterValue intactObject) {
+        intactObject.setId(null);
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<VariableParameterValue, IntactVariableParameterValue>(this));
     }

@@ -601,6 +601,11 @@ private Map<Experiment, IntactExperiment> persistedObjects;
     }
 
     @Override
+    protected void resetObjectIdentity(IntactExperiment intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void synchronizePropertiesAfterMerge(IntactExperiment mergedObject) throws SynchronizerException, PersisterException, FinderException {
         prepareParticipantIdentificationMethod(mergedObject, true);
     }

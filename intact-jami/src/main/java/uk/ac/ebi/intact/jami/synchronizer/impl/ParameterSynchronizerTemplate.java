@@ -31,6 +31,11 @@ implements ParameterSynchronizer<T,P>{
         super(context, paramClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(P intactObject) {
+        intactObject.setAc(null);
+    }
+
     public P find(T object) throws FinderException {
         return null;
     }

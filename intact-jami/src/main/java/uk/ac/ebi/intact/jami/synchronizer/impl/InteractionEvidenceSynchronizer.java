@@ -404,4 +404,9 @@ implements IntactInteractionSynchronizer{
         }
         intactParticipant.getParticipants().clear();
     }
+
+    @Override
+    protected void resetObjectIdentity(IntactInteractionEvidence intactObject) {
+        intactObject.setAc(null);
+    }
 }

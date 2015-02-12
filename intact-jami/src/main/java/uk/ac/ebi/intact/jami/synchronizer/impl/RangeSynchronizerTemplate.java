@@ -36,6 +36,11 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
         super(context, intactClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(I intactObject) {
+        intactObject.setAc(null);
+    }
+
     public I find(Range object) throws FinderException {
         return null;
     }

@@ -309,6 +309,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
                         +" but cannot be found in the database. It is considered as transsient and will be persisted");
                 // no cached object, process the transient instance and synchronize with database
+                // WARNING, we need ti reset the id to null
+                resetObjectIdentity(intactObject);
                 return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
             }
         }
@@ -328,6 +330,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
                         +" but cannot be found in the database. It is considered as transient and will be persisted");
                 // no cached object, process the transient instance and synchronize with database
+                // WARNING, we need ti reset the id to null
+                resetObjectIdentity(intactObject);
                 return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
             }
 
@@ -343,6 +347,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             return mergedObject;
         }
     }
+
+    /**
+     * Reset object identity to null
+     * @param intactObject
+     */
+    protected abstract void resetObjectIdentity(T intactObject);
 
     /**
      * Synchronize the properties which need to be synchronized after a merge with an existing instance

@@ -32,6 +32,11 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
         super(context, confClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(C intactObject) {
+        intactObject.setAc(null);
+    }
+
     public C find(T object) throws FinderException {
         return null;
     }

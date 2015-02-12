@@ -833,6 +833,11 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
+    protected void resetObjectIdentity(IntactPublication intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void synchronizePropertiesAfterMerge(IntactPublication mergedObject) throws SynchronizerException, PersisterException, FinderException {
         prepareAndSynchronizeShortLabel(mergedObject);
     }

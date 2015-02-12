@@ -30,6 +30,11 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
         super(context, intactClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(I intactObject) {
+        intactObject.setId(null);
+    }
+
     public I find(CausalRelationship object) throws FinderException {
         return null;
     }

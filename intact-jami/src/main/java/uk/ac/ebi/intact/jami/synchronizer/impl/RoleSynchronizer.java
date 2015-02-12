@@ -173,6 +173,11 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
+    protected void resetObjectIdentity(Role intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new RoleMerger());
     }

@@ -246,4 +246,9 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         }
         intactParticipant.getFeatures().clear();
     }
+
+    @Override
+    protected void resetObjectIdentity(I intactObject) {
+        intactObject.setAc(null);
+    }
 }

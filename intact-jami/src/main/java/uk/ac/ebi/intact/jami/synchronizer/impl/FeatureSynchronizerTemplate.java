@@ -107,6 +107,11 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         intactFeature.getLinkedFeatures().clear();
     }
 
+    @Override
+    protected void resetObjectIdentity(I intactObject) {
+        intactObject.setAc(null);
+    }
+
     public void clearCache() {
         this.persistedObjects.clear();
         this.convertedObjects.clear();

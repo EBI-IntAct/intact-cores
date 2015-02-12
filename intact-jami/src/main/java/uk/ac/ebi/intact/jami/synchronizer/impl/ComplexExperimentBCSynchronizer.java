@@ -448,4 +448,9 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
         }
         intactParticipant.getInteractionEvidences().clear();
     }
+
+    @Override
+    protected void resetObjectIdentity(IntactExperiment intactObject) {
+        intactObject.setAc(null);
+    }
 }

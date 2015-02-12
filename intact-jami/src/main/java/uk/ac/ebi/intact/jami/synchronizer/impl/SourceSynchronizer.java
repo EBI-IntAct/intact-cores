@@ -583,4 +583,9 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         }
         super.setIntactMerger(intactMerger);
     }
+
+    @Override
+    protected void resetObjectIdentity(IntactSource intactObject) {
+        intactObject.setAc(null);
+    }
 }

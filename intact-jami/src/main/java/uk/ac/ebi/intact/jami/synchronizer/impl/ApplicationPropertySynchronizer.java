@@ -109,6 +109,11 @@ public class ApplicationPropertySynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
+    protected void resetObjectIdentity(ApplicationProperty intactObject) {
+        intactObject.setAc(null);
+    }
+
+    @Override
     protected void initialiseDefaultMerger() {
         super.setIntactMerger(new IntactDbMergerIgnoringPersistentObject<ApplicationProperty, ApplicationProperty>(this));
     }

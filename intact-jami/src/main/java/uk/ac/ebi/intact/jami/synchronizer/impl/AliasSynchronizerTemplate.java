@@ -32,6 +32,11 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
         super(context, aliasClass);
     }
 
+    @Override
+    protected void resetObjectIdentity(A intactObject) {
+        intactObject.setAc(null);
+    }
+
     public A find(Alias object) throws FinderException {
         return null;
     }
