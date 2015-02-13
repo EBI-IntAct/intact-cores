@@ -758,13 +758,4 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     public void setListener(DbSynchronizerListener listener) {
         this.listener = listener;
     }
-
-    @Override
-    public boolean isObjectTransientWithIdentifier(T object) {
-        Object identifier = extractIdentifier(object);
-        if (identifier != null && getEntityManager().find(getIntactClass(), identifier) == null){
-             return true;
-        }
-        return false;
-    }
 }
