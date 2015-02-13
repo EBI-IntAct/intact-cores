@@ -581,11 +581,20 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
             CvTerm recommendedName = IntactUtils.createMIAliasType(Alias.COMPLEX_RECOMMENDED_NAME, Alias.COMPLEX_RECOMMENDED_NAME_MI);
             // first remove old recommended name if not null
-            if (this.recommendedName != null){
-                complexAliasList.remove(this.recommendedName);
+            if (this.recommendedName != null && !name.equals(this.recommendedName)){
+                if (this.recommendedName instanceof AbstractIntactAlias){
+                    ((AbstractIntactAlias) this.recommendedName).setName(name);
+                }
+                else{
+                    complexAliasList.remove(this.recommendedName);
+                    this.recommendedName = new InteractorAlias(recommendedName, name);
+                    complexAliasList.add(this.recommendedName);
+                }
             }
-            this.recommendedName = new InteractorAlias(recommendedName, name);
-            complexAliasList.add(this.recommendedName);
+            else if (this.recommendedName == null){
+                this.recommendedName = new InteractorAlias(recommendedName, name);
+                complexAliasList.add(this.recommendedName);
+            }
         }
         // remove all recommended name if the collection is not empty
         else if (!complexAliasList.isEmpty()) {
@@ -609,11 +618,20 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
 
             CvTerm systematicName = IntactUtils.createMIAliasType(Alias.COMPLEX_SYSTEMATIC_NAME, Alias.COMPLEX_SYSTEMATIC_NAME_MI);
             // first remove systematic name  if not null
-            if (this.systematicName != null){
-                complexAliasList.remove(this.systematicName);
+            if (this.systematicName != null && !name.equals(this.systematicName)){
+                if (this.systematicName instanceof AbstractIntactAlias){
+                    ((AbstractIntactAlias) this.systematicName).setName(name);
+                }
+                else{
+                    complexAliasList.remove(this.systematicName);
+                    this.systematicName = new InteractorAlias(systematicName, name);
+                    complexAliasList.add(this.systematicName);
+                }
             }
-            this.systematicName = new InteractorAlias(systematicName, name);
-            complexAliasList.add(this.systematicName);
+            else if (this.systematicName == null){
+                this.systematicName = new InteractorAlias(systematicName, name);
+                complexAliasList.add(this.systematicName);
+            }
         }
         // remove all systematic name  if the collection is not empty
         else if (!complexAliasList.isEmpty()) {

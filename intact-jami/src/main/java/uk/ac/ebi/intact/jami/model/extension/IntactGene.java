@@ -173,11 +173,21 @@ public class IntactGene extends IntactMolecule implements Gene{
             CvTerm ensemblDatabase = IntactUtils.createMIDatabase(Xref.ENSEMBL, Xref.ENSEMBL_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old ensembl if not null
-            if (this.ensembl != null){
-                geneIdentifiers.remove(this.ensembl);
+
+            if (this.ensembl != null && !ac.equals(this.ensembl)){
+                if (this.ensembl instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.ensembl).setId(ac);
+                }
+                else{
+                    geneIdentifiers.remove(this.ensembl);
+                    this.ensembl = new InteractorXref(ensemblDatabase, ac, identityQualifier);
+                    geneIdentifiers.add(this.ensembl);
+                }
             }
-            this.ensembl = new InteractorXref(ensemblDatabase, ac, identityQualifier);
-            geneIdentifiers.add(this.ensembl);
+            else if (this.ensembl == null){
+                this.ensembl = new InteractorXref(ensemblDatabase, ac, identityQualifier);
+                geneIdentifiers.add(this.ensembl);
+            }
         }
         // remove all ensembl if the collection is not empty
         else if (!geneIdentifiers.isEmpty()) {
@@ -200,11 +210,20 @@ public class IntactGene extends IntactMolecule implements Gene{
             CvTerm ensemblGenomesDatabase = IntactUtils.createMIDatabase(Xref.ENSEMBL_GENOMES, Xref.ENSEMBL_GENOMES_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old ensembl genome if not null
-            if (this.ensemblGenome != null){
-                geneIdentifiers.remove(this.ensemblGenome);
+            if (this.ensemblGenome != null && !ac.equals(this.ensemblGenome)){
+                if (this.ensemblGenome instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.ensemblGenome).setId(ac);
+                }
+                else{
+                    geneIdentifiers.remove(this.ensemblGenome);
+                    this.ensemblGenome = new InteractorXref(ensemblGenomesDatabase, ac, identityQualifier);
+                    geneIdentifiers.add(this.ensemblGenome);
+                }
             }
-            this.ensemblGenome = new InteractorXref(ensemblGenomesDatabase, ac, identityQualifier);
-            geneIdentifiers.add(this.ensemblGenome);
+            else if (this.ensemblGenome == null){
+                this.ensemblGenome = new InteractorXref(ensemblGenomesDatabase, ac, identityQualifier);
+                geneIdentifiers.add(this.ensemblGenome);
+            }
         }
         // remove all ensembl genomes if the collection is not empty
         else if (!geneIdentifiers.isEmpty()) {
@@ -227,11 +246,20 @@ public class IntactGene extends IntactMolecule implements Gene{
             CvTerm entrezDatabase = IntactUtils.createMIDatabase(Xref.ENTREZ_GENE, Xref.ENTREZ_GENE_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old entrez gene id if not null
-            if (this.entrezGeneId!= null){
-                geneIdentifiers.remove(this.entrezGeneId);
+            if (this.entrezGeneId != null && !id.equals(this.entrezGeneId)){
+                if (this.entrezGeneId instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.entrezGeneId).setId(id);
+                }
+                else{
+                    geneIdentifiers.remove(this.entrezGeneId);
+                    this.entrezGeneId = new InteractorXref(entrezDatabase, id, identityQualifier);
+                    geneIdentifiers.add(this.entrezGeneId);
+                }
             }
-            this.entrezGeneId = new InteractorXref(entrezDatabase, id, identityQualifier);
-            geneIdentifiers.add(this.entrezGeneId);
+            else if (this.entrezGeneId == null){
+                this.entrezGeneId = new InteractorXref(entrezDatabase, id, identityQualifier);
+                geneIdentifiers.add(this.entrezGeneId);
+            }
         }
         // remove all ensembl genomes if the collection is not empty
         else if (!geneIdentifiers.isEmpty()) {
@@ -254,11 +282,20 @@ public class IntactGene extends IntactMolecule implements Gene{
             CvTerm refseqDatabase = IntactUtils.createMIDatabase(Xref.REFSEQ, Xref.REFSEQ_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove refseq if not null
-            if (this.refseq!= null){
-                geneIdentifiers.remove(this.refseq);
+            if (this.refseq != null && !ac.equals(this.refseq)){
+                if (this.refseq instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.refseq).setId(ac);
+                }
+                else{
+                    geneIdentifiers.remove(this.refseq);
+                    this.refseq = new InteractorXref(refseqDatabase, ac, identityQualifier);
+                    geneIdentifiers.add(this.refseq);
+                }
             }
-            this.refseq = new InteractorXref(refseqDatabase, ac, identityQualifier);
-            geneIdentifiers.add(this.refseq);
+            else if (this.refseq == null){
+                this.refseq = new InteractorXref(refseqDatabase, ac, identityQualifier);
+                geneIdentifiers.add(this.refseq);
+            }
         }
         // remove all ensembl genomes if the collection is not empty
         else if (!geneIdentifiers.isEmpty()) {

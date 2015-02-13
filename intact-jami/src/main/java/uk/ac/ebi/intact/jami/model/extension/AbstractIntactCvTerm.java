@@ -168,11 +168,20 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             CvTerm psiMiDatabase = IntactUtils.createPsiMiDatabase();
             CvTerm identityQualifier = IntactUtils.createIdentityQualifier(psiMiDatabase);
             // first remove old psi mi if not null
-            if (this.miIdentifier != null){
-                cvTermIdentifiers.remove(this.miIdentifier);
+            if (this.miIdentifier != null && !mi.equals(this.miIdentifier)){
+                if (this.miIdentifier instanceof AbstractIntactXref){
+                   ((AbstractIntactXref) this.miIdentifier).setId(mi);
+                }
+                else{
+                    cvTermIdentifiers.remove(this.miIdentifier);
+                    this.miIdentifier = new CvTermXref(psiMiDatabase, mi, identityQualifier);
+                    cvTermIdentifiers.add(this.miIdentifier);
+                }
             }
-            this.miIdentifier = new CvTermXref(psiMiDatabase, mi, identityQualifier);
-            cvTermIdentifiers.add(this.miIdentifier);
+            else if (this.miIdentifier == null){
+                this.miIdentifier = new CvTermXref(psiMiDatabase, mi, identityQualifier);
+                cvTermIdentifiers.add(this.miIdentifier);
+            }
         }
         // remove all mi if the collection is not empty
         else if (!getIdentifiers().isEmpty()) {
@@ -190,11 +199,20 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             CvTerm psiModDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_MOD, CvTerm.PSI_MOD_MI);
             CvTerm identityQualifier = IntactUtils.createIdentityQualifier();
             // first remove old psi mod if not null
-            if (this.modIdentifier != null){
-                cvTermIdentifiers.remove(this.modIdentifier);
+            if (this.modIdentifier != null && !mod.equals(this.modIdentifier)){
+                if (this.modIdentifier instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.modIdentifier).setId(mod);
+                }
+                else{
+                    cvTermIdentifiers.remove(this.modIdentifier);
+                    this.modIdentifier = new CvTermXref(psiModDatabase, mod, identityQualifier);
+                    cvTermIdentifiers.add(this.modIdentifier);
+                }
             }
-            this.modIdentifier = new CvTermXref(psiModDatabase, mod, identityQualifier);
-            cvTermIdentifiers.add(this.modIdentifier);
+            else if (this.modIdentifier == null){
+                this.modIdentifier = new CvTermXref(psiModDatabase, mod, identityQualifier);
+                cvTermIdentifiers.add(this.modIdentifier);
+            }
         }
         // remove all mod if the collection is not empty
         else if (!getIdentifiers().isEmpty()) {
@@ -212,11 +230,20 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
             CvTerm psiModDatabase = IntactUtils.createMIDatabase(CvTerm.PSI_PAR, null);
             CvTerm identityQualifier = IntactUtils.createIdentityQualifier();
             // first remove old psi mod if not null
-            if (this.parIdentifier != null){
-                cvTermIdentifiers.remove(this.parIdentifier);
+            if (this.parIdentifier != null && !par.equals(this.parIdentifier)){
+                if (this.parIdentifier instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.parIdentifier).setId(par);
+                }
+                else{
+                    cvTermIdentifiers.remove(this.parIdentifier);
+                    this.parIdentifier = new CvTermXref(psiModDatabase, par, identityQualifier);
+                    cvTermIdentifiers.add(this.parIdentifier);
+                }
             }
-            this.parIdentifier = new CvTermXref(psiModDatabase, par, identityQualifier);
-            cvTermIdentifiers.add(this.parIdentifier);
+            else if (this.parIdentifier == null){
+                this.parIdentifier = new CvTermXref(psiModDatabase, par, identityQualifier);
+                cvTermIdentifiers.add(this.parIdentifier);
+            }
         }
         // remove all mod if the collection is not empty
         else if (!getIdentifiers().isEmpty()) {

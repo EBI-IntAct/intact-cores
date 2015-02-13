@@ -182,11 +182,20 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
             CvTerm interproDatabase = IntactUtils.createMIDatabase(Xref.INTERPRO, Xref.INTERPRO_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old chebi if not null
-            if (this.interpro != null){
-                featureIdentifiers.remove(this.interpro);
+            if (this.interpro != null && !interpro.equals(this.interpro)){
+                if (this.interpro instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.interpro).setId(interpro);
+                }
+                else{
+                    featureIdentifiers.remove(this.interpro);
+                    this.interpro = new FeatureEvidenceXref(interproDatabase, interpro, identityQualifier);
+                    featureIdentifiers.add(this.interpro);
+                }
             }
-            this.interpro = new FeatureEvidenceXref(interproDatabase, interpro, identityQualifier);
-            featureIdentifiers.add(this.interpro);
+            else if (this.interpro == null){
+                this.interpro = new FeatureEvidenceXref(interproDatabase, interpro, identityQualifier);
+                featureIdentifiers.add(this.interpro);
+            }
         }
         // remove all interpro if the collection is not empty
         else if (!featureIdentifiers.isEmpty()) {

@@ -298,11 +298,20 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
             CvTerm imexDatabase = IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI);
             CvTerm imexPrimaryQualifier = IntactUtils.createMIQualifier(Xref.IMEX_PRIMARY, Xref.IMEX_PRIMARY_MI);
             // first remove old doi if not null
-            if (this.imexId != null){
-                interactionXrefs.remove(this.imexId);
+            if (this.imexId != null && !identifier.equals(this.imexId)){
+                if (this.imexId instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.imexId).setId(identifier);
+                }
+                else{
+                    interactionXrefs.remove(this.imexId);
+                    this.imexId = new InteractionXref(imexDatabase, identifier, imexPrimaryQualifier);
+                    interactionXrefs.add(this.imexId);
+                }
             }
-            this.imexId = new InteractionXref(imexDatabase, identifier, imexPrimaryQualifier);
-            interactionXrefs.add(this.imexId);
+            else if (this.imexId == null){
+                this.imexId = new InteractionXref(imexDatabase, identifier, imexPrimaryQualifier);
+                interactionXrefs.add(this.imexId);
+            }
         }
         else {
             throw new IllegalArgumentException("The imex id has to be non null.");

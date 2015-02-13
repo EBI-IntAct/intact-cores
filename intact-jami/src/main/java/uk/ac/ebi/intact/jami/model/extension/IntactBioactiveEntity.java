@@ -172,11 +172,20 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
             CvTerm chebiDatabase = IntactUtils.createMIDatabase(Xref.CHEBI, Xref.CHEBI_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old chebi if not null
-            if (this.chebi != null){
-                bioactiveEntityIdentifiers.remove(this.chebi);
+            if (this.chebi != null && !id.equals(this.chebi)){
+                if (this.chebi instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.chebi).setId(id);
+                }
+                else{
+                    bioactiveEntityIdentifiers.remove(this.chebi);
+                    this.chebi = new InteractorXref(chebiDatabase, id, identityQualifier);
+                    bioactiveEntityIdentifiers.add(this.chebi);
+                }
             }
-            this.chebi = new InteractorXref(chebiDatabase, id, identityQualifier);
-            bioactiveEntityIdentifiers.add(this.chebi);
+            else if (this.chebi == null){
+                this.chebi = new InteractorXref(chebiDatabase, id, identityQualifier);
+                bioactiveEntityIdentifiers.add(this.chebi);
+            }
         }
         // remove all chebi if the collection is not empty
         else if (!bioactiveEntityIdentifiers.isEmpty()) {

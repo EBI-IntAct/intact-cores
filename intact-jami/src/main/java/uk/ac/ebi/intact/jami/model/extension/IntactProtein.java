@@ -129,11 +129,21 @@ public class IntactProtein extends IntactPolymer implements Protein{
             CvTerm uniprotkbDatabase = IntactUtils.createMIDatabase(Xref.UNIPROTKB, Xref.UNIPROTKB_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old uniprotkb if not null
-            if (this.uniprotkb != null){
-                proteinIdentifiers.remove(this.uniprotkb);
+
+            if (this.uniprotkb != null && !ac.equals(this.uniprotkb)){
+                if (this.uniprotkb instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.uniprotkb).setId(ac);
+                }
+                else{
+                    proteinIdentifiers.remove(this.uniprotkb);
+                    this.uniprotkb = new InteractorXref(uniprotkbDatabase, ac, identityQualifier);
+                    proteinIdentifiers.add(this.uniprotkb);
+                }
             }
-            this.uniprotkb = new InteractorXref(uniprotkbDatabase, ac, identityQualifier);
-            proteinIdentifiers.add(this.uniprotkb);
+            else if (this.uniprotkb == null){
+                this.uniprotkb = new InteractorXref(uniprotkbDatabase, ac, identityQualifier);
+                proteinIdentifiers.add(this.uniprotkb);
+            }
         }
         // remove all uniprotkb if the collection is not empty
         else if (!proteinIdentifiers.isEmpty()) {
@@ -157,11 +167,20 @@ public class IntactProtein extends IntactPolymer implements Protein{
             CvTerm refseqDatabase = IntactUtils.createMIDatabase(Xref.REFSEQ, Xref.REFSEQ_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old refseq if not null
-            if (this.refseq != null){
-                proteinIdentifiers.remove(this.refseq);
+            if (this.refseq != null && !ac.equals(this.refseq)){
+                if (this.refseq instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.refseq).setId(ac);
+                }
+                else{
+                    proteinIdentifiers.remove(this.refseq);
+                    this.refseq = new InteractorXref(refseqDatabase, ac, identityQualifier);
+                    proteinIdentifiers.add(this.refseq);
+                }
             }
-            this.refseq = new InteractorXref(refseqDatabase, ac, identityQualifier);
-            proteinIdentifiers.add(this.refseq);
+            else if (this.refseq == null){
+                this.refseq = new InteractorXref(refseqDatabase, ac, identityQualifier);
+                proteinIdentifiers.add(this.refseq);
+            }
         }
         // remove all refseq if the collection is not empty
         else if (!proteinIdentifiers.isEmpty()) {
@@ -184,11 +203,20 @@ public class IntactProtein extends IntactPolymer implements Protein{
         if (name != null){
             CvTerm geneNameType = IntactUtils.createMIAliasType(Alias.GENE_NAME, Alias.GENE_NAME_MI);
             // first remove old gene name if not null
-            if (this.geneName != null){
-                proteinAliases.remove(this.geneName);
+            if (this.geneName != null && !name.equals(this.geneName)){
+                if (this.geneName instanceof AbstractIntactAlias){
+                    ((AbstractIntactAlias) this.geneName).setName(name);
+                }
+                else{
+                    proteinAliases.remove(this.geneName);
+                    this.geneName = new InteractorAlias(geneNameType, name);
+                    proteinAliases.add(this.geneName);
+                }
             }
-            this.geneName = new InteractorAlias(geneNameType, name);
-            proteinAliases.add(this.geneName);
+            else if (this.geneName == null){
+                this.geneName = new InteractorAlias(geneNameType, name);
+                proteinAliases.add(this.geneName);
+            }
         }
         // remove all gene names if the collection is not empty
         else if (!proteinAliases.isEmpty()) {

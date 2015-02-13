@@ -129,11 +129,14 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
         if (url != null){
             CvTerm urlTopic = IntactUtils.createMITopic(Annotation.URL, Annotation.URL_MI);
             // first remove old url if not null
+
             if (this.url != null){
-                sourceAnnotationList.remove(this.url);
+               this.url.setValue(url);
             }
-            this.url = new SourceAnnotation(urlTopic, url);
-            sourceAnnotationList.add(this.url);
+            else if (this.url == null){
+                this.url = new SourceAnnotation(urlTopic, url);
+                sourceAnnotationList.add(this.url);
+            }
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {
@@ -159,8 +162,14 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
             if (this.postalAddress != null){
                 sourceAnnotationList.remove(this.postalAddress);
             }
-            this.postalAddress = new SourceAnnotation(addressTopic, address);
-            sourceAnnotationList.add(this.postalAddress);
+
+            if (this.postalAddress != null){
+                this.postalAddress.setValue(address);
+            }
+            else if (this.postalAddress == null){
+                this.postalAddress = new SourceAnnotation(addressTopic, address);
+                sourceAnnotationList.add(this.postalAddress);
+            }
         }
         // remove all url if the collection is not empty
         else if (!sourceAnnotationList.isEmpty()) {

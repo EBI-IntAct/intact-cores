@@ -186,11 +186,20 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             CvTerm pubmedDatabase = IntactUtils.createMIDatabase(Xref.PUBMED, Xref.PUBMED_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI);
             // first remove old pubmed if not null
-            if (this.pubmedId != null){
-                identifiers.remove(this.pubmedId);
+            if (this.pubmedId != null && !pubmedId.equals(this.pubmedId)){
+                if (this.pubmedId instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.pubmedId).setId(pubmedId);
+                }
+                else{
+                    identifiers.remove(this.pubmedId);
+                    this.pubmedId = new PublicationXref(pubmedDatabase, pubmedId, identityQualifier);
+                    identifiers.add(this.pubmedId);
+                }
             }
-            this.pubmedId = new PublicationXref(pubmedDatabase, pubmedId, identityQualifier);
-            identifiers.add(this.pubmedId);
+            else if (this.pubmedId == null){
+                this.pubmedId = new PublicationXref(pubmedDatabase, pubmedId, identityQualifier);
+                identifiers.add(this.pubmedId);
+            }
         }
         // remove all pubmed if the collection is not empty
         else if (!identifiers.isEmpty()) {
@@ -214,11 +223,21 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             CvTerm doiDatabase = IntactUtils.createMIDatabase(Xref.DOI, Xref.DOI_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.PRIMARY, Xref.PRIMARY_MI);
             // first remove old doi if not null
-            if (this.doi != null){
-                identifiers.remove(this.doi);
+
+            if (this.doi != null && !doi.equals(this.doi)){
+                if (this.doi instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.doi).setId(doi);
+                }
+                else{
+                    identifiers.remove(this.doi);
+                    this.doi = new PublicationXref(doiDatabase, doi, identityQualifier);
+                    identifiers.add(this.doi);
+                }
             }
-            this.doi = new PublicationXref(doiDatabase, doi, identityQualifier);
-            identifiers.add(this.doi);
+            else if (this.doi == null){
+                this.doi = new PublicationXref(doiDatabase, doi, identityQualifier);
+                identifiers.add(this.doi);
+            }
         }
         // remove all doi if the collection is not empty
         else if (!identifiers.isEmpty()) {
@@ -250,11 +269,20 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             CvTerm imexDatabase = IntactUtils.createMIDatabase(Xref.IMEX, Xref.IMEX_MI);
             CvTerm imexPrimaryQualifier = IntactUtils.createMIQualifier(Xref.IMEX_PRIMARY, Xref.IMEX_PRIMARY_MI);
             // first remove old imex if not null
-            if (this.imexId != null){
-                xrefs.remove(this.imexId);
+            if (this.imexId != null && !identifier.equals(this.imexId)){
+                if (this.imexId instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.imexId).setId(identifier);
+                }
+                else{
+                    xrefs.remove(this.imexId);
+                    this.imexId = new InteractionXref(imexDatabase, identifier, imexPrimaryQualifier);
+                    xrefs.add(this.imexId);
+                }
             }
-            this.imexId = new DefaultXref(imexDatabase, identifier, imexPrimaryQualifier);
-            xrefs.add(this.imexId);
+            else if (this.imexId == null){
+                this.imexId = new InteractionXref(imexDatabase, identifier, imexPrimaryQualifier);
+                xrefs.add(this.imexId);
+            }
 
             setCurationDepth(CurationDepth.IMEx);
         }

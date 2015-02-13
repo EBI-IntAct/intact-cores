@@ -123,11 +123,20 @@ public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
             CvTerm ddbjEmblGenbankDatabase = IntactUtils.createMIDatabase(Xref.DDBJ_EMBL_GENBANK, Xref.DDBJ_EMBL_GENBANK_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove old ddbj/embl/genbank if not null
-            if (this.ddbjEmblGenbank != null){
-                nucleicAcidIdentifiers.remove(this.ddbjEmblGenbank);
+            if (this.ddbjEmblGenbank != null && !id.equals(this.ddbjEmblGenbank)){
+                if (this.ddbjEmblGenbank instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.ddbjEmblGenbank).setId(id);
+                }
+                else{
+                    nucleicAcidIdentifiers.remove(this.ddbjEmblGenbank);
+                    this.ddbjEmblGenbank = new InteractorXref(ddbjEmblGenbankDatabase, id, identityQualifier);
+                    nucleicAcidIdentifiers.add(this.ddbjEmblGenbank);
+                }
             }
-            this.ddbjEmblGenbank = new InteractorXref(ddbjEmblGenbankDatabase, id, identityQualifier);
-            nucleicAcidIdentifiers.add(this.ddbjEmblGenbank);
+            else if (this.ddbjEmblGenbank == null){
+                this.ddbjEmblGenbank = new InteractorXref(ddbjEmblGenbankDatabase, id, identityQualifier);
+                nucleicAcidIdentifiers.add(this.ddbjEmblGenbank);
+            }
         }
         // remove all ddbj/embl/genbank if the collection is not empty
         else if (!nucleicAcidIdentifiers.isEmpty()) {
@@ -151,11 +160,21 @@ public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
             CvTerm refseqDatabase = IntactUtils.createMIDatabase(Xref.REFSEQ, Xref.REFSEQ_MI);
             CvTerm identityQualifier = IntactUtils.createMIQualifier(Xref.IDENTITY, Xref.IDENTITY_MI);
             // first remove refseq if not null
-            if (this.refseq!= null){
-                nucleicAcidIdentifiers.remove(this.refseq);
+
+            if (this.refseq != null && !id.equals(this.refseq)){
+                if (this.refseq instanceof AbstractIntactXref){
+                    ((AbstractIntactXref) this.refseq).setId(id);
+                }
+                else{
+                    nucleicAcidIdentifiers.remove(this.refseq);
+                    this.refseq = new InteractorXref(refseqDatabase, id, identityQualifier);
+                    nucleicAcidIdentifiers.add(this.refseq);
+                }
             }
-            this.refseq = new InteractorXref(refseqDatabase, id, identityQualifier);
-            nucleicAcidIdentifiers.add(this.refseq);
+            else if (this.refseq == null){
+                this.refseq = new InteractorXref(refseqDatabase, id, identityQualifier);
+                nucleicAcidIdentifiers.add(this.refseq);
+            }
         }
         // remove all ensembl genomes if the collection is not empty
         else if (!nucleicAcidIdentifiers.isEmpty()) {
