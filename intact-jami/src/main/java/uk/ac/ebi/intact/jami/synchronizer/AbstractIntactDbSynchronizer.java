@@ -306,14 +306,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // the reloaded object does not exist which means the object is in fact transient
             else{
                 LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
-                        +" but cannot be found in the database. It is considered as transsient and will be persisted");
+                        +" but cannot be found in the database. It is considered as transient and will be persisted");
                 // no cached object, process the transient instance and synchronize with database
+                // WARNING, we need ti reset the id to null
+                resetObjectIdentifier(intactObject);
                 if (isObjectStoredInCache((I)intactObject)){
                     return processCachedObject((I)intactObject, intactObject, mode, synchronizeProperties);
                 }
                 else {
-                    // WARNING, we need ti reset the id to null
-                    resetObjectIdentifier(intactObject);
                     return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
                 }
             }
@@ -334,12 +334,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
                         +" but cannot be found in the database. It is considered as transient and will be persisted");
                 // no cached object, process the transient instance and synchronize with database
+                // WARNING, we need ti reset the id to null
+                resetObjectIdentifier(intactObject);
                 if (isObjectStoredInCache((I)intactObject)){
                     return processCachedObject((I)intactObject, intactObject, mode, synchronizeProperties);
                 }
                 else {
-                    // WARNING, we need ti reset the id to null
-                    resetObjectIdentifier(intactObject);
                     return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
                 }
             }
