@@ -135,7 +135,7 @@ public class UserMergerOverride extends IntactDbMergerEnrichOnly<User, User> imp
             if (!containsPref){
                 toEnrichPreferences.add(pref);
                 if (getUserEnricherListener() != null){
-                    getUserEnricherListener().onRemovedPreference(userToEnrich, pref);
+                    getUserEnricherListener().onAddedPreference(userToEnrich, pref);
                 }
             }
         }
