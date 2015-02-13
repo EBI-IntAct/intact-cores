@@ -426,6 +426,9 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 // remove object and intact object from identity cache as not dirty anymore
                 unregisterObjectAfterProcessing(originalObject, persistentObject, existingInstance);
 
+                // cache object to persist if allowed
+                storeInCache((I)mergedObject, persistentObject, mergedObject);
+
                 // then set userContext
                 mergedObject.setLocalUserContext(getContext().getUserContext());
 
@@ -499,12 +502,15 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // merge cached instance with original object
             // store object and intact object in a identity cache so no lazy properties can be called before synchronization
             registerObjectBeforeProcessing(object, intactEntity, existingInstance);
-            getIntactMerger().merge(intactEntity, existingInstance);
+            T merged = getIntactMerger().merge(intactEntity, existingInstance);
             // remove object and intact object from identity cache as not dirty anymore
             unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
+            // cache object to persist if allowed
+            storeInCache((I)merged, intactEntity, merged);
 
             // then set userContext
             existingInstance.setLocalUserContext(getContext().getUserContext());
+            return merged;
         }
         return existingInstance;
     }
