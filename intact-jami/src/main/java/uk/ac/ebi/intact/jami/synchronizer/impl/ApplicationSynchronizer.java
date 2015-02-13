@@ -145,7 +145,7 @@ public class ApplicationSynchronizer extends AbstractIntactDbSynchronizer<Applic
     }
 
     @Override
-    protected void resetObjectIdentity(Application intactObject) {
+    protected void resetObjectIdentifier(Application intactObject) {
         intactObject.setAc(null);
     }
 

@@ -783,7 +783,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
     }
 
     @Override
-    protected void resetObjectIdentity(IntactCvTerm intactObject) {
+    protected void resetObjectIdentifier(IntactCvTerm intactObject) {
         intactObject.setAc(null);
     }
 

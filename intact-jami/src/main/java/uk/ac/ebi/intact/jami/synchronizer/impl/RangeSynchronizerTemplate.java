@@ -37,7 +37,7 @@ public class RangeSynchronizerTemplate<I extends AbstractIntactRange> extends Ab
     }
 
     @Override
-    protected void resetObjectIdentity(I intactObject) {
+    protected void resetObjectIdentifier(I intactObject) {
         intactObject.setAc(null);
     }
 

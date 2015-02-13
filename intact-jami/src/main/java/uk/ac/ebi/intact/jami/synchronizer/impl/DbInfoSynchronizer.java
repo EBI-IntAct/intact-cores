@@ -114,7 +114,7 @@ public class DbInfoSynchronizer extends AbstractIntactDbSynchronizer<DbInfo, DbI
     }
 
     @Override
-    protected void resetObjectIdentity(DbInfo intactObject) {
+    protected void resetObjectIdentifier(DbInfo intactObject) {
     }
 
     @Override

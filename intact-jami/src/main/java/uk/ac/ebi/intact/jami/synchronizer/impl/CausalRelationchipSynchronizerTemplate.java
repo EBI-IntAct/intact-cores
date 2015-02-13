@@ -31,7 +31,7 @@ public class CausalRelationchipSynchronizerTemplate<I extends AbstractIntactCaus
     }
 
     @Override
-    protected void resetObjectIdentity(I intactObject) {
+    protected void resetObjectIdentifier(I intactObject) {
         intactObject.setId(null);
     }
 

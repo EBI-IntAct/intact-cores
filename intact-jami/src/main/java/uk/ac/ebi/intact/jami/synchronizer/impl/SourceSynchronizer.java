@@ -585,7 +585,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     }
 
     @Override
-    protected void resetObjectIdentity(IntactSource intactObject) {
+    protected void resetObjectIdentifier(IntactSource intactObject) {
         intactObject.setAc(null);
     }
 }

@@ -151,7 +151,7 @@ public class AllosterySynchronizer extends CooperativeEffectSynchronizerTemplate
     }
 
     @Override
-    protected void resetObjectIdentity(AbstractIntactAllostery intactObject) {
+    protected void resetObjectIdentifier(AbstractIntactAllostery intactObject) {
         intactObject.setId(null);
     }
 

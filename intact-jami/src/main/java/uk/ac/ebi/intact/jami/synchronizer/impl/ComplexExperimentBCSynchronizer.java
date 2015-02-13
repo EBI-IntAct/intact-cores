@@ -450,7 +450,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void resetObjectIdentity(IntactExperiment intactObject) {
+    protected void resetObjectIdentifier(IntactExperiment intactObject) {
         intactObject.setAc(null);
     }
 }

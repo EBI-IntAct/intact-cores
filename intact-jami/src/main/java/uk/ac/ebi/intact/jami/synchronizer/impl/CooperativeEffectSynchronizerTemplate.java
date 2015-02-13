@@ -36,7 +36,7 @@ implements CooperativeEffectSynchronizer<T, C> {
     }
 
     @Override
-    protected void resetObjectIdentity(C intactObject) {
+    protected void resetObjectIdentifier(C intactObject) {
         intactObject.setId(null);
     }
 

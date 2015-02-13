@@ -61,7 +61,7 @@ public class ComplexXrefSynchronizerTemplate extends XrefSynchronizerTemplate<In
     }
 
     @Override
-    protected void resetObjectIdentity(InteractorXref intactObject) {
+    protected void resetObjectIdentifier(InteractorXref intactObject) {
         intactObject.setAc(null);
     }
 

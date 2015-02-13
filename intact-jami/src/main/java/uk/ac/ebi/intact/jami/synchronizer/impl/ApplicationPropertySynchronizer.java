@@ -109,7 +109,7 @@ public class ApplicationPropertySynchronizer extends AbstractIntactDbSynchronize
     }
 
     @Override
-    protected void resetObjectIdentity(ApplicationProperty intactObject) {
+    protected void resetObjectIdentifier(ApplicationProperty intactObject) {
         intactObject.setAc(null);
     }
 

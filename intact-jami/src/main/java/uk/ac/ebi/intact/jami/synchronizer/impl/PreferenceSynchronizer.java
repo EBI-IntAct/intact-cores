@@ -109,7 +109,7 @@ public class PreferenceSynchronizer extends AbstractIntactDbSynchronizer<Prefere
     }
 
     @Override
-    protected void resetObjectIdentity(Preference intactObject) {
+    protected void resetObjectIdentifier(Preference intactObject) {
         intactObject.setAc(null);
     }
 

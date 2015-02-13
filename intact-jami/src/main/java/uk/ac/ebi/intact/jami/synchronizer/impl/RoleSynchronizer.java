@@ -173,7 +173,7 @@ public class RoleSynchronizer extends AbstractIntactDbSynchronizer<Role, Role> {
     }
 
     @Override
-    protected void resetObjectIdentity(Role intactObject) {
+    protected void resetObjectIdentifier(Role intactObject) {
         intactObject.setAc(null);
     }
 

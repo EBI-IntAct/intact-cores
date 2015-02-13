@@ -33,7 +33,7 @@ public class AliasSynchronizerTemplate<A extends AbstractIntactAlias> extends Ab
     }
 
     @Override
-    protected void resetObjectIdentity(A intactObject) {
+    protected void resetObjectIdentifier(A intactObject) {
         intactObject.setAc(null);
     }
 

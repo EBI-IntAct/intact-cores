@@ -761,7 +761,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     }
 
     @Override
-    protected void resetObjectIdentity(I intactObject) {
+    protected void resetObjectIdentifier(I intactObject) {
         intactObject.setAc(null);
     }
 }

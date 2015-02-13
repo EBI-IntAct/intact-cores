@@ -33,7 +33,7 @@ public class ConfidenceSynchronizerTemplate<T extends Confidence, C extends Abst
     }
 
     @Override
-    protected void resetObjectIdentity(C intactObject) {
+    protected void resetObjectIdentifier(C intactObject) {
         intactObject.setAc(null);
     }
 

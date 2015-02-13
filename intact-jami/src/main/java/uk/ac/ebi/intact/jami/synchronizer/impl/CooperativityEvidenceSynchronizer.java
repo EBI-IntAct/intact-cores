@@ -154,7 +154,7 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
     }
 
     @Override
-    protected void resetObjectIdentity(IntactCooperativityEvidence intactObject) {
+    protected void resetObjectIdentifier(IntactCooperativityEvidence intactObject) {
         intactObject.setId(null);
     }
 

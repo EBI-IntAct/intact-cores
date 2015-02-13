@@ -313,7 +313,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 }
                 else {
                     // WARNING, we need ti reset the id to null
-                    resetObjectIdentity(intactObject);
+                    resetObjectIdentifier(intactObject);
                     return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
                 }
             }
@@ -339,7 +339,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 }
                 else {
                     // WARNING, we need ti reset the id to null
-                    resetObjectIdentity(intactObject);
+                    resetObjectIdentifier(intactObject);
                     return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
                 }
             }
@@ -361,7 +361,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * Reset object identity to null
      * @param intactObject
      */
-    protected abstract void resetObjectIdentity(T intactObject);
+    public abstract void resetObjectIdentifier(T intactObject);
 
     /**
      * Synchronize the properties which need to be synchronized after a merge with an existing instance
@@ -757,5 +757,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     @Override
     public void setListener(DbSynchronizerListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public boolean isObjectTransientWithIdentifier(T object) {
+        Object identifier = extractIdentifier(object);
+        if (identifier != null && getEntityManager().find(getIntactClass(), identifier) == null){
+             return true;
+        }
+        return false;
     }
 }

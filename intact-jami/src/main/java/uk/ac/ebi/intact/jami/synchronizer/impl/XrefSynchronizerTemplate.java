@@ -33,7 +33,7 @@ public class XrefSynchronizerTemplate<X extends AbstractIntactXref> extends Abst
     }
 
     @Override
-    protected void resetObjectIdentity(X intactObject) {
+    protected void resetObjectIdentifier(X intactObject) {
         intactObject.setAc(null);
     }
 

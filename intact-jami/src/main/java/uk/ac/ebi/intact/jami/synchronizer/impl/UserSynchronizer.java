@@ -271,7 +271,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     }
 
     @Override
-    protected void resetObjectIdentity(User intactObject) {
+    protected void resetObjectIdentifier(User intactObject) {
         intactObject.setAc(null);
     }
 }

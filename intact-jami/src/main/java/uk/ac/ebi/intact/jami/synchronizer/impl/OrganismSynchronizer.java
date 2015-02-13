@@ -492,7 +492,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
     }
 
     @Override
-    protected void resetObjectIdentity(IntactOrganism intactObject) {
+    protected void resetObjectIdentifier(IntactOrganism intactObject) {
         intactObject.setAc(null);
     }
 }

@@ -134,7 +134,7 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
     }
 
     @Override
-    protected void resetObjectIdentity(IntactVariableParameterValueSet intactObject) {
+    protected void resetObjectIdentifier(IntactVariableParameterValueSet intactObject) {
         intactObject.setId(null);
     }
 

@@ -833,7 +833,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
     }
 
     @Override
-    protected void resetObjectIdentity(IntactPublication intactObject) {
+    protected void resetObjectIdentifier(IntactPublication intactObject) {
         intactObject.setAc(null);
     }
 

@@ -406,7 +406,7 @@ implements IntactInteractionSynchronizer{
     }
 
     @Override
-    protected void resetObjectIdentity(IntactInteractionEvidence intactObject) {
+    protected void resetObjectIdentifier(IntactInteractionEvidence intactObject) {
         intactObject.setAc(null);
     }
 }

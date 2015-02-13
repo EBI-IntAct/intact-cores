@@ -108,7 +108,7 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
     }
 
     @Override
-    protected void resetObjectIdentity(I intactObject) {
+    protected void resetObjectIdentifier(I intactObject) {
         intactObject.setAc(null);
     }
 

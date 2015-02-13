@@ -32,7 +32,7 @@ implements ParameterSynchronizer<T,P>{
     }
 
     @Override
-    protected void resetObjectIdentity(P intactObject) {
+    protected void resetObjectIdentifier(P intactObject) {
         intactObject.setAc(null);
     }
 
