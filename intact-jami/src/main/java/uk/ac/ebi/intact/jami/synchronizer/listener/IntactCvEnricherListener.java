@@ -19,4 +19,6 @@ public interface IntactCvEnricherListener extends CvTermEnricherListener<CvTerm>
 
     public void onRemovedParent(IntactCvTerm complex, OntologyTerm removed);
 
+    public void onUpdatedDefinition(IntactCvTerm cv, String def);
+
 }

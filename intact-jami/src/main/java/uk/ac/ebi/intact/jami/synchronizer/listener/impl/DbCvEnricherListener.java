@@ -3,6 +3,7 @@ package uk.ac.ebi.intact.jami.synchronizer.listener.impl;
 import org.apache.commons.collections.map.IdentityMap;
 import psidev.psi.mi.jami.enricher.listener.EnrichmentStatus;
 import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.IntactMergerException;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
@@ -10,8 +11,8 @@ import uk.ac.ebi.intact.jami.synchronizer.FinderException;
 import uk.ac.ebi.intact.jami.synchronizer.IntactCvSynchronizer;
 import uk.ac.ebi.intact.jami.synchronizer.PersisterException;
 import uk.ac.ebi.intact.jami.synchronizer.SynchronizerException;
-import uk.ac.ebi.intact.jami.synchronizer.listener.updates.CvUpdates;
 import uk.ac.ebi.intact.jami.synchronizer.listener.IntactCvEnricherListener;
+import uk.ac.ebi.intact.jami.synchronizer.listener.updates.CvUpdates;
 import uk.ac.ebi.intact.jami.utils.IntactEnricherUtils;
 
 import java.util.List;
@@ -98,6 +99,17 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
                         }
                     }
                 }
+                if (!updates.getAddedDbAnnotations().isEmpty()){
+
+                    List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedDbAnnotations(),
+                            context.getCvAnnotationSynchronizer());
+                    ((IntactCvTerm)object).getDbAnnotations().removeAll(updates.getAddedDbAnnotations());
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactCvTerm)object).getDbAnnotations().contains(obj)){
+                            ((IntactCvTerm)object).getDbAnnotations().add(obj);
+                        }
+                    }
+                }
                 if (!updates.getAddedAliases().isEmpty()){
 
                     List<Alias> synchronizedAliases = IntactEnricherUtils.synchronizeAliasesToEnrich(updates.getAddedAliases(),
@@ -170,6 +182,17 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
                     for (Annotation obj : synchronizedAnnotations){
                         if (!object.getAnnotations().contains(obj)){
                             object.getAnnotations().add(obj);
+                        }
+                    }
+                }
+                if (!updates.getAddedDbAnnotations().isEmpty()){
+
+                    List<Annotation> synchronizedAnnotations = IntactEnricherUtils.synchronizeAnnotationsToEnrich(updates.getAddedDbAnnotations(),
+                            context.getCvAnnotationSynchronizer());
+                    ((IntactCvTerm)object).getDbAnnotations().removeAll(updates.getAddedDbAnnotations());
+                    for (Annotation obj : synchronizedAnnotations){
+                        if (!((IntactCvTerm)object).getDbAnnotations().contains(obj)){
+                            ((IntactCvTerm)object).getDbAnnotations().add(obj);
                         }
                     }
                 }
@@ -317,5 +340,22 @@ public class DbCvEnricherListener implements IntactCvEnricherListener {
     @Override
     public void onRemovedParent(IntactCvTerm t, OntologyTerm removed) {
          // nothing to do
+    }
+
+    @Override
+    public void onUpdatedDefinition(IntactCvTerm cv, String def) {
+        if (cv.getDefinition() != null && cv instanceof IntactCvTerm){
+            if (this.cvUpdates.containsKey(cv)){
+                this.cvUpdates.get(cv).getAddedDbAnnotations().addAll(
+                        AnnotationUtils.collectAllAnnotationsHavingTopic(cv.getDbAnnotations(),
+                                null, "definition"));
+            }
+            else{
+                CvUpdates updates = new CvUpdates();
+                updates.getAddedDbAnnotations().addAll(AnnotationUtils.collectAllAnnotationsHavingTopic(cv.getDbAnnotations(),
+                        null, "definition"));
+                this.cvUpdates.put(cv, updates);
+            }
+        }
     }
 }

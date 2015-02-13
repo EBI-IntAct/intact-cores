@@ -19,6 +19,7 @@ import java.util.List;
 public class CvUpdates {
     private List<Xref> addedXrefs = new ArrayList<Xref>();
     private List<Annotation> addedAnnotations = new ArrayList<Annotation>();
+    private List<Annotation> addedDbAnnotations = new ArrayList<Annotation>();
     private List<Alias> addedAliases = new ArrayList<Alias>();
     private List<Xref> addedIdentifiers = new ArrayList<Xref>();
 
@@ -42,5 +43,9 @@ public class CvUpdates {
 
     public List<OntologyTerm> getAddedParents() {
         return addedParents;
+    }
+
+    public List<Annotation> getAddedDbAnnotations() {
+        return addedDbAnnotations;
     }
 }
