@@ -89,10 +89,6 @@ public interface IntactDbSynchronizer<I, T extends Auditable> {
 
     public void setIntactClass(Class<? extends T> intactClass);
 
-    public boolean isObjectTransientWithIdentifier(T object);
-
-    public abstract void resetObjectIdentifier(T object);
-
     /**
      * Delete the object and synchronize changes with database when needed
      * @param object
