@@ -361,7 +361,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * Reset object identity to null
      * @param intactObject
      */
-    public abstract void resetObjectIdentifier(T intactObject);
+    protected abstract void resetObjectIdentifier(T intactObject);
 
     /**
      * Synchronize the properties which need to be synchronized after a merge with an existing instance
