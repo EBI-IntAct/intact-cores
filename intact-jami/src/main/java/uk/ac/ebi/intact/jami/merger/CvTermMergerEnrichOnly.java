@@ -8,6 +8,7 @@ import psidev.psi.mi.jami.model.CvTerm;
 import psidev.psi.mi.jami.model.OntologyTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.synchronizer.impl.CvTermSynchronizer;
+import uk.ac.ebi.intact.jami.synchronizer.listener.IntactCvEnricherListener;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -58,6 +59,9 @@ public class CvTermMergerEnrichOnly extends IntactDbMergerEnrichOnly<CvTerm, Int
         // merge definition
         if (mergedCv.getDefinition() == null && obj1.getDefinition() != null){
             mergedCv.setDefinition(obj1.getDefinition());
+            if (getCvTermEnricherListener() instanceof IntactCvEnricherListener){
+                ((IntactCvEnricherListener) getCvTermEnricherListener()).onUpdatedDefinition(mergedCv, null);
+            }
         }
     }
 
