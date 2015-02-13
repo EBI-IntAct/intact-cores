@@ -136,7 +136,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // detached existing instance which need to be reattached to the session
             if (identifier != null && !this.entityManager.contains(intactObject)){
                 // merge and re-attach to existing session
-                T merged = mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties, mode);
+                T merged = mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties, mode, persist);
                 // then set userContext
                 merged.setLocalUserContext(getContext().getUserContext());
 
@@ -281,12 +281,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @param intactObject : db entity which is detached from the session
      * @param identifier : db identifier for this entty
      * @param synchronizeProperties : true if the properties need to be synchronized
+     * @param persist: true if the object is still transient and needs to be persisted
      * @return  the merged entity attached to the session
      * @throws FinderException
      * @throws PersisterException
      * @throws SynchronizerException
      */
-    protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier, boolean synchronizeProperties, FlushModeType mode) throws FinderException,
+    protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier, boolean synchronizeProperties, FlushModeType mode,
+                                                      boolean persist) throws FinderException,
             PersisterException, SynchronizerException {
 
         // reload existing instance from DB
@@ -314,7 +316,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                     return processCachedObject((I)intactObject, intactObject, mode, synchronizeProperties);
                 }
                 else {
-                    return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
+                    return processTransientObject((I)intactObject, persist, mode, intactObject, synchronizeProperties);
                 }
             }
         }
@@ -340,7 +342,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                     return processCachedObject((I)intactObject, intactObject, mode, synchronizeProperties);
                 }
                 else {
-                    return processTransientObject((I)intactObject, true, mode, intactObject, synchronizeProperties);
+                    return processTransientObject((I)intactObject, persist, mode, intactObject, synchronizeProperties);
                 }
             }
 
