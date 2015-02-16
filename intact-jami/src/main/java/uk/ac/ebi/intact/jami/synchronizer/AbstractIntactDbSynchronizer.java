@@ -291,10 +291,10 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                                                       boolean persist) throws FinderException,
             PersisterException, SynchronizerException {
 
-        // reload existing instance from DB
-        T reloaded = getEntityManager().find(getIntactClass(), identifier);
         // do not merge existing instance with db instance if the merger is a merger ignoring source. Just return the existing instance in the DB
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
+            // reload existing instance from DB
+            T reloaded = getEntityManager().find(getIntactClass(), identifier);
             // the reloaded object is not null and is the one that should be used in the cache because we ignore local changes
             if (reloaded != null){
                 // cache object to persist if allowed
@@ -307,17 +307,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // the reloaded object does not exist which means the object is in fact transient
             else{
-                LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
-                        +" but cannot be found in the database. It is considered as transient and will be persisted");
-                // no cached object, process the transient instance and synchronize with database
-                // WARNING, we need ti reset the id to null
-                resetObjectIdentifier(intactObject);
-                if (isObjectStoredInCache((I)intactObject)){
-                    return processCachedObject((I)intactObject, intactObject, mode, synchronizeProperties);
-                }
-                else {
-                    return processTransientObject((I)intactObject, persist, mode, intactObject, synchronizeProperties);
-                }
+                throw new SynchronizerException("The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
+                        +" but cannot be found in the database.");
             }
         }
         // merge existing instance with whatever exists in the database
@@ -328,23 +319,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 synchronizePartiallyInitialisedProperties((I) intactObject, intactObject);
             }
             // merge or persist
-            T mergedObject = intactObject;
-            if (reloaded != null){
-                mergedObject = this.entityManager.merge(intactObject);
-            }
-            else{
-                LOGGER.log(java.util.logging.Level.WARNING, "The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
-                        +" but cannot be found in the database. It is considered as transient and will be persisted");
-                // no cached object, process the transient instance and synchronize with database
-                // WARNING, we need ti reset the id to null
-                resetObjectIdentifier(intactObject);
-                if (isObjectStoredInCache((I)intactObject)){
-                    return processCachedObject((I)intactObject, intactObject, mode, synchronizeProperties);
-                }
-                else {
-                    return processTransientObject((I)intactObject, persist, mode, intactObject, synchronizeProperties);
-                }
-            }
+            T mergedObject = this.entityManager.merge(intactObject);
 
             if (listener != null
                     && intactObject instanceof IntactPrimaryObject){
