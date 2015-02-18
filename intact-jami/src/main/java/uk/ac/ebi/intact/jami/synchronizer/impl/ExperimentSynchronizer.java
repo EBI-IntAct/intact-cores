@@ -426,7 +426,7 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getVariableParameterSynchronizer().synchronize(param, false) :
                             getContext().getVariableParameterSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    if (!intactExperiment.getVariableParameters().contains(expParam)){
+                    if (expParam != null && !intactExperiment.getVariableParameters().contains(expParam)){
                         intactExperiment.addVariableParameter(expParam);
                     }
                     index++;
@@ -455,7 +455,7 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getInteractionSynchronizer().synchronize(interaction, false) :
                             getContext().getInteractionSynchronizer().convertToPersistentObject(interaction);
                     // we have a different instance because needed to be synchronized
-                    if (!intactExperiment.getInteractionEvidences().contains(expInter)){
+                    if (expInter != null && !intactExperiment.getInteractionEvidences().contains(expInter)){
                         intactExperiment.addInteractionEvidence(expInter);
                     }
                     index++;
@@ -502,7 +502,7 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
                             getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactExperiment.getXrefs().contains(expRef)){
+                    if (expRef != null && !intactExperiment.getXrefs().contains(expRef)){
                         intactExperiment.getXrefs().add(expRef);
                     }
                     index++;
@@ -531,7 +531,7 @@ private Map<Experiment, IntactExperiment> persistedObjects;
                             getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactExperiment.getAnnotations().contains(expAnnotation)){
+                    if (expAnnotation != null && !intactExperiment.getAnnotations().contains(expAnnotation)){
                         intactExperiment.getAnnotations().add(expAnnotation);
                     }
                     index++;

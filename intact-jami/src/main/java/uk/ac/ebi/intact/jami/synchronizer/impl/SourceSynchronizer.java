@@ -467,7 +467,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                             getContext().getSourceXrefSynchronizer().synchronize(xref, false) :
                             getContext().getSourceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactSource.getDbXrefs().contains(cvXref)){
+                    if (cvXref != null && !intactSource.getDbXrefs().contains(cvXref)){
                         intactSource.getDbXrefs().add(cvXref);
                     }
                     index++;
@@ -496,7 +496,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                             getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getSourceAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactSource.getDbAnnotations().contains(cvAnnotation)){
+                    if (cvAnnotation != null && !intactSource.getDbAnnotations().contains(cvAnnotation)){
                         intactSource.getDbAnnotations().add(cvAnnotation);
                     }
                     index++;
@@ -525,7 +525,7 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
                             getContext().getSourceAliasSynchronizer().synchronize(alias, false) :
                             getContext().getSourceAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactSource.getSynonyms().contains(cvAlias)){
+                    if (cvAlias != null && !intactSource.getSynonyms().contains(cvAlias)){
                         intactSource.getSynonyms().add(cvAlias);
                     }
                     index++;

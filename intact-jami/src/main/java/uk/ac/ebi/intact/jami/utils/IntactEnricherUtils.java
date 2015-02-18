@@ -36,7 +36,7 @@ public class IntactEnricherUtils {
             // do not persist or merge annotations because of cascades
             Annotation expAnnotation = (Annotation)annotationSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedAnnots.contains(expAnnotation)){
+            if (expAnnotation != null && !synchronizedAnnots.contains(expAnnotation)){
                 synchronizedAnnots.add(expAnnotation);
             }
         }
@@ -62,7 +62,7 @@ public class IntactEnricherUtils {
             // do not persist or merge annotations because of cascades
             Role expAnnotation = (Role)roleSynchronizer.synchronize(role, true);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedRoles.contains(expAnnotation)){
+            if (expAnnotation != null && !synchronizedRoles.contains(expAnnotation)){
                 synchronizedRoles.add(expAnnotation);
             }
         }
@@ -88,7 +88,7 @@ public class IntactEnricherUtils {
             // do not persist or merge aliases because of cascades
             Alias expAlias = (Alias)aliasSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedAliases.contains(expAlias)){
+            if (expAlias != null && !synchronizedAliases.contains(expAlias)){
                 synchronizedAliases.add(expAlias);
             }
         }
@@ -114,7 +114,7 @@ public class IntactEnricherUtils {
             // do not persist or merge variable parameters because of cascades
             VariableParameter cpExp = (VariableParameter)vPSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedParameters.contains(cpExp)){
+            if (cpExp != null && !synchronizedParameters.contains(cpExp)){
                 synchronizedParameters.add(cpExp);
             }
         }
@@ -140,7 +140,7 @@ public class IntactEnricherUtils {
             // do not persist or merge variable parameters because of cascades
             VariableParameterValueSet cpExp = (VariableParameterValueSet)vPSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedParameters.contains(cpExp)){
+            if (cpExp != null && !synchronizedParameters.contains(cpExp)){
                 synchronizedParameters.add(cpExp);
             }
         }
@@ -166,7 +166,7 @@ public class IntactEnricherUtils {
             // do not persist or merge cv parents because of cascades
             C expCv = (C)cvSynchronizer.synchronize(cv, true);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedCvs.contains(expCv)){
+            if (expCv != null && !synchronizedCvs.contains(expCv)){
                 synchronizedCvs.add(expCv);
             }
         }
@@ -187,12 +187,12 @@ public class IntactEnricherUtils {
                                                 XrefSynchronizer xrefSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Xref> synchronizedXrefs = new ArrayList<Xref>(xrefsToBeAdded.size());
+        Set<Xref> goReferences = new TreeSet<Xref>(new IntactComplexGoXrefComparator());
         for (Xref ref : xrefsToBeAdded){
             // do not persist or merge xrefs because of cascades
             Xref expRef = (Xref)xrefSynchronizer.synchronize(ref, false);
-            Set<Xref> goReferences = new TreeSet<Xref>(new IntactComplexGoXrefComparator());
-            for (Xref obj : synchronizedXrefs){
-                if (goReferences.add(obj)){
+            if (expRef != null){
+                if (goReferences.add(expRef)){
                     synchronizedXrefs.add(expRef);
                 }
             }
@@ -218,7 +218,7 @@ public class IntactEnricherUtils {
             // do not persist or merge interactors because of cascades
             Interactor expRef = (Interactor)interactorSynchronizer.synchronize(ref, true);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedInteractors.contains(expRef)){
+            if (expRef != null && !synchronizedInteractors.contains(expRef)){
                 synchronizedInteractors.add(expRef);
             }
         }
@@ -243,7 +243,7 @@ public class IntactEnricherUtils {
             // do not persist or merge confidences because of cascades
             C expConf = (C)confidenceSynchronizer.synchronize(conf, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedConfidences.contains(expConf)){
+            if (expConf != null && !synchronizedConfidences.contains(expConf)){
                 synchronizedConfidences.add(expConf);
             }
         }
@@ -268,7 +268,7 @@ public class IntactEnricherUtils {
             // do not persist or merge parameters because of cascades
             C expConf = (C)parameterSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedParameters.contains(expConf)){
+            if (expConf != null && !synchronizedParameters.contains(expConf)){
                 synchronizedParameters.add(expConf);
             }
         }
@@ -293,7 +293,7 @@ public class IntactEnricherUtils {
             // do not persist or merge participants because of cascades
             C expParticipant = (C)participantSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedParticipants.contains(expParticipant)){
+            if (expParticipant != null && !synchronizedParticipants.contains(expParticipant)){
                 synchronizedParticipants.add(expParticipant);
             }
         }
@@ -318,7 +318,7 @@ public class IntactEnricherUtils {
             // do not persist or merge interactions because of cascades
             InteractionEvidence expInteraction = (InteractionEvidence)interactionSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedInteractions.contains(expInteraction)){
+            if (expInteraction != null && !synchronizedInteractions.contains(expInteraction)){
                 synchronizedInteractions.add(expInteraction);
 
             }
@@ -344,7 +344,7 @@ public class IntactEnricherUtils {
             // do not persist or merge experiments because of cascades
             Experiment expInteraction = (Experiment)experimentSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedInteractions.contains(expInteraction)){
+            if (expInteraction != null && !synchronizedInteractions.contains(expInteraction)){
                 synchronizedInteractions.add(expInteraction);
             }
         }
@@ -369,7 +369,7 @@ public class IntactEnricherUtils {
             // do not persist or merge ranges because of cascades
             Range expInteraction = (Range)rangeSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedRanges.contains(expInteraction)){
+            if (expInteraction != null && !synchronizedRanges.contains(expInteraction)){
                 synchronizedRanges.add(expInteraction);
             }
         }
@@ -394,7 +394,7 @@ public class IntactEnricherUtils {
             // do not persist or merge ranges because of cascades
             F expInteraction = (F)featureSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedfeatures.contains(expInteraction)){
+            if (expInteraction != null && !synchronizedfeatures.contains(expInteraction)){
                 synchronizedfeatures.add(expInteraction);
             }
         }
@@ -419,7 +419,7 @@ public class IntactEnricherUtils {
             // do not persist or merge causal relationships because of cascades
             F expInteraction = (F)crSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedCr.contains(para)){
+            if (expInteraction != null && !synchronizedCr.contains(para)){
                 synchronizedCr.add(expInteraction);
             }
         }
@@ -444,7 +444,7 @@ public class IntactEnricherUtils {
             // do not persist or merge lifecycle because of cascades
             C expLc = (C)lcSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (!synchronizedLc.contains(expLc)){
+            if (expLc != null && !synchronizedLc.contains(expLc)){
                 synchronizedLc.add(expLc);
             }
         }

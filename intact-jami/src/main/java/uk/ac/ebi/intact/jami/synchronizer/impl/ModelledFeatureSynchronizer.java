@@ -91,7 +91,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                             getContext().getModelledRangeSynchronizer().synchronize(range, false) :
                             getContext().getModelledRangeSynchronizer().convertToPersistentObject(range);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getRanges().contains(featureRange)){
+                    if (featureRange != null && !intactFeature.getRanges().contains(featureRange)){
                         intactFeature.getRanges().add(featureRange);
                     }
                     index++;
@@ -135,7 +135,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                             getContext().getModelledFeatureXrefSynchronizer().synchronize(xref, false) :
                             getContext().getModelledFeatureXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getDbXrefs().contains(featureXref)){
+                    if (featureXref != null && !intactFeature.getDbXrefs().contains(featureXref)){
                         intactFeature.getDbXrefs().add(featureXref);
                     }
                     index++;
@@ -164,7 +164,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                             getContext().getModelledFeatureAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getModelledFeatureAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getAnnotations().contains(featureAnnotation)){
+                    if (featureAnnotation != null && !intactFeature.getAnnotations().contains(featureAnnotation)){
                         intactFeature.getAnnotations().add(featureAnnotation);
                     }
                     index++;
@@ -193,7 +193,7 @@ public class ModelledFeatureSynchronizer extends FeatureSynchronizerTemplate<Mod
                             getContext().getModelledFeatureAliasSynchronizer().synchronize(alias, false) :
                             getContext().getModelledFeatureAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getAliases().contains(featureAlias)){
+                    if (featureAlias != null && !intactFeature.getAliases().contains(featureAlias)){
                         intactFeature.getAliases().add(featureAlias);
                     }
                     index++;

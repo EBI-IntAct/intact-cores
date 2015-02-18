@@ -85,7 +85,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                             getContext().getFeatureParameterSynchronizer().synchronize(parameter, false) :
                             getContext().getFeatureParameterSynchronizer().convertToPersistentObject(parameter);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getParameters().contains(persistentParameter)){
+                    if (persistentParameter != null && !intactFeature.getParameters().contains(persistentParameter)){
                         intactFeature.getParameters().add(persistentParameter);
                     }
                     index++;
@@ -122,7 +122,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                             getContext().getExperimentalRangeSynchronizer().synchronize(range, false) :
                             getContext().getExperimentalRangeSynchronizer().convertToPersistentObject(range);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getRanges().contains(featureRange)){
+                    if (featureRange != null && !intactFeature.getRanges().contains(featureRange)){
                         intactFeature.getRanges().add(featureRange);
                     }
                     index++;
@@ -170,7 +170,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                             getContext().getFeatureDetectionMethodSynchronizer().synchronize(method, true) :
                             getContext().getFeatureDetectionMethodSynchronizer().convertToPersistentObject(method);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getDbDetectionMethods().contains(featureTerm)){
+                    if (featureTerm != null && !intactFeature.getDbDetectionMethods().contains(featureTerm)){
                         intactFeature.getDbDetectionMethods().add(featureTerm);
                     }
                     index++;
@@ -212,7 +212,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                             getContext().getFeatureEvidenceXrefSynchronizer().synchronize(xref, false) :
                             getContext().getFeatureEvidenceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getDbXrefs().contains(featureXref)){
+                    if (featureXref != null && !intactFeature.getDbXrefs().contains(featureXref)){
                         intactFeature.getDbXrefs().add(featureXref);
                     }
                     index++;
@@ -241,7 +241,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                             getContext().getFeatureEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getFeatureEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getAnnotations().contains(featureAnnotation)){
+                    if (featureAnnotation != null && !intactFeature.getAnnotations().contains(featureAnnotation)){
                         intactFeature.getAnnotations().add(featureAnnotation);
                     }
                     index++;
@@ -270,7 +270,7 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
                             getContext().getFeatureEvidenceAliasSynchronizer().synchronize(alias, false) :
                             getContext().getFeatureEvidenceAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactFeature.getAliases().contains(featureAlias)){
+                    if (featureAlias != null && !intactFeature.getAliases().contains(featureAlias)){
                         intactFeature.getAliases().add(featureAlias);
                     }
                     index++;

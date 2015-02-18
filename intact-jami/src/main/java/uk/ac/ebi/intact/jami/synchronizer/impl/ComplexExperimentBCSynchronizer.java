@@ -351,7 +351,9 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                             getContext().getExperimentXrefSynchronizer().synchronize(xref, false) :
                             getContext().getExperimentXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    intactExperiment.getXrefs().add(expRef);
+                    if (expRef != null && !intactExperiment.getXrefs().contains(expRef)){
+                        intactExperiment.getXrefs().add(expRef);
+                    }
                     index++;
                 }
             }
@@ -378,7 +380,7 @@ public class ComplexExperimentBCSynchronizer extends AbstractIntactDbSynchronize
                             getContext().getExperimentAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getExperimentAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactExperiment.getAnnotations().contains(expAnnotation)){
+                    if (expAnnotation != null && !intactExperiment.getAnnotations().contains(expAnnotation)){
                         intactExperiment.getAnnotations().add(expAnnotation);
                     }
                     index++;

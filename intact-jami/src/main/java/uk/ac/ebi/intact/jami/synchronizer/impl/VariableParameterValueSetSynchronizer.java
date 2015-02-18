@@ -114,7 +114,9 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
                             getContext().getVariableParameterValueSynchronizer().synchronize(value, false):
                             getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
                     // we have a different instance because needed to be synchronized
-                    object.add(valueCheck);
+                    if (valueCheck != null){
+                        object.add(valueCheck);
+                    }
                     index++;
                 }
             }

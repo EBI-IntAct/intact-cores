@@ -77,7 +77,9 @@ public class CooperativityEvidenceSynchronizer extends AbstractIntactDbSynchroni
                             getContext().getTopicSynchronizer().synchronize(param, true) :
                             getContext().getTopicSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    object.getEvidenceMethods().add(expParam);
+                    if (expParam != null && !object.getEvidenceMethods().contains(expParam)){
+                        object.getEvidenceMethods().add(expParam);
+                    }
                     index++;
                 }
             }

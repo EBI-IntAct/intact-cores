@@ -613,7 +613,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             synchronize(term, true) :
                             convertToPersistentObject(term);
                     // we have a different instance because needed to be synchronized
-                    if (!intactCv.getParents().contains(cvParent)){
+                    if (cvParent != null && !intactCv.getParents().contains(cvParent)){
                         intactCv.addParent(cvParent);
                     }
                     index++;
@@ -642,7 +642,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             getContext().getCvXrefSynchronizer().synchronize(xref, false) :
                             getContext().getCvXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactCv.getDbXrefs().contains(cvXref)){
+                    if (cvXref != null && !intactCv.getDbXrefs().contains(cvXref)){
                         intactCv.getDbXrefs().add(cvXref);
                     }
                     index++;
@@ -671,7 +671,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             getContext().getCvAnnotationSynchronizer().synchronize(annotation, false):
                             getContext().getCvAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactCv.getDbAnnotations().contains(cvAnnotation)){
+                    if (cvAnnotation != null && !intactCv.getDbAnnotations().contains(cvAnnotation)){
                         intactCv.getDbAnnotations().add(cvAnnotation);
                     }
                     index++;
@@ -700,7 +700,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
                             getContext().getCvAliasSynchronizer().synchronize(alias, false):
                             getContext().getCvAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactCv.getSynonyms().contains(cvAlias)){
+                    if (cvAlias != null && !intactCv.getSynonyms().contains(cvAlias)){
                         intactCv.getSynonyms().add(cvAlias);
                     }
                     index++;

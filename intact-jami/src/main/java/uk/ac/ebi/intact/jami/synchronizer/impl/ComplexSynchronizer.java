@@ -206,7 +206,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexXrefSynchronizer().synchronize(xref, false) :
                             getContext().getComplexXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (goReferences.add(cvXref)){
+                    if (cvXref != null && goReferences.add(cvXref)){
                         intactInteractor.getDbXrefs().add(cvXref);
                     }
                     index++;
@@ -372,7 +372,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexLifecycleSynchronizer().synchronize(event, false) :
                             getContext().getComplexLifecycleSynchronizer().convertToPersistentObject(event);
                     // we have a different instance because needed to be synchronized
-                    if (!intactComplex.getLifecycleEvents().contains(evt)){
+                    if (evt != null && !intactComplex.getLifecycleEvents().contains(evt)){
                         intactComplex.getLifecycleEvents().add(evt);
                     }
                     index++;
@@ -402,7 +402,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getCooperativeEffectSynchronizer().synchronize(param, false) :
                             getContext().getCooperativeEffectSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getCooperativeEffects().contains(expParam)){
+                    if (expParam != null && !intactInteraction.getCooperativeEffects().contains(expParam)){
                         intactInteraction.getCooperativeEffects().add(expParam);
                     }
                     index++;
@@ -433,7 +433,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             (ModelledParticipant) getContext().getModelledParticipantSynchronizer().synchronize(participant, false) :
                             (ModelledParticipant) getContext().getModelledParticipantSynchronizer().convertToPersistentObject(participant);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getParticipants().contains(expPart)){
+                    if (expPart != null && !intactInteraction.getParticipants().contains(expPart)){
                         intactInteraction.addParticipant(expPart);
                     }
                     index++;
@@ -494,7 +494,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             this.experimentBCSynchronizer.synchronize(exp, true) :
                             this.experimentBCSynchronizer.convertToPersistentObject(exp);
                     // we have a different instance because needed to be synchronized
-                    if (processedExperiments.add(expPar)){
+                    if (expPar != null && processedExperiments.add(expPar)){
                         intactComplex.getExperiments().add(expPar);
                     }
                     index++;
@@ -523,7 +523,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexParameterSynchronizer().synchronize(param, false) :
                             getContext().getComplexParameterSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getModelledParameters().contains(expPar)){
+                    if (expPar != null && !intactInteraction.getModelledParameters().contains(expPar)){
                         intactInteraction.getModelledParameters().add(expPar);
                     }
                     index++;
@@ -552,7 +552,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
                             getContext().getComplexConfidenceSynchronizer().synchronize(confidence, false) :
                             getContext().getComplexConfidenceSynchronizer().convertToPersistentObject(confidence);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getModelledConfidences().contains(expConf)){
+                    if (expConf != null && !intactInteraction.getModelledConfidences().contains(expConf)){
                         intactInteraction.getModelledConfidences().add(expConf);
                     }
                     index++;

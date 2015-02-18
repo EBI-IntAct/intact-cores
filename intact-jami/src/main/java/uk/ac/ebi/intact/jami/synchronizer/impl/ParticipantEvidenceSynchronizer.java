@@ -103,7 +103,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getExperimentalCausalRelationshipSynchronizer().synchronize(causalRelationship, false) :
                             getContext().getExperimentalCausalRelationshipSynchronizer().convertToPersistentObject(causalRelationship);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getCausalRelationships().contains(persistentRelationship)){
+                    if (persistentRelationship != null && !intactEntity.getCausalRelationships().contains(persistentRelationship)){
                         intactEntity.getCausalRelationships().add(persistentRelationship);
                     }
                     index++;
@@ -141,7 +141,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceConfidenceSynchronizer().synchronize(confidence, false) :
                             getContext().getParticipantEvidenceConfidenceSynchronizer().convertToPersistentObject(confidence);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getConfidences().contains(persistentConfidence)){
+                    if (persistentConfidence != null && !intactEntity.getConfidences().contains(persistentConfidence)){
                         intactEntity.getConfidences().add(persistentConfidence);
                     }
                     index++;
@@ -169,7 +169,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getExperimentalPreparationSynchronizer().synchronize(preparation, true) :
                             getContext().getExperimentalPreparationSynchronizer().convertToPersistentObject(preparation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getExperimentalPreparations().contains(persistentPreparation)){
+                    if (persistentPreparation != null && !intactEntity.getExperimentalPreparations().contains(persistentPreparation)){
                         intactEntity.getExperimentalPreparations().add(persistentPreparation);
                     }
                     index++;
@@ -197,7 +197,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceParameterSynchronizer().synchronize(parameter, false) :
                             getContext().getParticipantEvidenceParameterSynchronizer().convertToPersistentObject(parameter);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getParameters().contains(persistentParameter)){
+                    if (persistentParameter != null && !intactEntity.getParameters().contains(persistentParameter)){
                         intactEntity.getParameters().add(persistentParameter);
                     }
                     index++;
@@ -225,7 +225,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantDetectionMethodSynchronizer().synchronize(term, true) :
                             getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(term);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getDbIdentificationMethods().contains(persistentTerm)){
+                    if (persistentTerm != null && !intactEntity.getDbIdentificationMethods().contains(persistentTerm)){
                         intactEntity.getDbIdentificationMethods().add(persistentTerm);
                     }
                     index++;
@@ -254,7 +254,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceXrefSynchronizer().synchronize(xref, false) :
                             getContext().getParticipantEvidenceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getXrefs().contains(persistentXref)){
+                    if (persistentXref != null && !intactEntity.getXrefs().contains(persistentXref)){
                         intactEntity.getXrefs().add(persistentXref);
                     }
                     index++;
@@ -283,7 +283,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getParticipantEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getAnnotations().contains(persistentAnnotation)){
+                    if (persistentAnnotation != null && !intactEntity.getAnnotations().contains(persistentAnnotation)){
                         intactEntity.getAnnotations().add(persistentAnnotation);
                     }
                     index++;
@@ -312,7 +312,7 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getParticipantEvidenceAliasSynchronizer().synchronize(alias, false) :
                             getContext().getParticipantEvidenceAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getAliases().contains(persistentAlias)){
+                    if (persistentAlias != null && !intactEntity.getAliases().contains(persistentAlias)){
                         intactEntity.getAliases().add(persistentAlias);
                     }
                     index++;

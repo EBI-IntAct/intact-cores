@@ -56,7 +56,7 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
                             getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
                             getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactObj.getXrefs().contains(objRef)){
+                    if (objRef != null && !intactObj.getXrefs().contains(objRef)){
                         intactObj.getXrefs().add(objRef);
                     }
                     index++;

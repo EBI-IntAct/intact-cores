@@ -142,7 +142,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
                             getContext().getRoleSynchronizer().synchronize(role, true) :
                             getContext().getRoleSynchronizer().convertToPersistentObject(role);
                     // we have a different instance because needed to be synchronized
-                    if (!intactUser.getRoles().contains(userRole)){
+                    if (userRole != null && !intactUser.getRoles().contains(userRole)){
                         intactUser.addRole(userRole);
                     }
                     index++;
@@ -171,7 +171,7 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
                             getContext().getPreferenceSynchronizer().synchronize(pref, false) :
                             getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactUser.getPreferences().contains(userPref)){
+                    if (userPref != null && !intactUser.getPreferences().contains(userPref)){
                         intactUser.addPreference(userPref);
                     }
                     index++;

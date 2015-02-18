@@ -120,7 +120,7 @@ implements CooperativeEffectSynchronizer<T, C> {
                             getContext().getComplexSynchronizer().synchronize(convertedComplex, true) :
                             getContext().getComplexSynchronizer().convertToPersistentObject(convertedComplex);
                     // we have a different instance because needed to be synchronized
-                    if (!object.getAffectedInteractions().contains(persistentInteraction)){
+                    if (persistentInteraction != null && !object.getAffectedInteractions().contains(persistentInteraction)){
                         object.getAffectedInteractions().add(persistentInteraction);
                     }
                     index++;
@@ -148,7 +148,7 @@ implements CooperativeEffectSynchronizer<T, C> {
                             getContext().getCooperativityEvidenceSynchronizer().synchronize(param, false) :
                             getContext().getCooperativityEvidenceSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    if (!object.getCooperativityEvidences().contains(expParam)){
+                    if (expParam != null && !object.getCooperativityEvidences().contains(expParam)){
                         object.getCooperativityEvidences().add(expParam);
                     }
                     index++;

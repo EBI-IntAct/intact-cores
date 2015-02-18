@@ -412,7 +412,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                             getContext().getInteractorXrefSynchronizer().synchronize(xref, false) :
                             getContext().getInteractorXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteractor.getDbXrefs().contains(cvXref)){
+                    if (cvXref != null && !intactInteractor.getDbXrefs().contains(cvXref)){
                         intactInteractor.getDbXrefs().add(cvXref);
                     }
                     index++;
@@ -441,7 +441,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                             getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getInteractorAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteractor.getDbAnnotations().contains(cvAnnotation)){
+                    if (cvAnnotation != null && !intactInteractor.getDbAnnotations().contains(cvAnnotation)){
                         intactInteractor.getDbAnnotations().add(cvAnnotation);
                     }
                     index++;
@@ -470,7 +470,7 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
                             getContext().getInteractorAliasSynchronizer().synchronize(alias, false) :
                             getContext().getInteractorAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteractor.getDbAliases().contains(cvAlias)){
+                    if (cvAlias != null && !intactInteractor.getDbAliases().contains(cvAlias)){
                         intactInteractor.getDbAliases().add(cvAlias);
                     }
                     index++;

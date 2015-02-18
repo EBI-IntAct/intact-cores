@@ -11,6 +11,7 @@ import uk.ac.ebi.intact.jami.synchronizer.listener.DbSynchronizerListener;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -137,9 +138,11 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             if (identifier != null && !this.entityManager.contains(intactObject)){
                 // merge and re-attach to existing session
                 T merged = mergeExistingInstanceToCurrentSession(intactObject, identifier, needToSynchronizeProperties, mode, persist);
-                // then set userContext
-                merged.setLocalUserContext(getContext().getUserContext());
-
+                // can be null if object does not exist in database anymore
+                if (merged != null){
+                    // then set userContext
+                    merged.setLocalUserContext(getContext().getUserContext());
+                }
                 // reinit flushmode
                 resetEntityManagerFlushType(mode);
                 return merged;
@@ -290,26 +293,23 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
     protected T mergeExistingInstanceToCurrentSession(T intactObject, Object identifier, boolean synchronizeProperties, FlushModeType mode,
                                                       boolean persist) throws FinderException,
             PersisterException, SynchronizerException {
-
+        // reload existing instance from DB
+        T reloaded = getEntityManager().find(getIntactClass(), identifier);
+        if (reloaded == null){
+            LOGGER.log(Level.WARNING, "The persistent entity " + intactObject.getClass() + " has an identifier " + identifier
+                    + " but cannot be found in the database. It is considered as deleted");
+            return null;
+        }
         // do not merge existing instance with db instance if the merger is a merger ignoring source. Just return the existing instance in the DB
         if (getIntactMerger() instanceof IntactDbMergerIgnoringLocalObject){
-            // reload existing instance from DB
-            T reloaded = getEntityManager().find(getIntactClass(), identifier);
             // the reloaded object is not null and is the one that should be used in the cache because we ignore local changes
-            if (reloaded != null){
-                // cache object to persist if allowed
-                storeInCache((I)intactObject, intactObject, reloaded);
-                if (listener != null
-                        && intactObject instanceof IntactPrimaryObject){
-                    listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)reloaded);
-                }
-                return reloaded;
+            // cache object to persist if allowed
+            storeInCache((I)intactObject, intactObject, reloaded);
+            if (listener != null
+                    && intactObject instanceof IntactPrimaryObject){
+                listener.onMerged((IntactPrimaryObject)intactObject, (IntactPrimaryObject)reloaded);
             }
-            // the reloaded object does not exist which means the object is in fact transient
-            else{
-                throw new SynchronizerException("The persistent entity "+intactObject.getClass() + " has an identifier "+identifier
-                        +" but cannot be found in the database.");
-            }
+            return reloaded;
         }
         // merge existing instance with whatever exists in the database
         else{

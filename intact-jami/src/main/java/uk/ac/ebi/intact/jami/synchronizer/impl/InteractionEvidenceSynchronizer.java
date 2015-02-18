@@ -190,7 +190,7 @@ implements IntactInteractionSynchronizer{
                             getContext().getVariableParameterValueSetSynchronizer().synchronize(param, false) :
                             getContext().getVariableParameterValueSetSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getVariableParameterValues().contains(expParam)){
+                    if (expParam != null && !intactInteraction.getVariableParameterValues().contains(expParam)){
                         intactInteraction.getVariableParameterValues().add(expParam);
                     }
                     index++;
@@ -221,7 +221,7 @@ implements IntactInteractionSynchronizer{
                             getContext().getParticipantEvidenceSynchronizer().synchronize(participant, false) :
                             getContext().getParticipantEvidenceSynchronizer().convertToPersistentObject(participant);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getParticipants().contains(expPart)){
+                    if (expPart != null && !intactInteraction.getParticipants().contains(expPart)){
                         intactInteraction.addParticipant(expPart);
                     }
                     index++;
@@ -250,7 +250,7 @@ implements IntactInteractionSynchronizer{
                             getContext().getInteractionParameterSynchronizer().synchronize(param, false) :
                             getContext().getInteractionParameterSynchronizer().convertToPersistentObject(param);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getParameters().contains(expPar)){
+                    if (expPar != null && !intactInteraction.getParameters().contains(expPar)){
                         intactInteraction.getParameters().add(expPar);
                     }
                     index++;
@@ -288,7 +288,7 @@ implements IntactInteractionSynchronizer{
                             getContext().getInteractionXrefSynchronizer().synchronize(xref, false) :
                             getContext().getInteractionXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getDbXrefs().contains(expRef)){
+                    if (expRef != null && !intactInteraction.getDbXrefs().contains(expRef)){
                         intactInteraction.getDbXrefs().add(expRef);
                     }
                     index++;
@@ -317,7 +317,7 @@ implements IntactInteractionSynchronizer{
                             getContext().getInteractionAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getInteractionAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getDbAnnotations().contains(expAnnotation)){
+                    if (expAnnotation != null && !intactInteraction.getDbAnnotations().contains(expAnnotation)){
                         intactInteraction.getDbAnnotations().add(expAnnotation);
                     }
                     index++;
@@ -346,7 +346,7 @@ implements IntactInteractionSynchronizer{
                             getContext().getInteractionConfidenceSynchronizer().synchronize(confidence, false) :
                             getContext().getInteractionConfidenceSynchronizer().convertToPersistentObject(confidence);
                     // we have a different instance because needed to be synchronized
-                    if (!intactInteraction.getConfidences().contains(expConf)){
+                    if (expConf != null && !intactInteraction.getConfidences().contains(expConf)){
                         intactInteraction.getConfidences().add(expConf);
                     }
                     index++;

@@ -354,7 +354,7 @@ public class OrganismSynchronizer extends AbstractIntactDbSynchronizer<Organism,
                             getContext().getOrganismAliasSynchronizer().synchronize(alias, false) :
                             getContext().getOrganismAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactOrganism.getAliases().contains(organismAlias)){
+                    if (organismAlias != null && !intactOrganism.getAliases().contains(organismAlias)){
                         intactOrganism.getAliases().add(organismAlias);
                     }
                     index++;

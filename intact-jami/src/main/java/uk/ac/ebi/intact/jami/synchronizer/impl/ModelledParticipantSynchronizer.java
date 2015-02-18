@@ -86,7 +86,7 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getModelledCausalRelationshipSynchronizer().synchronize(causalRelationship, false) :
                             getContext().getModelledCausalRelationshipSynchronizer().convertToPersistentObject(causalRelationship);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getCausalRelationships().contains(persistentRelationship)){
+                    if (persistentRelationship != null && !intactEntity.getCausalRelationships().contains(persistentRelationship)){
                         intactEntity.getCausalRelationships().add(persistentRelationship);
                     }
                     index++;
@@ -117,7 +117,7 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getExperimentalRoleSynchronizer().synchronize(role, true) :
                             getContext().getExperimentalRoleSynchronizer().convertToPersistentObject(role);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getDbExperimentalRoles().contains(persistentRole)){
+                    if (persistentRole != null && !intactEntity.getDbExperimentalRoles().contains(persistentRole)){
                         intactEntity.getDbExperimentalRoles().add(persistentRole);
                     }
                     index++;
@@ -146,7 +146,7 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getModelledParticipantXrefSynchronizer().synchronize(xref, false) :
                             getContext().getModelledParticipantXrefSynchronizer().convertToPersistentObject(xref);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getXrefs().contains(persistentXref)){
+                    if (persistentXref != null && !intactEntity.getXrefs().contains(persistentXref)){
                         intactEntity.getXrefs().add(persistentXref);
                     }
                     index++;
@@ -175,7 +175,7 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getModelledParticipantAnnotationSynchronizer().synchronize(annotation, false) :
                             getContext().getModelledParticipantAnnotationSynchronizer().convertToPersistentObject(annotation);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getAnnotations().contains(persistentAnnotation)){
+                    if (persistentAnnotation != null && !intactEntity.getAnnotations().contains(persistentAnnotation)){
                         intactEntity.getAnnotations().add(persistentAnnotation);
                     }
                     index++;
@@ -204,7 +204,7 @@ public class ModelledParticipantSynchronizer extends ParticipantSynchronizerTemp
                             getContext().getModelledParticipantAliasSynchronizer().synchronize(alias, false) :
                             getContext().getModelledParticipantAliasSynchronizer().convertToPersistentObject(alias);
                     // we have a different instance because needed to be synchronized
-                    if (!intactEntity.getAliases().contains(persistentAlias)){
+                    if (persistentAlias != null && !intactEntity.getAliases().contains(persistentAlias)){
                         intactEntity.getAliases().add(persistentAlias);
                     }
                     index++;

@@ -71,7 +71,7 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
                                 getContext().getInteractorSynchronizer().synchronize(interactor, true) :
                                 getContext().getInteractorSynchronizer().convertToPersistentObject(intactInteractor);
                         // we have a different instance because needed to be synchronized
-                        if (processedInteractors.add(interactorCheck)){
+                        if (interactorCheck != null && processedInteractors.add(interactorCheck)){
                             intactInteractor.add(interactorCheck);
                         }
                     }
