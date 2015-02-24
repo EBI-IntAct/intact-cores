@@ -20,8 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jami.core.version>1.1.3-SNAPSHOT</jami.core.version>
-        <jami.version>1.0.1-SNAPSHOT</jami.version>
+        <jami.core.version>1.2.1</jami.core.version>
+        <jami.enricher.version>1.1.1</jami.enricher.version>
         <spring.version>3.2.4.RELEASE</spring.version>
     </properties>
 
@@ -42,14 +42,14 @@
         <dependency>
             <groupId>psidev.psi.mi.jami</groupId>
             <artifactId>jami-core</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>${jami.core.version}</version>
         </dependency>
 
         <!-- JAMI enricher -->
         <dependency>
             <groupId>psidev.psi.mi.jami</groupId>
             <artifactId>jami-enricher</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>${jami.enricher.version}</version>
         </dependency>
 
         <!-- commons lang -->
