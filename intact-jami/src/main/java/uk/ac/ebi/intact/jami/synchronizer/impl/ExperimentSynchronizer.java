@@ -1,12 +1,14 @@
 package uk.ac.ebi.intact.jami.synchronizer.impl;
 
 import org.apache.commons.collections.map.IdentityMap;
+import psidev.psi.mi.jami.enricher.ExperimentEnricher;
 import psidev.psi.mi.jami.model.*;
 import psidev.psi.mi.jami.utils.ExperimentUtils;
 import psidev.psi.mi.jami.utils.clone.ExperimentCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ExperimentMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.IntactDbMerger;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactExperiment;
 import uk.ac.ebi.intact.jami.model.extension.IntactOrganism;
@@ -589,7 +591,17 @@ private Map<Experiment, IntactExperiment> persistedObjects;
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new ExperimentMergerEnrichOnly());
+        ExperimentMergerEnrichOnly merger = new ExperimentMergerEnrichOnly();
+        merger.setExperimentEnricherListener(this.enricherListener);
+        super.setIntactMerger(merger);
+    }
+
+    @Override
+    public void setIntactMerger(IntactDbMerger<Experiment, IntactExperiment> intactMerger) {
+        if (intactMerger instanceof ExperimentEnricher){
+            ((ExperimentEnricher)intactMerger).setExperimentEnricherListener(this.enricherListener);
+        }
+        super.setIntactMerger(intactMerger);
     }
 
     @Override
