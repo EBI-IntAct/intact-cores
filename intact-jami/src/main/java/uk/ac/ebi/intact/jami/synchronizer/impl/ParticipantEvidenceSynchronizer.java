@@ -338,7 +338,9 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new ParticipantEvidenceMergerEnrichOnly<ParticipantEvidence, IntactParticipantEvidence>());
+        ParticipantEvidenceMergerEnrichOnly<ParticipantEvidence, IntactParticipantEvidence> merger =new ParticipantEvidenceMergerEnrichOnly<ParticipantEvidence, IntactParticipantEvidence>();
+        merger.setParticipantEnricherListener(getEnricherListener());
+        super.setIntactMerger(merger);
     }
 
     @Override

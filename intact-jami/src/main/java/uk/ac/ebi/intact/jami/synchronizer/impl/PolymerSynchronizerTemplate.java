@@ -117,7 +117,9 @@ public class PolymerSynchronizerTemplate<T extends Polymer, P extends IntactPoly
     }
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new PolymerMergerEnrichOnly(this));
+        PolymerMergerEnrichOnly merger = new PolymerMergerEnrichOnly(this);
+        merger.setListener(getEnricherListener());
+        super.setIntactMerger(merger);
     }
 
     @Override

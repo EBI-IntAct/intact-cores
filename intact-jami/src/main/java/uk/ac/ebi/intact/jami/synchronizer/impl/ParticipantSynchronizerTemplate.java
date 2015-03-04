@@ -227,6 +227,10 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
         super.setIntactMerger(merger);
     }
 
+    protected AbstractDbParticipantEnricherListener<T, F> getEnricherListener() {
+        return enricherListener;
+    }
+
     @Override
     public void setIntactMerger(IntactDbMerger<T, I> intactMerger) {
         if (intactMerger instanceof ParticipantEnricher){

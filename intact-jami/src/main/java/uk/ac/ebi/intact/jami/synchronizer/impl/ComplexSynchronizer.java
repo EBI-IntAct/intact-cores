@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.CollectionComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
 import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
+import uk.ac.ebi.intact.jami.merger.InteractorBaseMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.*;
 import uk.ac.ebi.intact.jami.model.lifecycle.LifeCycleEvent;
 import uk.ac.ebi.intact.jami.model.user.User;
@@ -581,7 +582,9 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new ComplexMergerEnrichOnly());
+        ComplexMergerEnrichOnly merger = new ComplexMergerEnrichOnly();
+        merger.setListener(getEnricherListener());
+        super.setIntactMerger(merger);
     }
 
     @Override

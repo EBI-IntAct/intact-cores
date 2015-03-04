@@ -74,6 +74,9 @@ public class Application extends AbstractIntactPrimaryObject {
     @LazyCollection(LazyCollectionOption.FALSE)
     @ForeignKey(name="FK_PROP_APPLICATION")
     public Collection<ApplicationProperty> getProperties() {
+        if (this.properties == null){
+            this.properties = new ArrayList<ApplicationProperty>();
+        }
         return properties;
     }
 

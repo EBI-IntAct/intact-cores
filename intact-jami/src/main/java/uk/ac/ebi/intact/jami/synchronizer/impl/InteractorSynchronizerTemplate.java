@@ -752,6 +752,10 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         super.setIntactMerger(merger);
     }
 
+    protected DbInteractorEnricherListener<T> getEnricherListener() {
+        return enricherListener;
+    }
+
     @Override
     public void setIntactMerger(IntactDbMerger<T, I> intactMerger) {
         if (intactMerger instanceof InteractorEnricher){

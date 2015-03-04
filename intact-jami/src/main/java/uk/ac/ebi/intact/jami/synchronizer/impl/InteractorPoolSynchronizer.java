@@ -7,6 +7,7 @@ import psidev.psi.mi.jami.model.VariableParameterValueSet;
 import psidev.psi.mi.jami.utils.clone.InteractorCloner;
 import psidev.psi.mi.jami.utils.comparator.interactor.DefaultInteractorPoolComparator;
 import uk.ac.ebi.intact.jami.context.SynchronizerContext;
+import uk.ac.ebi.intact.jami.merger.ComplexMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.merger.InteractorPoolMergerEnrichOnly;
 import uk.ac.ebi.intact.jami.model.extension.IntactCvTerm;
 import uk.ac.ebi.intact.jami.model.extension.IntactInteractorPool;
@@ -192,7 +193,9 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new InteractorPoolMergerEnrichOnly(this));
+        InteractorPoolMergerEnrichOnly merger = new InteractorPoolMergerEnrichOnly(this);
+        merger.setListener(getEnricherListener());
+        super.setIntactMerger(merger);
     }
 
     @Override

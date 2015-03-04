@@ -248,6 +248,10 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         super.setIntactMerger(merger);
     }
 
+    protected AbstractDbFeatureEnricherListener<F> getEnricherListener() {
+        return enricherListener;
+    }
+
     @Override
     public void setIntactMerger(IntactDbMerger<F, I> intactMerger) {
         if (intactMerger instanceof FeatureEnricher){

@@ -189,7 +189,9 @@ public class FeatureEvidenceSynchronizer extends FeatureSynchronizerTemplate<Fea
 
     @Override
     protected void initialiseDefaultMerger() {
-        super.setIntactMerger(new FeatureEvidenceMergerEnrichOnly());
+        FeatureEvidenceMergerEnrichOnly merger = new FeatureEvidenceMergerEnrichOnly();
+        merger.setFeatureEnricherListener(getEnricherListener());
+        super.setIntactMerger(merger);
     }
 
     @Override
