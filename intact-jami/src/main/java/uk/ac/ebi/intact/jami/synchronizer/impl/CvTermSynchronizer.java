@@ -539,7 +539,7 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         // if cv is attached to session, some identifiers may have changed
         if (intactCv.getAc() == null || getEntityManager().contains(intactCv)){
             // first look at PSI-MI
-            if (intactCv.getMIIdentifier() != null){
+            if (intactCv.getMIIdentifier() != null && intactCv.getMODIdentifier() == null){
                 intactCv.setIdentifier(intactCv.getMIIdentifier());
             }
             // then MOD identifier

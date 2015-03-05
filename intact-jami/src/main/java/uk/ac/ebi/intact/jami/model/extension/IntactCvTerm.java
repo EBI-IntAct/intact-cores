@@ -2,10 +2,8 @@ package uk.ac.ebi.intact.jami.model.extension;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.*;
-import psidev.psi.mi.jami.model.Alias;
-import psidev.psi.mi.jami.model.Annotation;
-import psidev.psi.mi.jami.model.OntologyTerm;
-import psidev.psi.mi.jami.model.Xref;
+import psidev.psi.mi.jami.model.*;
+import psidev.psi.mi.jami.utils.AnnotationUtils;
 import uk.ac.ebi.intact.jami.utils.IntactUtils;
 
 import javax.persistence.*;
@@ -253,12 +251,24 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
     }
 
     public void setDefinition(String def) {
-        if (getDefinition() != null){
-            getDbAnnotations().remove(this.definition);
-        }
+        Collection<Annotation> sourceAnnotationList = getDbAnnotations();
+
+        // add new url if not null
         if (def != null){
-            this.definition = new CvTermAnnotation(IntactUtils.createMITopic("definition", null), def);
-            getDbAnnotations().add(this.definition);
+            CvTerm defTopic = IntactUtils.createMITopic("definition", null);
+
+            if (this.definition != null){
+                this.definition.setValue(def);
+            }
+            else {
+                this.definition = new CvTermAnnotation(defTopic, def);
+                sourceAnnotationList.add(this.definition);
+            }
+        }
+        // remove all def if the collection is not empty
+        else if (!sourceAnnotationList.isEmpty()) {
+            AnnotationUtils.removeAllAnnotationsWithTopic(sourceAnnotationList, null, "definition");
+            this.definition = null;
         }
     }
 
