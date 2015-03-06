@@ -286,6 +286,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         prepareAnnotations(intactInteractor, true);
         // then check xrefs
         prepareXrefs(intactInteractor, true);
+        // refresh cached properties
+        intactInteractor.resetCachedDbProperties();
     }
 
     protected void synchronizeInteractorType(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {

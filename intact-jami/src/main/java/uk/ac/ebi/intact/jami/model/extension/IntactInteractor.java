@@ -365,6 +365,16 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         return Hibernate.isInitialized(getDbAnnotations());
     }
 
+    /**
+     * This method can reset all properties that are cached in this object as if it was just loaded from the database
+     */
+    public void resetCachedDbProperties(){
+        this.identifiers = null;
+        this.xrefs = null;
+        this.aliases = null;
+        this.annotations = null;
+    }
+
     @Column(name = "objclass", nullable = false, updatable = false)
     @NotNull
     protected String getObjClass(){
@@ -558,8 +568,6 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         oos.writeObject(getDbAnnotations());
         // write the aliases
         oos.writeObject(getDbAliases());
-        // write the checksums
-        oos.writeObject(getChecksums());
     }
 
     /**
@@ -578,8 +586,6 @@ public class IntactInteractor extends AbstractIntactPrimaryObject implements Int
         setDbAnnotations((Collection<Annotation>)ois.readObject());
         // read default aliases
         setDbAliases((Collection<Alias>) ois.readObject());
-        // write checksums
-        getChecksums().addAll((Collection<Checksum>) ois.readObject());
     }
 
     protected class InteractorIdentifierList extends AbstractListHavingProperties<Xref> {

@@ -58,6 +58,8 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
         prepareConfidences(intactEntity, true);
         // then check parameters
         prepareParameters(intactEntity, true);
+        // clear cached properties
+        intactEntity.resetCachedDbProperties();
     }
 
     public void convertPersistableProperties(IntactParticipantEvidence intactEntity) throws FinderException, PersisterException, SynchronizerException {

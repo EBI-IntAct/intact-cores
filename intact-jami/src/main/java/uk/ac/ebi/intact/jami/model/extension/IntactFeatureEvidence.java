@@ -250,6 +250,12 @@ public class IntactFeatureEvidence extends AbstractIntactFeature<ExperimentalEnt
         return Hibernate.isInitialized(getDbDetectionMethods());
     }
 
+    @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        this.detectionMethods = null;
+    }
+
     @Column(name = "category", nullable = false, updatable = false)
     @NotNull
     protected String getCategory() {

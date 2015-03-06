@@ -547,6 +547,28 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         }
     }
 
+    /**
+     * This method can reset all properties that are cached in this object as if it was just loaded from the database
+     */
+    public void resetCachedDbProperties(){
+        this.identifiers = null;
+        this.xrefs = null;
+        this.pubmedId = null;
+        this.doi = null;
+        this.imexId = null;
+        this.annotations = null;
+        this.releasedDate = null;
+        this.publicationDate = null;
+        this.curationDepth = null;
+        this.status = null;
+        this.journal = null;
+        this.authors = null;
+        this.onHold = null;
+        this.toBeReviewed = null;
+        this.correctionComment = null;
+        this.accepted = null;
+    }
+
     @ManyToOne(targetEntity = IntactSource.class)
     @JoinColumn( name = "owner_ac", nullable = false, referencedColumnName = "ac" )
     @Target(IntactSource.class)

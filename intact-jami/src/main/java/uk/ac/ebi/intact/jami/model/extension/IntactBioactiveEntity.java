@@ -416,6 +416,16 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
     }
 
     @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        initialiseChecksumsWith(null);
+        this.chebi = null;
+        this.smile = null;
+        this.standardInchi = null;
+        this.standardInchiKey = null;
+    }
+
+    @Override
     protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.SmallMoleculeImpl";
     }

@@ -93,6 +93,8 @@ implements IntactInteractionSynchronizer{
         prepareVariableParametersValues(intactInteraction, true);
         // then check shortlabel/synchronize
         prepareAndSynchronizeShortLabel(intactInteraction);
+        // clear cached properties
+        intactInteraction.resetCachedDbProperties();
     }
 
     public void clearCache() {

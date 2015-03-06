@@ -191,6 +191,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         preparePublicationAuthors(intactPublication);
         // then check annotations
         prepareAnnotations(intactPublication, true);
+        // refresh cached properties
+        intactPublication.resetCachedDbProperties();
     }
 
     public Publication fetchByIdentifier(String identifier, String source) throws BridgeFailedException {
@@ -732,7 +734,7 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
 
     protected void prepareStatusAndCurators(IntactPublication intactPublication, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         // first the status
-        CvTerm status = intactPublication.getStatus().toCvTerm();
+        CvTerm status = intactPublication.getCvStatus();
         intactPublication.setCvStatus(enableSynchronization ?
                 getContext().getLifecycleStatusSynchronizer().synchronize(status, true) :
                 getContext().getLifecycleStatusSynchronizer().convertToPersistentObject(status));

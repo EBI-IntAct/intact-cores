@@ -252,6 +252,14 @@ public class IntactProtein extends IntactPolymer implements Protein{
     }
 
     @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        this.uniprotkb = null;
+        this.refseq = null;
+        this.geneName = null;
+    }
+
+    @Override
     protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.ProteinImpl";
     }

@@ -555,6 +555,16 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
         setDbLinkedFeatures((Collection<F>)ois.readObject());
     }
 
+    /**
+     * This method can reset all properties that are cached in this object as if it was just loaded from the database
+     */
+    public void resetCachedDbProperties(){
+        this.identifiers = null;
+        this.xrefs = null;
+        this.interpro = null;
+        this.linkedFeatures = null;
+    }
+
     protected class FeatureIdentifierList extends AbstractListHavingProperties<Xref> {
         public FeatureIdentifierList(){
             super();

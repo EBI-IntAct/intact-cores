@@ -487,6 +487,16 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         return this.persistentAnnotations.getWrappedList();
     }
 
+    /**
+     * This method can reset all properties that are cached in this object as if it was just loaded from the database
+     */
+    public void resetCachedDbProperties(){
+        this.identifiers = null;
+        this.xrefs = null;
+        this.annotations = null;
+        this.isNegative = null;
+    }
+
     @Column(name = "category", nullable = false, updatable = false)
     @NotNull
     protected String getCategory() {

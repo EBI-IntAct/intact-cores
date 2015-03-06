@@ -245,4 +245,11 @@ public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
         ddbjEmblGenbank = null;
         refseq = null;
     }
+
+    @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        this.ddbjEmblGenbank = null;
+        this.refseq = null;
+    }
 }

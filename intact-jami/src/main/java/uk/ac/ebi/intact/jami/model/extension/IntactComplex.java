@@ -929,6 +929,19 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         this.interactionEvidences = interactionEvidences;
     }
 
+    @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        this.physicalProperties = null;
+        this.systematicName = null;
+        this.recommendedName = null;
+        this.status = null;
+        this.onHold = null;
+        this.toBeReviewed = null;
+        this.correctionComment = null;
+        this.accepted = null;
+    }
+
     /**
      * Overrides serialization for xrefs and annotations (inner classes not serializable)
      * @param oos

@@ -11,6 +11,9 @@ import uk.ac.ebi.intact.jami.utils.IntactUtils;
 import javax.persistence.CascadeType;
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -125,6 +128,39 @@ public class IntactPolymer extends IntactMolecule implements Polymer{
     public void setSequence(String sequence) {
         this.sequence = sequence;
         convertSequence(this.sequence, getDbSequenceChunks());
+    }
+
+    @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        this.sequence = null;
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param oos
+     * @throws java.io.IOException
+     */
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        // default serialization
+        oos.defaultWriteObject();
+        // write the crc64
+        oos.writeObject(getCrc64());
+    }
+
+    /**
+     * Overrides serialization for xrefs and annotations (inner classes not serializable)
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        // default deserialization
+        ois.defaultReadObject();
+        // read default crc64
+        setCrc64((String)ois.readObject());
     }
 
     @Deprecated

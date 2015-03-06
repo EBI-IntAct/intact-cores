@@ -306,6 +306,13 @@ public class IntactParticipantEvidence extends AbstractIntactParticipant<Interac
         return Hibernate.isInitialized(getExperimentalPreparations());
     }
 
+    /**
+     * This method can reset all properties that are cached in this object as if it was just loaded from the database
+     */
+    public void resetCachedDbProperties(){
+        this.identificationMethods = null;
+    }
+
     @ManyToOne( targetEntity = IntactInteractionEvidence.class )
     @JoinColumn( name = "interaction_ac" )
     @Target(IntactInteractionEvidence.class)

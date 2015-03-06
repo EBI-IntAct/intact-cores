@@ -337,7 +337,7 @@ public class ComplexSynchronizer extends InteractorSynchronizerTemplate<Complex,
     protected void prepareStatusAndCurators(IntactComplex intactComplex, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
 
         // first the status
-        CvTerm status = intactComplex.getStatus().toCvTerm();
+        CvTerm status = intactComplex.getCvStatus();
         intactComplex.setCvStatus(enableSynchronization ?
                 getContext().getLifecycleStatusSynchronizer().synchronize(status, true) :
                 getContext().getLifecycleStatusSynchronizer().convertToPersistentObject(status));

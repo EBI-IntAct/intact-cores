@@ -304,6 +304,15 @@ public class IntactGene extends IntactMolecule implements Gene{
         }
     }
 
+    @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
+        this.entrezGeneId = null;
+        this.refseq = null;
+        this.ensembl = null;
+        this.ensemblGenome = null;
+    }
+
     protected void processAddedIdentifierEvent(Xref added) {
         // the added identifier is ensembl and it is not the current ensembl identifier
         if (ensembl != added && XrefUtils.isXrefFromDatabase(added, Xref.ENSEMBL_MI, Xref.ENSEMBL)){
