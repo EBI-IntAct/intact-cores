@@ -410,9 +410,18 @@ public class IntactBioactiveEntity extends IntactMolecule implements BioactiveEn
     }
 
     @Override
+    protected void setDbXrefs(Collection<Xref> persistentXrefs) {
+        super.setDbXrefs(persistentXrefs);
+        this.chebi = null;
+    }
+
+    @Override
     protected void setDbAnnotations(Collection<Annotation> annotations) {
         super.setDbAnnotations(annotations);
         initialiseChecksumsWith(null);
+        this.smile = null;
+        this.standardInchi = null;
+        this.standardInchiKey = null;
     }
 
     @Override

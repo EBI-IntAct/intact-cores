@@ -252,4 +252,11 @@ public class IntactNucleicAcid extends IntactPolymer implements NucleicAcid{
         this.ddbjEmblGenbank = null;
         this.refseq = null;
     }
+
+    @Override
+    protected void setDbXrefs(Collection<Xref> persistentXrefs) {
+        super.setDbXrefs(persistentXrefs);
+        this.ddbjEmblGenbank = null;
+        this.refseq = null;
+    }
 }

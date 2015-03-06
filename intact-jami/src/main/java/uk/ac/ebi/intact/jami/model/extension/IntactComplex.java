@@ -942,6 +942,23 @@ public class IntactComplex extends IntactInteractor implements Complex,Releasabl
         this.accepted = null;
     }
 
+    @Override
+    protected void setDbAliases(Collection<Alias> aliases) {
+        super.setDbAliases(aliases);
+        this.systematicName = null;
+        this.recommendedName = null;
+    }
+
+    @Override
+    protected void setDbAnnotations(Collection<Annotation> annotations) {
+        super.setDbAnnotations(annotations);
+        this.onHold = null;
+        this.toBeReviewed = null;
+        this.correctionComment = null;
+        this.accepted = null;
+        this.physicalProperties = null;
+    }
+
     /**
      * Overrides serialization for xrefs and annotations (inner classes not serializable)
      * @param oos

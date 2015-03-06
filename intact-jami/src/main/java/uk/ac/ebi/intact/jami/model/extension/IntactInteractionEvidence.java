@@ -656,6 +656,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
         }
         this.identifiers = null;
         this.xrefs = null;
+        this.imexId = null;
     }
 
     private void setDbAnnotations(Collection<Annotation> annotations) {

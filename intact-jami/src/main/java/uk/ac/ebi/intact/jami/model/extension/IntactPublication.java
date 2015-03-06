@@ -969,7 +969,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
                 else if (XrefUtils.doesXrefHaveQualifier(added, Xref.IDENTITY_MI, Xref.IDENTITY) || XrefUtils.doesXrefHaveQualifier(added, Xref.PRIMARY_MI, Xref.PRIMARY)){
                     pubmedId = added;
                 }
-                // the added xref is secondary object and the current pubmed is not a secondary object, we reset pubmed identifier
+                // the added xref is secondary object and the current pubmed is not a secondary object, we setDbAnno pubmed identifier
                 else if (!XrefUtils.doesXrefHaveQualifier(pubmedId, Xref.SECONDARY_MI, Xref.SECONDARY)
                         && XrefUtils.doesXrefHaveQualifier(added, Xref.SECONDARY_MI, Xref.SECONDARY)){
                     pubmedId = added;
@@ -1126,6 +1126,26 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
                 return true;
             }
         }
+        else if (toBeReviewed == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.TO_BE_REVIEWED)){
+            toBeReviewed = added;
+            return true;
+        }
+        else if (accepted == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.ACCEPTED)){
+            accepted = added;
+            return true;
+        }
+        else if (onHold == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.ON_HOLD)){
+            onHold = added;
+            return true;
+        }
+        else if (correctionComment == null &&
+                AnnotationUtils.doesAnnotationHaveTopic(added, null, Releasable.CORRECTION_COMMENT)){
+            correctionComment = added;
+            return true;
+        }
         else{
             return false;
         }
@@ -1205,6 +1225,7 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
 
     private void setLifecycleEvents( List<LifeCycleEvent> lifecycleEvents ) {
         this.lifecycleEvents = lifecycleEvents;
+        this.releasedDate = null;
     }
 
     protected void setExperiments(Collection<Experiment> experiments) {
@@ -1251,11 +1272,27 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
             this.persistentAnnotations = (PersistentAnnotationList)annotations;
             this.annotations = null;
             this.authors = null;
+            this.publicationDate = null;
+            this.curationDepth = null;
+            this.status = null;
+            this.journal = null;
+            this.onHold = null;
+            this.toBeReviewed = null;
+            this.correctionComment = null;
+            this.accepted = null;
         }
         else{
             this.persistentAnnotations = new PersistentAnnotationList(annotations);
             this.annotations = null;
             this.authors = null;
+            this.publicationDate = null;
+            this.curationDepth = null;
+            this.status = null;
+            this.journal = null;
+            this.onHold = null;
+            this.toBeReviewed = null;
+            this.correctionComment = null;
+            this.accepted = null;
         }
     }
 

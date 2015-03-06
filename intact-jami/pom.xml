@@ -4,7 +4,7 @@
     <parent>
       <groupId>uk.ac.ebi.intact.core</groupId>
       <artifactId>core</artifactId>
-      <version>2.6.10-SNAPSHOT</version>
+      <version>2.6.9</version>
     </parent>
     <groupId>uk.ac.ebi.intact.jami</groupId>
     <artifactId>intact-jami</artifactId>
@@ -20,8 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jami.core.version>1.2.2-SNAPSHOT</jami.core.version>
-        <jami.enricher.version>1.1.2-SNAPSHOT</jami.enricher.version>
+        <jami.core.version>1.2.1</jami.core.version>
+        <jami.enricher.version>1.1.1</jami.enricher.version>
         <spring.version>3.2.4.RELEASE</spring.version>
     </properties>
 

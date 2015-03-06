@@ -260,6 +260,19 @@ public class IntactProtein extends IntactPolymer implements Protein{
     }
 
     @Override
+    protected void setDbXrefs(Collection<Xref> persistentXrefs) {
+        super.setDbXrefs(persistentXrefs);
+        this.uniprotkb = null;
+        this.refseq = null;
+    }
+
+    @Override
+    protected void setDbAliases(Collection<Alias> aliases) {
+        super.setDbAliases(aliases);
+        this.geneName = null;
+    }
+
+    @Override
     protected String generateObjClass() {
         return "uk.ac.ebi.intact.model.ProteinImpl";
     }

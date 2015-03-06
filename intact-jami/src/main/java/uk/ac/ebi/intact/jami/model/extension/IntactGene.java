@@ -268,6 +268,15 @@ public class IntactGene extends IntactMolecule implements Gene{
         }
     }
 
+    @Override
+    protected void setDbXrefs(Collection<Xref> persistentXrefs) {
+        super.setDbXrefs(persistentXrefs);
+        this.ensembl = null;
+        this.ensemblGenome = null;
+        this.refseq = null;
+        this.entrezGeneId=null;
+    }
+
     @Transient
     public String getRefseq() {
         // initialise identifiers if not done yet

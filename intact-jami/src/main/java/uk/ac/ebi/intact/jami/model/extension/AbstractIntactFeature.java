@@ -480,11 +480,13 @@ public abstract class AbstractIntactFeature<P extends Entity, F extends Feature>
             this.persistentXrefs = (PersistentXrefList)persistentXrefs;
             this.identifiers = null;
             this.xrefs = null;
+            this.interpro = null;
         }
         else{
             this.persistentXrefs = new PersistentXrefList(persistentXrefs);
             this.identifiers = null;
             this.xrefs = null;
+            this.interpro = null;
         }
     }
 
