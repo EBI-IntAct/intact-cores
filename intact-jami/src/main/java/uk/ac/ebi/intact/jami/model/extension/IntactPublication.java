@@ -1067,6 +1067,10 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         this.curationDepth = CurationDepth.undefined;
         this.journal = null;
         this.publicationDate = null;
+        this.onHold = null;
+        this.toBeReviewed = null;
+        this.accepted = null;
+        this.correctionComment = null;
 
         // initialise persistent annot and content
         if (this.persistentAnnotations != null){
