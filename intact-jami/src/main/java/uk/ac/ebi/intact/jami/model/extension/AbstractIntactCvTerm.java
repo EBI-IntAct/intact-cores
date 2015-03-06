@@ -396,16 +396,16 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         if (annotations instanceof PersistentAnnotationList){
             this.persistentAnnotations = (PersistentAnnotationList)annotations;
             resetFieldsLinkedToAnnotations();
-            this.annotations = null;
         }
         else{
             this.persistentAnnotations = new PersistentAnnotationList(annotations);
             resetFieldsLinkedToAnnotations();
-            this.annotations = null;
         }
     }
 
-    protected abstract void resetFieldsLinkedToAnnotations();
+    protected void resetFieldsLinkedToAnnotations(){
+        this.annotations = null;
+    }
 
     protected void setSynonyms(Collection<Alias> aliases){
         this.synonyms = aliases;
@@ -504,6 +504,14 @@ public abstract class AbstractIntactCvTerm extends AbstractIntactPrimaryObject i
         this.miIdentifier = null;
         this.modIdentifier = null;
         this.parIdentifier = null;
+    }
+
+    /**
+     * This method can reset all properties that are cached in this object as if it was just loaded from the database
+     */
+    public void resetCachedDbProperties(){
+        resetXrefs();
+        resetFieldsLinkedToAnnotations();
     }
 
     /**

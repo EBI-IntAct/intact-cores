@@ -162,6 +162,7 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     @Override
     protected void resetFieldsLinkedToAnnotations() {
+        super.resetFieldsLinkedToAnnotations();
         this.definition = null;
     }
 

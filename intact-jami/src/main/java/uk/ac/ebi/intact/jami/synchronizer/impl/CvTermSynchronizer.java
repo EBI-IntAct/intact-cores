@@ -194,6 +194,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         prepareXrefs(intactCv, true);
         // do synchronize parent but not children
         prepareParents(intactCv, true);
+        // rest all cached properties after synchronization
+        intactCv.resetCachedDbProperties();
     }
 
     public OntologyTerm fetchByIdentifier(String termIdentifier, String miOntologyName) throws BridgeFailedException {

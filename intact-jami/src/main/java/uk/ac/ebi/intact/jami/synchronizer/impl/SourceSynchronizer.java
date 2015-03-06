@@ -167,6 +167,8 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         prepareAnnotations(intactSource, true);
         // then check xrefs
         prepareXrefs(intactSource, true);
+        // rest all cached properties after synchronization
+        intactSource.resetCachedDbProperties();
     }
 
     public void clearCache() {

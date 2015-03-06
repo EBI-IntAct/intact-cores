@@ -262,6 +262,7 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Override
     protected void resetFieldsLinkedToAnnotations() {
+        super.resetFieldsLinkedToAnnotations();
         this.url = null;
         this.postalAddress = null;
     }
@@ -304,12 +305,19 @@ public class IntactSource extends AbstractIntactCvTerm implements Source {
 
     @Override
     protected void clearPropertiesLinkedToXrefs() {
+        super.clearPropertiesLinkedToXrefs();
         this.bibRef = null;
     }
 
     @Override
     protected void setDbXrefs(Collection<Xref> persistentXrefs) {
         super.setDbXrefs(persistentXrefs);
+        this.bibRef = null;
+    }
+
+    @Override
+    public void resetCachedDbProperties() {
+        super.resetCachedDbProperties();
         this.bibRef = null;
     }
 
