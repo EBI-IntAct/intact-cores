@@ -462,26 +462,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     protected void prepareXrefs(IntactSource intactSource, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactSource.getDbXrefs());
-            intactSource.getDbXrefs().clear();
-            int index = 0;
-            try{
-                for (Xref xref : xrefsToPersist){
-                    // do not persist or merge xrefs because of cascades
-                    Xref cvXref = enableSynchronization ?
-                            getContext().getSourceXrefSynchronizer().synchronize(xref, false) :
-                            getContext().getSourceXrefSynchronizer().convertToPersistentObject(xref);
-                    // we have a different instance because needed to be synchronized
+            for (Xref xref : xrefsToPersist){
+                // do not persist or merge xrefs because of cascades
+                Xref cvXref = enableSynchronization ?
+                        getContext().getSourceXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getSourceXrefSynchronizer().convertToPersistentObject(xref);
+                // we have a different instance because needed to be synchronized
+                if (cvXref != xref){
+                    intactSource.getDbXrefs().remove(xref);
                     if (cvXref != null && !intactSource.getDbXrefs().contains(cvXref)){
                         intactSource.getDbXrefs().add(cvXref);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < xrefsToPersist.size() - 1) {
-                    for (int i = index; i < xrefsToPersist.size(); i++) {
-                        intactSource.getDbXrefs().add(xrefsToPersist.get(i));
                     }
                 }
             }
@@ -491,26 +481,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     protected void prepareAnnotations(IntactSource intactSource, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactSource.getDbAnnotations());
-            intactSource.getDbAnnotations().clear();
-            int index = 0;
-            try{
-                for (Annotation annotation : annotationsToPersist){
-                    // do not persist or merge annotations because of cascades
-                    Annotation cvAnnotation = enableSynchronization ?
-                            getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false) :
-                            getContext().getSourceAnnotationSynchronizer().convertToPersistentObject(annotation);
-                    // we have a different instance because needed to be synchronized
+            for (Annotation annotation : annotationsToPersist){
+                // do not persist or merge annotations because of cascades
+                Annotation cvAnnotation = enableSynchronization ?
+                        getContext().getSourceAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getSourceAnnotationSynchronizer().convertToPersistentObject(annotation);
+                // we have a different instance because needed to be synchronized
+                if (cvAnnotation != annotation){
+                    intactSource.getDbAnnotations().remove(annotation);
                     if (cvAnnotation != null && !intactSource.getDbAnnotations().contains(cvAnnotation)){
                         intactSource.getDbAnnotations().add(cvAnnotation);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < annotationsToPersist.size() - 1) {
-                    for (int i = index; i < annotationsToPersist.size(); i++) {
-                        intactSource.getDbAnnotations().add(annotationsToPersist.get(i));
                     }
                 }
             }
@@ -520,26 +500,16 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
     protected void prepareAliases(IntactSource intactSource, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactSource.areSynonymsInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactSource.getSynonyms());
-            intactSource.getSynonyms().clear();
-            int index = 0;
-            try{
-                for (Alias alias : aliasesToPersist){
-                    // do not persist or merge alias because of cascades
-                    Alias cvAlias = enableSynchronization ?
-                            getContext().getSourceAliasSynchronizer().synchronize(alias, false) :
-                            getContext().getSourceAliasSynchronizer().convertToPersistentObject(alias);
-                    // we have a different instance because needed to be synchronized
+            for (Alias alias : aliasesToPersist){
+                // do not persist or merge alias because of cascades
+                Alias cvAlias = enableSynchronization ?
+                        getContext().getSourceAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getSourceAliasSynchronizer().convertToPersistentObject(alias);
+                // we have a different instance because needed to be synchronized
+                if (cvAlias != alias){
+                    intactSource.getSynonyms().remove(alias);
                     if (cvAlias != null && !intactSource.getSynonyms().contains(cvAlias)){
                         intactSource.getSynonyms().add(cvAlias);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < aliasesToPersist.size() - 1) {
-                    for (int i = index; i < aliasesToPersist.size(); i++) {
-                        intactSource.getSynonyms().add(aliasesToPersist.get(i));
                     }
                 }
             }

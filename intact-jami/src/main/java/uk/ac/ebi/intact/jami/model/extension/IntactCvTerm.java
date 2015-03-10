@@ -253,12 +253,12 @@ public class IntactCvTerm extends AbstractIntactCvTerm implements OntologyTerm{
 
     public void setDefinition(String def) {
         Collection<Annotation> sourceAnnotationList = getDbAnnotations();
-
+        getAnnotations();
         // add new url if not null
         if (def != null){
             CvTerm defTopic = IntactUtils.createMITopic("definition", null);
 
-            if (this.definition != null){
+            if (definition != null){
                 this.definition.setValue(def);
             }
             else {

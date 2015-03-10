@@ -118,25 +118,15 @@ public class VariableParameterSynchronizer extends AbstractIntactDbSynchronizer<
     protected void synchronizeParameterValues(IntactVariableParameter object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object.getVariableValues());
-            object.getVariableValues().clear();
-            int index = 0;
-            try{
-                for (VariableParameterValue value : valuesToPersist){
-                    VariableParameterValue valueCheck = enableSynchronization ?
-                            getContext().getVariableParameterValueSynchronizer().synchronize(value, false) :
-                            getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
-                    // we have a different instance because needed to be synchronized
+            for (VariableParameterValue value : valuesToPersist){
+                VariableParameterValue valueCheck = enableSynchronization ?
+                        getContext().getVariableParameterValueSynchronizer().synchronize(value, false) :
+                        getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
+                // we have a different instance because needed to be synchronized
+                if (valueCheck != value){
+                    object.getVariableValues().remove(value);
                     if (valueCheck != null && !object.getVariableValues().contains(valueCheck)){
                         object.getVariableValues().add(valueCheck);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < valuesToPersist.size() - 1) {
-                    for (int i = index; i < valuesToPersist.size(); i++) {
-                        object.getVariableValues().add(valuesToPersist.get(i));
                     }
                 }
             }

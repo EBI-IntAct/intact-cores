@@ -185,26 +185,16 @@ implements IntactInteractionSynchronizer{
 
         if (intactInteraction.areVariableParameterValuesInitialized()){
             List<VariableParameterValueSet> parametersToPersist = new ArrayList<VariableParameterValueSet>(intactInteraction.getVariableParameterValues());
-            intactInteraction.getVariableParameterValues().clear();
-            int index = 0;
-            try{
-                for (VariableParameterValueSet param : parametersToPersist){
-                    // do not persist or merge parameters because of cascades
-                    VariableParameterValueSet expParam = enableSynchronization ?
-                            getContext().getVariableParameterValueSetSynchronizer().synchronize(param, false) :
-                            getContext().getVariableParameterValueSetSynchronizer().convertToPersistentObject(param);
-                    // we have a different instance because needed to be synchronized
+            for (VariableParameterValueSet param : parametersToPersist){
+                // do not persist or merge parameters because of cascades
+                VariableParameterValueSet expParam = enableSynchronization ?
+                        getContext().getVariableParameterValueSetSynchronizer().synchronize(param, false) :
+                        getContext().getVariableParameterValueSetSynchronizer().convertToPersistentObject(param);
+                // we have a different instance because needed to be synchronized
+                if (expParam != param){
+                    intactInteraction.getVariableParameterValues().remove(param);
                     if (expParam != null && !intactInteraction.getVariableParameterValues().contains(expParam)){
                         intactInteraction.getVariableParameterValues().add(expParam);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < parametersToPersist.size() - 1) {
-                    for (int i = index; i < parametersToPersist.size(); i++) {
-                        intactInteraction.getVariableParameterValues().add(parametersToPersist.get(i));
                     }
                 }
             }
@@ -214,28 +204,18 @@ implements IntactInteractionSynchronizer{
     protected void prepareParticipants(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactInteraction.areParticipantsInitialized()){
             List<ParticipantEvidence> participantsToPersist = new ArrayList<ParticipantEvidence>(intactInteraction.getParticipants());
-            intactInteraction.getParticipants().clear();
-            int index = 0;
-            try{
-                for (ParticipantEvidence participant : participantsToPersist){
-                    // reinit parent
-                    participant.setInteraction(intactInteraction);
-                    // do not persist or merge participants because of cascades
-                    ParticipantEvidence expPart = enableSynchronization ?
-                            getContext().getParticipantEvidenceSynchronizer().synchronize(participant, false) :
-                            getContext().getParticipantEvidenceSynchronizer().convertToPersistentObject(participant);
-                    // we have a different instance because needed to be synchronized
+            for (ParticipantEvidence participant : participantsToPersist){
+                // reinit parent
+                participant.setInteraction(intactInteraction);
+                // do not persist or merge participants because of cascades
+                ParticipantEvidence expPart = enableSynchronization ?
+                        getContext().getParticipantEvidenceSynchronizer().synchronize(participant, false) :
+                        getContext().getParticipantEvidenceSynchronizer().convertToPersistentObject(participant);
+                // we have a different instance because needed to be synchronized
+                if (expPart != participant){
+                    intactInteraction.getParticipants().remove(participant);
                     if (expPart != null && !intactInteraction.getParticipants().contains(expPart)){
                         intactInteraction.addParticipant(expPart);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < participantsToPersist.size() - 1) {
-                    for (int i = index; i < participantsToPersist.size(); i++) {
-                        intactInteraction.addParticipant(participantsToPersist.get(i));
                     }
                 }
             }
@@ -245,26 +225,16 @@ implements IntactInteractionSynchronizer{
     protected void prepareParameters(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactInteraction.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactInteraction.getParameters());
-            intactInteraction.getParameters().clear();
-            int index = 0;
-            try{
-                for (Parameter param : parametersToPersist){
-                    // do not persist or merge parameters because of cascades
-                    Parameter expPar = enableSynchronization ?
-                            getContext().getInteractionParameterSynchronizer().synchronize(param, false) :
-                            getContext().getInteractionParameterSynchronizer().convertToPersistentObject(param);
-                    // we have a different instance because needed to be synchronized
+            for (Parameter param : parametersToPersist){
+                // do not persist or merge parameters because of cascades
+                Parameter expPar = enableSynchronization ?
+                        getContext().getInteractionParameterSynchronizer().synchronize(param, false) :
+                        getContext().getInteractionParameterSynchronizer().convertToPersistentObject(param);
+                // we have a different instance because needed to be synchronized
+                if (expPar != param){
+                    intactInteraction.getParameters().remove(param);
                     if (expPar != null && !intactInteraction.getParameters().contains(expPar)){
                         intactInteraction.getParameters().add(expPar);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < parametersToPersist.size() - 1){
-                    for (int i = index; i < parametersToPersist.size(); i++){
-                        intactInteraction.getParameters().add(parametersToPersist.get(i));
                     }
                 }
             }
@@ -283,26 +253,16 @@ implements IntactInteractionSynchronizer{
     protected void prepareXrefs(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteraction.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteraction.getDbXrefs());
-            intactInteraction.getDbXrefs().clear();
-            int index = 0;
-            try{
-                for (Xref xref : xrefsToPersist){
-                    // do not persist or merge xrefs because of cascades
-                    Xref expRef = enableSynchronization ?
-                            getContext().getInteractionXrefSynchronizer().synchronize(xref, false) :
-                            getContext().getInteractionXrefSynchronizer().convertToPersistentObject(xref);
-                    // we have a different instance because needed to be synchronized
+            for (Xref xref : xrefsToPersist){
+                // do not persist or merge xrefs because of cascades
+                Xref expRef = enableSynchronization ?
+                        getContext().getInteractionXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getInteractionXrefSynchronizer().convertToPersistentObject(xref);
+                // we have a different instance because needed to be synchronized
+                if (expRef != xref){
+                    intactInteraction.getDbXrefs().remove(xref);
                     if (expRef != null && !intactInteraction.getDbXrefs().contains(expRef)){
                         intactInteraction.getDbXrefs().add(expRef);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < xrefsToPersist.size() - 1){
-                    for (int i = index; i < xrefsToPersist.size(); i++){
-                        intactInteraction.getDbXrefs().add(xrefsToPersist.get(i));
                     }
                 }
             }
@@ -312,26 +272,16 @@ implements IntactInteractionSynchronizer{
     protected void prepareAnnotations(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteraction.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteraction.getDbAnnotations());
-            intactInteraction.getDbAnnotations().clear();
-            int index = 0;
-            try{
-                for (Annotation annotation : annotationsToPersist){
-                    // do not persist or merge annotations because of cascades
-                    Annotation expAnnotation = enableSynchronization ?
-                            getContext().getInteractionAnnotationSynchronizer().synchronize(annotation, false) :
-                            getContext().getInteractionAnnotationSynchronizer().convertToPersistentObject(annotation);
-                    // we have a different instance because needed to be synchronized
+            for (Annotation annotation : annotationsToPersist){
+                // do not persist or merge annotations because of cascades
+                Annotation expAnnotation = enableSynchronization ?
+                        getContext().getInteractionAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getInteractionAnnotationSynchronizer().convertToPersistentObject(annotation);
+                // we have a different instance because needed to be synchronized
+                if (expAnnotation != annotation){
+                    intactInteraction.getDbAnnotations().remove(annotation);
                     if (expAnnotation != null && !intactInteraction.getDbAnnotations().contains(expAnnotation)){
                         intactInteraction.getDbAnnotations().add(expAnnotation);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < annotationsToPersist.size() - 1){
-                    for (int i = index; i < annotationsToPersist.size(); i++){
-                        intactInteraction.getDbAnnotations().add(annotationsToPersist.get(i));
                     }
                 }
             }
@@ -341,26 +291,16 @@ implements IntactInteractionSynchronizer{
     protected void prepareConfidences(IntactInteractionEvidence intactInteraction, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteraction.areConfidencesInitialized()){
             List<Confidence> confsToPersist = new ArrayList<Confidence>(intactInteraction.getConfidences());
-            intactInteraction.getConfidences().clear();
-            int index = 0;
-            try{
-                for (Confidence confidence : confsToPersist){
-                    // do not persist or merge confidences because of cascades
-                    Confidence expConf = enableSynchronization ?
-                            getContext().getInteractionConfidenceSynchronizer().synchronize(confidence, false) :
-                            getContext().getInteractionConfidenceSynchronizer().convertToPersistentObject(confidence);
-                    // we have a different instance because needed to be synchronized
+            for (Confidence confidence : confsToPersist){
+                // do not persist or merge confidences because of cascades
+                Confidence expConf = enableSynchronization ?
+                        getContext().getInteractionConfidenceSynchronizer().synchronize(confidence, false) :
+                        getContext().getInteractionConfidenceSynchronizer().convertToPersistentObject(confidence);
+                // we have a different instance because needed to be synchronized
+                if (expConf != confidence){
+                    intactInteraction.getConfidences().remove(confidence);
                     if (expConf != null && !intactInteraction.getConfidences().contains(expConf)){
                         intactInteraction.getConfidences().add(expConf);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < confsToPersist.size() - 1){
-                    for (int i = index; i < confsToPersist.size(); i++){
-                        intactInteraction.getConfidences().add(confsToPersist.get(i));
                     }
                 }
             }

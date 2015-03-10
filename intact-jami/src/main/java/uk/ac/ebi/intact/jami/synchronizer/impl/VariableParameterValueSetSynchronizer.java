@@ -106,25 +106,15 @@ public class VariableParameterValueSetSynchronizer extends AbstractIntactDbSynch
     protected void prepareVariableParameterValues(IntactVariableParameterValueSet object, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (object.areVariableParameterValuesInitialized()){
             List<VariableParameterValue> valuesToPersist = new ArrayList<VariableParameterValue>(object);
-            object.clear();
-            int index = 0;
-            try{
-                for (VariableParameterValue value : valuesToPersist){
-                    VariableParameterValue valueCheck = enableSynchronization ?
-                            getContext().getVariableParameterValueSynchronizer().synchronize(value, false):
-                            getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
-                    // we have a different instance because needed to be synchronized
+            for (VariableParameterValue value : valuesToPersist){
+                VariableParameterValue valueCheck = enableSynchronization ?
+                        getContext().getVariableParameterValueSynchronizer().synchronize(value, false):
+                        getContext().getVariableParameterValueSynchronizer().convertToPersistentObject(value);
+                // we have a different instance because needed to be synchronized
+                if (valueCheck != value){
+                    object.remove(value);
                     if (valueCheck != null){
                         object.add(valueCheck);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < valuesToPersist.size() - 1) {
-                    for (int i = index; i < valuesToPersist.size(); i++) {
-                        object.add(valuesToPersist.get(i));
                     }
                 }
             }

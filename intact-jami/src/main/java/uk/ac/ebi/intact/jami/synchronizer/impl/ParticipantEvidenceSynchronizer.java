@@ -98,26 +98,16 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareCausalRelationships(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areCausalRelationshipsInitialized()){
             List<CausalRelationship> relationshipsToPersist = new ArrayList<CausalRelationship>(intactEntity.getCausalRelationships());
-            intactEntity.getCausalRelationships().clear();
-            int index = 0;
-            try{
-                for (CausalRelationship causalRelationship : relationshipsToPersist){
-                    // do not persist or merge causalRelationship because of cascades
-                    CausalRelationship persistentRelationship = enableSynchronization ?
-                            getContext().getExperimentalCausalRelationshipSynchronizer().synchronize(causalRelationship, false) :
-                            getContext().getExperimentalCausalRelationshipSynchronizer().convertToPersistentObject(causalRelationship);
-                    // we have a different instance because needed to be synchronized
+            for (CausalRelationship causalRelationship : relationshipsToPersist){
+                // do not persist or merge causalRelationship because of cascades
+                CausalRelationship persistentRelationship = enableSynchronization ?
+                        getContext().getExperimentalCausalRelationshipSynchronizer().synchronize(causalRelationship, false) :
+                        getContext().getExperimentalCausalRelationshipSynchronizer().convertToPersistentObject(causalRelationship);
+                // we have a different instance because needed to be synchronized
+                if (persistentRelationship != causalRelationship){
+                    intactEntity.getCausalRelationships().remove(causalRelationship);
                     if (persistentRelationship != null && !intactEntity.getCausalRelationships().contains(persistentRelationship)){
                         intactEntity.getCausalRelationships().add(persistentRelationship);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < relationshipsToPersist.size() - 1) {
-                    for (int i = index; i < relationshipsToPersist.size(); i++) {
-                        intactEntity.getCausalRelationships().add(relationshipsToPersist.get(i));
                     }
                 }
             }
@@ -136,26 +126,16 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareConfidences(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areConfidencesInitialized()){
             List<Confidence> confidencesToPersist = new ArrayList<Confidence>(intactEntity.getConfidences());
-            intactEntity.getConfidences().clear();
-            int index = 0;
-            try{
-                for (Confidence confidence : confidencesToPersist){
-                    // do not persist or merge confidences because of cascades
-                    Confidence persistentConfidence = enableSynchronization ?
-                            getContext().getParticipantEvidenceConfidenceSynchronizer().synchronize(confidence, false) :
-                            getContext().getParticipantEvidenceConfidenceSynchronizer().convertToPersistentObject(confidence);
-                    // we have a different instance because needed to be synchronized
+            for (Confidence confidence : confidencesToPersist){
+                // do not persist or merge confidences because of cascades
+                Confidence persistentConfidence = enableSynchronization ?
+                        getContext().getParticipantEvidenceConfidenceSynchronizer().synchronize(confidence, false) :
+                        getContext().getParticipantEvidenceConfidenceSynchronizer().convertToPersistentObject(confidence);
+                // we have a different instance because needed to be synchronized
+                if (persistentConfidence != confidence){
+                    intactEntity.getConfidences().remove(confidence);
                     if (persistentConfidence != null && !intactEntity.getConfidences().contains(persistentConfidence)){
                         intactEntity.getConfidences().add(persistentConfidence);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < confidencesToPersist.size() - 1) {
-                    for (int i = index; i < confidencesToPersist.size(); i++) {
-                        intactEntity.getConfidences().add(confidencesToPersist.get(i));
                     }
                 }
             }
@@ -165,25 +145,15 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareExperimentalPreparations(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areExperimentalPreparationsInitialized()){
             List<CvTerm> preparationsToPersist = new ArrayList<CvTerm>(intactEntity.getExperimentalPreparations());
-            intactEntity.getExperimentalPreparations().clear();
-            int index = 0;
-            try{
-                for (CvTerm preparation : preparationsToPersist){
-                    CvTerm persistentPreparation = enableSynchronization ?
-                            getContext().getExperimentalPreparationSynchronizer().synchronize(preparation, true) :
-                            getContext().getExperimentalPreparationSynchronizer().convertToPersistentObject(preparation);
-                    // we have a different instance because needed to be synchronized
+            for (CvTerm preparation : preparationsToPersist){
+                CvTerm persistentPreparation = enableSynchronization ?
+                        getContext().getExperimentalPreparationSynchronizer().synchronize(preparation, true) :
+                        getContext().getExperimentalPreparationSynchronizer().convertToPersistentObject(preparation);
+                // we have a different instance because needed to be synchronized
+                if (persistentPreparation != preparation){
+                    intactEntity.getExperimentalPreparations().remove(preparation);
                     if (persistentPreparation != null && !intactEntity.getExperimentalPreparations().contains(persistentPreparation)){
                         intactEntity.getExperimentalPreparations().add(persistentPreparation);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < preparationsToPersist.size() - 1) {
-                    for (int i = index; i < preparationsToPersist.size(); i++) {
-                        intactEntity.getExperimentalPreparations().add(preparationsToPersist.get(i));
                     }
                 }
             }
@@ -193,25 +163,15 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareParameters(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areParametersInitialized()){
             List<Parameter> parametersToPersist = new ArrayList<Parameter>(intactEntity.getParameters());
-            intactEntity.getParameters().clear();
-            int index = 0;
-            try{
-                for (Parameter parameter : parametersToPersist){
-                    Parameter persistentParameter = enableSynchronization ?
-                            getContext().getParticipantEvidenceParameterSynchronizer().synchronize(parameter, false) :
-                            getContext().getParticipantEvidenceParameterSynchronizer().convertToPersistentObject(parameter);
-                    // we have a different instance because needed to be synchronized
+            for (Parameter parameter : parametersToPersist){
+                Parameter persistentParameter = enableSynchronization ?
+                        getContext().getParticipantEvidenceParameterSynchronizer().synchronize(parameter, false) :
+                        getContext().getParticipantEvidenceParameterSynchronizer().convertToPersistentObject(parameter);
+                // we have a different instance because needed to be synchronized
+                if (persistentParameter != parameter){
+                    intactEntity.getParameters().remove(parameter);
                     if (persistentParameter != null && !intactEntity.getParameters().contains(persistentParameter)){
                         intactEntity.getParameters().add(persistentParameter);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < parametersToPersist.size() - 1) {
-                    for (int i = index; i < parametersToPersist.size(); i++) {
-                        intactEntity.getParameters().add(parametersToPersist.get(i));
                     }
                 }
             }
@@ -221,25 +181,15 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareIdentificationMethods(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws PersisterException, FinderException, SynchronizerException {
         if (intactEntity.areIdentificationMethodsInitialized()){
             List<CvTerm> methodsToPersist = new ArrayList<CvTerm>(intactEntity.getDbIdentificationMethods());
-            intactEntity.getDbIdentificationMethods().clear();
-            int index = 0;
-            try{
-                for (CvTerm term : methodsToPersist){
-                    CvTerm persistentTerm = enableSynchronization ?
-                            getContext().getParticipantDetectionMethodSynchronizer().synchronize(term, true) :
-                            getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(term);
-                    // we have a different instance because needed to be synchronized
+            for (CvTerm term : methodsToPersist){
+                CvTerm persistentTerm = enableSynchronization ?
+                        getContext().getParticipantDetectionMethodSynchronizer().synchronize(term, true) :
+                        getContext().getParticipantDetectionMethodSynchronizer().convertToPersistentObject(term);
+                // we have a different instance because needed to be synchronized
+                if (persistentTerm != term){
+                    intactEntity.getDbIdentificationMethods().remove(term);
                     if (persistentTerm != null && !intactEntity.getDbIdentificationMethods().contains(persistentTerm)){
                         intactEntity.getDbIdentificationMethods().add(persistentTerm);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < methodsToPersist.size() - 1) {
-                    for (int i = index; i < methodsToPersist.size(); i++) {
-                        intactEntity.getDbIdentificationMethods().add(methodsToPersist.get(i));
                     }
                 }
             }
@@ -249,26 +199,16 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareXrefs(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactEntity.getXrefs());
-            intactEntity.getXrefs().clear();
-            int index = 0;
-            try{
-                for (Xref xref : xrefsToPersist){
-                    // do not persist or merge xrefs because of cascades
-                    Xref persistentXref = enableSynchronization ?
-                            getContext().getParticipantEvidenceXrefSynchronizer().synchronize(xref, false) :
-                            getContext().getParticipantEvidenceXrefSynchronizer().convertToPersistentObject(xref);
-                    // we have a different instance because needed to be synchronized
+            for (Xref xref : xrefsToPersist){
+                // do not persist or merge xrefs because of cascades
+                Xref persistentXref = enableSynchronization ?
+                        getContext().getParticipantEvidenceXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getParticipantEvidenceXrefSynchronizer().convertToPersistentObject(xref);
+                // we have a different instance because needed to be synchronized
+                if (persistentXref != xref){
+                    intactEntity.getXrefs().remove(xref);
                     if (persistentXref != null && !intactEntity.getXrefs().contains(persistentXref)){
                         intactEntity.getXrefs().add(persistentXref);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < xrefsToPersist.size() - 1) {
-                    for (int i = index; i < xrefsToPersist.size(); i++) {
-                        intactEntity.getXrefs().add(xrefsToPersist.get(i));
                     }
                 }
             }
@@ -278,26 +218,16 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareAnnotations(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactEntity.getAnnotations());
-            intactEntity.getAnnotations().clear();
-            int index = 0;
-            try{
-                for (Annotation annotation : annotationsToPersist){
-                    // do not persist or merge annotations because of cascades
-                    Annotation persistentAnnotation = enableSynchronization ?
-                            getContext().getParticipantEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
-                            getContext().getParticipantEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
-                    // we have a different instance because needed to be synchronized
+            for (Annotation annotation : annotationsToPersist){
+                // do not persist or merge annotations because of cascades
+                Annotation persistentAnnotation = enableSynchronization ?
+                        getContext().getParticipantEvidenceAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getParticipantEvidenceAnnotationSynchronizer().convertToPersistentObject(annotation);
+                // we have a different instance because needed to be synchronized
+                if (persistentAnnotation != annotation){
+                    intactEntity.getAnnotations().remove(annotation);
                     if (persistentAnnotation != null && !intactEntity.getAnnotations().contains(persistentAnnotation)){
                         intactEntity.getAnnotations().add(persistentAnnotation);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < annotationsToPersist.size() - 1) {
-                    for (int i = index; i < annotationsToPersist.size(); i++) {
-                        intactEntity.getAnnotations().add(annotationsToPersist.get(i));
                     }
                 }
             }
@@ -307,26 +237,16 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
     protected void prepareAliases(IntactParticipantEvidence intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactEntity.getAliases());
-            intactEntity.getAliases().clear();
-            int index = 0;
-            try{
-                for (Alias alias : aliasesToPersist){
-                    // do not persist or merge alias because of cascades
-                    Alias persistentAlias = enableSynchronization ?
-                            getContext().getParticipantEvidenceAliasSynchronizer().synchronize(alias, false) :
-                            getContext().getParticipantEvidenceAliasSynchronizer().convertToPersistentObject(alias);
-                    // we have a different instance because needed to be synchronized
+            for (Alias alias : aliasesToPersist){
+                // do not persist or merge alias because of cascades
+                Alias persistentAlias = enableSynchronization ?
+                        getContext().getParticipantEvidenceAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getParticipantEvidenceAliasSynchronizer().convertToPersistentObject(alias);
+                // we have a different instance because needed to be synchronized
+                if (persistentAlias != alias){
+                    intactEntity.getAliases().remove(alias);
                     if (persistentAlias != null && !intactEntity.getAliases().contains(persistentAlias)){
                         intactEntity.getAliases().add(persistentAlias);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < aliasesToPersist.size() - 1) {
-                    for (int i = index; i < aliasesToPersist.size(); i++) {
-                        intactEntity.getAliases().add(aliasesToPersist.get(i));
                     }
                 }
             }

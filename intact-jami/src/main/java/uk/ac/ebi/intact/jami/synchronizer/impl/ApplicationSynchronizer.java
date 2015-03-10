@@ -60,28 +60,18 @@ public class ApplicationSynchronizer extends AbstractIntactDbSynchronizer<Applic
     protected void prepareApplicationProperties(Application intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.areApplicationPropertiesInitialised()){
             List<ApplicationProperty> propertiesToPersist = new ArrayList<ApplicationProperty>(intactUser.getProperties());
-            intactUser.getProperties().clear();
-            int index = 0;
-            try {
-                for (ApplicationProperty pref : propertiesToPersist){
-                    // do not persist or merge preferences because of cascades
-                    ApplicationProperty userPref = enableSynchronization ?
-                            getContext().getApplicationPropertySynchronizer().synchronize(pref, false) :
-                            getContext().getApplicationPropertySynchronizer().convertToPersistentObject(pref);
-                    // we have a different instance because needed to be synchronized
-                    if (userPref != null && !intactUser.getProperties().contains(pref)){
+            for (ApplicationProperty pref : propertiesToPersist){
+                // do not persist or merge preferences because of cascades
+                ApplicationProperty userPref = enableSynchronization ?
+                        getContext().getApplicationPropertySynchronizer().synchronize(pref, false) :
+                        getContext().getApplicationPropertySynchronizer().convertToPersistentObject(pref);
+                // we have a different instance because needed to be synchronized
+                if (userPref != pref){
+                    intactUser.getProperties().remove(pref);
+                    if (userPref != null && !intactUser.getProperties().contains(userPref)){
                         intactUser.addProperty(userPref);
                     }
-                    index++;
                 }
-            }
-            finally {
-                // always add previous properties in case of exception
-                 if (index < propertiesToPersist.size() - 1){
-                      for (int i = index; i < propertiesToPersist.size(); i++){
-                          intactUser.addProperty(propertiesToPersist.get(i));
-                      }
-                 }
             }
         }
     }

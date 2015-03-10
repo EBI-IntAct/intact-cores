@@ -407,26 +407,16 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void prepareXrefs(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactInteractor.getDbXrefs());
-            intactInteractor.getDbXrefs().clear();
-            int index = 0;
-            try{
-                for (Xref xref : xrefsToPersist){
-                    // do not persist or merge xrefs because of cascades
-                    Xref cvXref = enableSynchronization ?
-                            getContext().getInteractorXrefSynchronizer().synchronize(xref, false) :
-                            getContext().getInteractorXrefSynchronizer().convertToPersistentObject(xref);
-                    // we have a different instance because needed to be synchronized
+            for (Xref xref : xrefsToPersist){
+                // do not persist or merge xrefs because of cascades
+                Xref cvXref = enableSynchronization ?
+                        getContext().getInteractorXrefSynchronizer().synchronize(xref, false) :
+                        getContext().getInteractorXrefSynchronizer().convertToPersistentObject(xref);
+                // we have a different instance because needed to be synchronized
+                if (cvXref != xref){
+                    intactInteractor.getDbXrefs().remove(xref);
                     if (cvXref != null && !intactInteractor.getDbXrefs().contains(cvXref)){
                         intactInteractor.getDbXrefs().add(cvXref);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < xrefsToPersist.size() - 1) {
-                    for (int i = index; i < xrefsToPersist.size(); i++) {
-                        intactInteractor.getDbXrefs().add(xrefsToPersist.get(i));
                     }
                 }
             }
@@ -436,26 +426,16 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void prepareAnnotations(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAnnotationsInitialized()){
             List<Annotation> annotationsToPersist = new ArrayList<Annotation>(intactInteractor.getDbAnnotations());
-            intactInteractor.getDbAnnotations().clear();
-            int index = 0;
-            try{
-                for (Annotation annotation : annotationsToPersist){
-                    // do not persist or merge annotations because of cascades
-                    Annotation cvAnnotation = enableSynchronization ?
-                            getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false) :
-                            getContext().getInteractorAnnotationSynchronizer().convertToPersistentObject(annotation);
-                    // we have a different instance because needed to be synchronized
+            for (Annotation annotation : annotationsToPersist){
+                // do not persist or merge annotations because of cascades
+                Annotation cvAnnotation = enableSynchronization ?
+                        getContext().getInteractorAnnotationSynchronizer().synchronize(annotation, false) :
+                        getContext().getInteractorAnnotationSynchronizer().convertToPersistentObject(annotation);
+                // we have a different instance because needed to be synchronized
+                if (cvAnnotation != annotation){
+                    intactInteractor.getDbAnnotations().remove(annotation);
                     if (cvAnnotation != null && !intactInteractor.getDbAnnotations().contains(cvAnnotation)){
                         intactInteractor.getDbAnnotations().add(cvAnnotation);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < annotationsToPersist.size() - 1) {
-                    for (int i = index; i < annotationsToPersist.size(); i++) {
-                        intactInteractor.getDbAnnotations().add(annotationsToPersist.get(i));
                     }
                 }
             }
@@ -465,26 +445,16 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
     protected void prepareAliases(I intactInteractor, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactInteractor.areAliasesInitialized()){
             List<Alias> aliasesToPersist = new ArrayList<Alias>(intactInteractor.getDbAliases());
-            intactInteractor.getDbAliases().clear();
-            int index = 0;
-            try{
-                for (Alias alias : aliasesToPersist){
-                    // do not persist or merge alias because of cascades
-                    Alias cvAlias = enableSynchronization ?
-                            getContext().getInteractorAliasSynchronizer().synchronize(alias, false) :
-                            getContext().getInteractorAliasSynchronizer().convertToPersistentObject(alias);
-                    // we have a different instance because needed to be synchronized
+            for (Alias alias : aliasesToPersist){
+                // do not persist or merge alias because of cascades
+                Alias cvAlias = enableSynchronization ?
+                        getContext().getInteractorAliasSynchronizer().synchronize(alias, false) :
+                        getContext().getInteractorAliasSynchronizer().convertToPersistentObject(alias);
+                // we have a different instance because needed to be synchronized
+                if (cvAlias != alias){
+                    intactInteractor.getDbAliases().remove(alias);
                     if (cvAlias != null && !intactInteractor.getDbAliases().contains(cvAlias)){
                         intactInteractor.getDbAliases().add(cvAlias);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < aliasesToPersist.size() - 1) {
-                    for (int i = index; i < aliasesToPersist.size(); i++) {
-                        intactInteractor.getDbAliases().add(aliasesToPersist.get(i));
                     }
                 }
             }

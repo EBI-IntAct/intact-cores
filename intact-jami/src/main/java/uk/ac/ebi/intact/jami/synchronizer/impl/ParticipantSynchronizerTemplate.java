@@ -177,27 +177,17 @@ public class ParticipantSynchronizerTemplate<T extends Participant, I extends Ab
     protected void prepareFeatures(I intactEntity, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactEntity.areFeaturesInitialized()) {
             List<Feature> featuresToPersist = new ArrayList<Feature>(intactEntity.getFeatures());
-            intactEntity.getFeatures().clear();
-            int index = 0;
-            try{
-                for (Feature feature : featuresToPersist) {
-                    feature.setParticipant(intactEntity);
-                    // do not persist or merge features because of cascades
-                    Feature persistentFeature = enableSynchronization ?
-                            (Feature)getFeatureSynchronizer().synchronize(feature, false) :
-                            (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
-                    // we have a different instance because needed to be synchronized
+            for (Feature feature : featuresToPersist) {
+                feature.setParticipant(intactEntity);
+                // do not persist or merge features because of cascades
+                Feature persistentFeature = enableSynchronization ?
+                        (Feature)getFeatureSynchronizer().synchronize(feature, false) :
+                        (Feature)getFeatureSynchronizer().convertToPersistentObject(feature);
+                // we have a different instance because needed to be synchronized
+                if (persistentFeature != feature){
+                    intactEntity.getFeatures().remove(feature);
                     if (persistentFeature != null && !intactEntity.getFeatures().contains(persistentFeature)){
                         intactEntity.addFeature(persistentFeature);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < featuresToPersist.size() - 1) {
-                    for (int i = index; i < featuresToPersist.size(); i++) {
-                        intactEntity.addFeature(featuresToPersist.get(i));
                     }
                 }
             }

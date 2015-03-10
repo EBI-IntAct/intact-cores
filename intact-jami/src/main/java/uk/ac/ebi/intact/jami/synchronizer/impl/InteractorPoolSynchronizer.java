@@ -63,27 +63,17 @@ public class InteractorPoolSynchronizer extends InteractorSynchronizerTemplate<I
         if (intactInteractor.areInteractorsInitialized()){
             List<Interactor> interactorToPersist = new ArrayList<Interactor>(intactInteractor);
             Set<Interactor> processedInteractors = new HashSet<Interactor>(intactInteractor.size());
-            intactInteractor.clear();
-            int index = 0;
-            try{
-                for (Interactor interactor : interactorToPersist){
-                    if (interactor != intactInteractor){
-                        Interactor interactorCheck = enableSynchronization ?
-                                getContext().getInteractorSynchronizer().synchronize(interactor, true) :
-                                getContext().getInteractorSynchronizer().convertToPersistentObject(intactInteractor);
-                        // we have a different instance because needed to be synchronized
+            for (Interactor interactor : interactorToPersist){
+                if (interactor != intactInteractor){
+                    Interactor interactorCheck = enableSynchronization ?
+                            getContext().getInteractorSynchronizer().synchronize(interactor, true) :
+                            getContext().getInteractorSynchronizer().convertToPersistentObject(intactInteractor);
+                    // we have a different instance because needed to be synchronized
+                    if (interactorCheck != interactor){
+                        intactInteractor.remove(interactor);
                         if (interactorCheck != null && processedInteractors.add(interactorCheck)){
                             intactInteractor.add(interactorCheck);
                         }
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < interactorToPersist.size() - 1) {
-                    for (int i = index; i < interactorToPersist.size(); i++) {
-                        intactInteractor.add(interactorToPersist.get(i));
                     }
                 }
             }

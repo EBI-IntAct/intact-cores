@@ -395,6 +395,7 @@ public class IntactInteractionEvidence extends AbstractIntactPrimaryObject imple
     }
 
     public void setNegative(boolean negative) {
+        getAnnotations();
         if (!negative){
             AnnotationUtils.removeAllAnnotationsWithTopic(getDbAnnotations(), null, "negative");
             this.isNegative = null;

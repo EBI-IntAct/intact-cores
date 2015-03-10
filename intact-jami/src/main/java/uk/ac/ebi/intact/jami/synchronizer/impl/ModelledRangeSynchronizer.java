@@ -47,26 +47,16 @@ public class ModelledRangeSynchronizer extends RangeSynchronizerTemplate<Modelle
     protected void prepareXrefs(AbstractIntactResultingSequence intactObj, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactObj.areXrefsInitialized()){
             List<Xref> xrefsToPersist = new ArrayList<Xref>(intactObj.getXrefs());
-            intactObj.getXrefs().clear();
-            int index = 0;
-            try{
-                for (Xref xref : xrefsToPersist){
-                    // do not persist or merge xrefs because of cascades
-                    Xref objRef = enableSynchronization ?
-                            getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
-                            getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
-                    // we have a different instance because needed to be synchronized
+            for (Xref xref : xrefsToPersist){
+                // do not persist or merge xrefs because of cascades
+                Xref objRef = enableSynchronization ?
+                        getContext().getModelledResultingSequenceXrefSynchronizer().synchronize(xref, false):
+                        getContext().getModelledResultingSequenceXrefSynchronizer().convertToPersistentObject(xref);
+                // we have a different instance because needed to be synchronized
+                if (objRef != xref){
+                    intactObj.getXrefs().remove(xref);
                     if (objRef != null && !intactObj.getXrefs().contains(objRef)){
                         intactObj.getXrefs().add(objRef);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < xrefsToPersist.size() - 1) {
-                    for (int i = index; i < xrefsToPersist.size(); i++) {
-                        intactObj.getXrefs().add(xrefsToPersist.get(i));
                     }
                 }
             }

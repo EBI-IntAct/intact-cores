@@ -134,25 +134,15 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void prepareRoles(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.areRolesInitialized()){
             List<Role> rolesToPersist = new ArrayList<Role>(intactUser.getRoles());
-            intactUser.getRoles().clear();
-            int index = 0;
-            try{
-                for (Role role : rolesToPersist){
-                    Role userRole = enableSynchronization ?
-                            getContext().getRoleSynchronizer().synchronize(role, true) :
-                            getContext().getRoleSynchronizer().convertToPersistentObject(role);
-                    // we have a different instance because needed to be synchronized
+            for (Role role : rolesToPersist){
+                Role userRole = enableSynchronization ?
+                        getContext().getRoleSynchronizer().synchronize(role, true) :
+                        getContext().getRoleSynchronizer().convertToPersistentObject(role);
+                // we have a different instance because needed to be synchronized
+                if (userRole != role){
+                    intactUser.getRoles().remove(role);
                     if (userRole != null && !intactUser.getRoles().contains(userRole)){
                         intactUser.addRole(userRole);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < rolesToPersist.size() - 1) {
-                    for (int i = index; i < rolesToPersist.size(); i++) {
-                        intactUser.addRole(rolesToPersist.get(i));
                     }
                 }
             }
@@ -162,26 +152,16 @@ public class UserSynchronizer extends AbstractIntactDbSynchronizer<User, User> {
     protected void preparePreferences(User intactUser, boolean enableSynchronization) throws FinderException, PersisterException, SynchronizerException {
         if (intactUser.arePreferencesInitialized()){
             List<Preference> preferencesToPersist = new ArrayList<Preference>(intactUser.getPreferences());
-            intactUser.getPreferences().clear();
-            int index = 0;
-            try{
-                for (Preference pref : preferencesToPersist){
-                    // do not persist or merge preferences because of cascades
-                    Preference userPref = enableSynchronization ?
-                            getContext().getPreferenceSynchronizer().synchronize(pref, false) :
-                            getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
-                    // we have a different instance because needed to be synchronized
+            for (Preference pref : preferencesToPersist){
+                // do not persist or merge preferences because of cascades
+                Preference userPref = enableSynchronization ?
+                        getContext().getPreferenceSynchronizer().synchronize(pref, false) :
+                        getContext().getPreferenceSynchronizer().convertToPersistentObject(pref);
+                // we have a different instance because needed to be synchronized
+                if (userPref != pref){
+                    intactUser.getPreferences().remove(pref);
                     if (userPref != null && !intactUser.getPreferences().contains(userPref)){
                         intactUser.addPreference(userPref);
-                    }
-                    index++;
-                }
-            }
-            finally {
-                // always add previous properties in case of exception
-                if (index < preferencesToPersist.size() - 1) {
-                    for (int i = index; i < preferencesToPersist.size(); i++) {
-                        intactUser.addPreference(preferencesToPersist.get(i));
                     }
                 }
             }
