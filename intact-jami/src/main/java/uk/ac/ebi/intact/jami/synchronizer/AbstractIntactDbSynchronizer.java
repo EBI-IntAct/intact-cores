@@ -360,10 +360,12 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
      * @throws FinderException
      */
     protected void convertProperties(I object, T newObject) throws SynchronizerException, PersisterException, FinderException {
-        // cache
-        storeObjectInIdentityCache(object, newObject);
+        // store object and intact object in a identity cache so no lazy properties can be called before synchronization
+        registerObjectBeforeProcessing(object, newObject, newObject);
         // convert properties if not done
         convertPersistableProperties(newObject);
+        // remove object and intact object from identity cache as not dirty anymore
+        unregisterObjectAfterProcessing(object, newObject, newObject);
     }
 
     /**
