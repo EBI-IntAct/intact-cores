@@ -390,6 +390,8 @@ implements InteractorFetcher<T>, InteractorSynchronizer<T, I>{
         prepareAnnotations(object, false);
         // then check xrefs
         prepareXrefs(object, false);
+        // refresh cached properties
+        object.resetCachedDbProperties();
     }
 
     @Override

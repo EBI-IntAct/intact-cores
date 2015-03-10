@@ -167,6 +167,8 @@ implements IntactInteractionSynchronizer{
         prepareParticipants(intactInteraction, false);
         // then check variable parameters
         prepareVariableParametersValues(intactInteraction, false);
+        // clear cached properties
+        intactInteraction.resetCachedDbProperties();
     }
 
     @Override

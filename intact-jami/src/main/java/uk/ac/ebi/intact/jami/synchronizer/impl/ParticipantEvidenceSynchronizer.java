@@ -84,6 +84,8 @@ public class ParticipantEvidenceSynchronizer extends ParticipantSynchronizerTemp
         prepareConfidences(intactEntity, false);
         // then check parameters
         prepareParameters(intactEntity, false);
+        // clear cached properties
+        intactEntity.resetCachedDbProperties();
     }
 
     @Override

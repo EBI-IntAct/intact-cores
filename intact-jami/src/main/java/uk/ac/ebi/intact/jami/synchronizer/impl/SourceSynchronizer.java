@@ -444,6 +444,8 @@ public class SourceSynchronizer extends AbstractIntactDbSynchronizer<Source, Int
         prepareAnnotations(intactSource, false);
         // then check xrefs
         prepareXrefs(intactSource, false);
+        // refresh cached properties
+        intactSource.resetCachedDbProperties();
     }
 
     @Override

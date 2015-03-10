@@ -614,6 +614,8 @@ public class PublicationSynchronizer extends AbstractIntactDbSynchronizer<Public
         prepareLifeCycleEvents(intactPublication, false);
         // then check annotations
         prepareAnnotations(intactPublication, false);
+        // refresh cached properties
+        intactPublication.resetCachedDbProperties();
     }
 
     @Override

@@ -525,6 +525,8 @@ public class CvTermSynchronizer extends AbstractIntactDbSynchronizer<CvTerm, Int
         prepareXrefs(intactCv, false);
         // do synchronize parent but not children
         prepareParents(intactCv, false);
+        // rest all cached properties after synchronization
+        intactCv.resetCachedDbProperties();
     }
 
     @Override

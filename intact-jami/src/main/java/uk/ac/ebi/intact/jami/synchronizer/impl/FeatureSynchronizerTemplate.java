@@ -225,6 +225,8 @@ public class FeatureSynchronizerTemplate<F extends Feature, I extends AbstractIn
         prepareInteractionEffectAndDependencies(intactFeature, false);
         // then check linkedFeatures
         prepareLinkedFeatures(intactFeature, false);
+        // reset cached properties
+        intactFeature.resetCachedDbProperties();
     }
 
     @Override
