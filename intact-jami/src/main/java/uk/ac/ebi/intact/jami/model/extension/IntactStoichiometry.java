@@ -5,6 +5,7 @@ import psidev.psi.mi.jami.utils.comparator.participant.StoichiometryComparator;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  * Intact implementation of stoichiometry
@@ -14,7 +15,7 @@ import javax.persistence.Embeddable;
  * @since <pre>15/01/14</pre>
  */
 @Embeddable
-public class IntactStoichiometry implements Stoichiometry{
+public class IntactStoichiometry implements Stoichiometry, Serializable{
 
     private int minValue;
     private int maxValue;

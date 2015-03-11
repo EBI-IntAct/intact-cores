@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import java.io.Serializable;
 
 /**
  * Intact implementation of a position
@@ -20,7 +21,7 @@ import javax.persistence.Transient;
  * @since <pre>13/01/14</pre>
  */
 @Embeddable
-public class IntactPosition implements Position{
+public class IntactPosition implements Position,Serializable{
 
     private CvTerm status;
     private long start;
