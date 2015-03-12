@@ -32,12 +32,19 @@ public class IntactEnricherUtils {
                                                       AnnotationSynchronizer annotationSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Annotation> synchronizedAnnots = new ArrayList<Annotation>(annotationsToBeAdded.size());
-        for (Annotation annotation : annotationsToBeAdded){
+        Iterator<Annotation> annotIterator = annotationsToBeAdded.iterator();
+        while (annotIterator.hasNext()){
+            Annotation annotation = annotIterator.next();
             // do not persist or merge annotations because of cascades
             Annotation expAnnotation = (Annotation)annotationSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (expAnnotation != null && !synchronizedAnnots.contains(expAnnotation)){
-                synchronizedAnnots.add(expAnnotation);
+            if (expAnnotation != annotation){
+                if (expAnnotation != null && !synchronizedAnnots.contains(expAnnotation)){
+                    synchronizedAnnots.add(expAnnotation);
+                }
+            }
+            else{
+                annotIterator.remove();
             }
         }
 
@@ -58,12 +65,19 @@ public class IntactEnricherUtils {
                                                                   IntactDbSynchronizer roleSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Role> synchronizedRoles = new ArrayList<Role>(rolesToBeAdded.size());
-        for (Role role : rolesToBeAdded){
+        Iterator<Role> roleIterator = rolesToBeAdded.iterator();
+        while (roleIterator.hasNext()){
+            Role role = roleIterator.next();
             // do not persist or merge annotations because of cascades
             Role expAnnotation = (Role)roleSynchronizer.synchronize(role, true);
             // we have a different instance because needed to be synchronized
-            if (expAnnotation != null && !synchronizedRoles.contains(expAnnotation)){
-                synchronizedRoles.add(expAnnotation);
+            if (expAnnotation != role){
+                if (expAnnotation != null && !synchronizedRoles.contains(expAnnotation)){
+                    synchronizedRoles.add(expAnnotation);
+                }
+            }
+            else{
+                roleIterator.remove();
             }
         }
 
@@ -84,12 +98,19 @@ public class IntactEnricherUtils {
                                                   AliasSynchronizer aliasSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Alias> synchronizedAliases = new ArrayList<Alias>(aliasesToBeAdded.size());
-        for (Alias annotation : aliasesToBeAdded){
+        Iterator<Alias> aliasIterator = aliasesToBeAdded.iterator();
+        while (aliasIterator.hasNext()){
+            Alias annotation = aliasIterator.next();
             // do not persist or merge aliases because of cascades
             Alias expAlias = (Alias)aliasSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (expAlias != null && !synchronizedAliases.contains(expAlias)){
-                synchronizedAliases.add(expAlias);
+            if (expAlias != annotation){
+                if (expAlias != null && !synchronizedAliases.contains(expAlias)){
+                    synchronizedAliases.add(expAlias);
+                }
+            }
+            else{
+                aliasIterator.remove();
             }
         }
 
@@ -110,12 +131,19 @@ public class IntactEnricherUtils {
                                                              IntactDbSynchronizer vPSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<VariableParameter> synchronizedParameters = new ArrayList<VariableParameter>(paramsToBweAdded.size());
-        for (VariableParameter annotation : paramsToBweAdded){
+        Iterator<VariableParameter> paramsToBeAddedIterator = paramsToBweAdded.iterator();
+        while (paramsToBeAddedIterator.hasNext()){
+            VariableParameter annotation = paramsToBeAddedIterator.next();
             // do not persist or merge variable parameters because of cascades
             VariableParameter cpExp = (VariableParameter)vPSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (cpExp != null && !synchronizedParameters.contains(cpExp)){
-                synchronizedParameters.add(cpExp);
+            if (annotation != cpExp){
+                if (cpExp != null && !synchronizedParameters.contains(cpExp)){
+                    synchronizedParameters.add(cpExp);
+                }
+            }
+            else{
+                paramsToBeAddedIterator.remove();
             }
         }
 
@@ -136,12 +164,19 @@ public class IntactEnricherUtils {
                                                                                 IntactDbSynchronizer vPSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<VariableParameterValueSet> synchronizedParameters = new ArrayList<VariableParameterValueSet>(paramsToBweAdded.size());
-        for (VariableParameterValueSet annotation : paramsToBweAdded){
+        Iterator<VariableParameterValueSet> paramsToBeAddedIterator = paramsToBweAdded.iterator();
+        while (paramsToBeAddedIterator.hasNext()){
+            VariableParameterValueSet annotation = paramsToBeAddedIterator.next();
             // do not persist or merge variable parameters because of cascades
             VariableParameterValueSet cpExp = (VariableParameterValueSet)vPSynchronizer.synchronize(annotation, false);
             // we have a different instance because needed to be synchronized
-            if (cpExp != null && !synchronizedParameters.contains(cpExp)){
-                synchronizedParameters.add(cpExp);
+            if (cpExp != annotation){
+                if (cpExp != null && !synchronizedParameters.contains(cpExp)){
+                    synchronizedParameters.add(cpExp);
+                }
+            }
+            else{
+               paramsToBeAddedIterator.remove();
             }
         }
 
@@ -162,12 +197,19 @@ public class IntactEnricherUtils {
                                                                  IntactDbSynchronizer cvSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<C> synchronizedCvs = new ArrayList<C>(cvsToBeAdded.size());
-        for (C cv : cvsToBeAdded){
+        Iterator<C> cvsToBeAddedIterator = cvsToBeAdded.iterator();
+        while (cvsToBeAddedIterator.hasNext()){
+            C cv = cvsToBeAddedIterator.next();
             // do not persist or merge cv parents because of cascades
             C expCv = (C)cvSynchronizer.synchronize(cv, true);
             // we have a different instance because needed to be synchronized
-            if (expCv != null && !synchronizedCvs.contains(expCv)){
-                synchronizedCvs.add(expCv);
+            if (expCv != cv){
+                if (expCv != null && !synchronizedCvs.contains(expCv)){
+                    synchronizedCvs.add(expCv);
+                }
+            }
+            else{
+                cvsToBeAddedIterator.remove();
             }
         }
 
@@ -187,14 +229,21 @@ public class IntactEnricherUtils {
                                                 XrefSynchronizer xrefSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Xref> synchronizedXrefs = new ArrayList<Xref>(xrefsToBeAdded.size());
+        Iterator<Xref> xrefsToBeAddedIterator = xrefsToBeAdded.iterator();
         Set<Xref> goReferences = new TreeSet<Xref>(new IntactComplexGoXrefComparator());
-        for (Xref ref : xrefsToBeAdded){
+        while (xrefsToBeAddedIterator.hasNext()){
+            Xref ref = xrefsToBeAddedIterator.next();
             // do not persist or merge xrefs because of cascades
             Xref expRef = (Xref)xrefSynchronizer.synchronize(ref, false);
-            if (expRef != null){
-                if (goReferences.add(expRef)){
-                    synchronizedXrefs.add(expRef);
+            if (expRef != ref){
+                if (expRef != null){
+                    if (goReferences.add(expRef)){
+                        synchronizedXrefs.add(expRef);
+                    }
                 }
+            }
+            else{
+               xrefsToBeAddedIterator.remove();
             }
         }
 
@@ -214,12 +263,19 @@ public class IntactEnricherUtils {
                                                       IntactDbSynchronizer interactorSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Interactor> synchronizedInteractors = new ArrayList<Interactor>(interactorsToBeAdded.size());
-        for (Interactor ref : interactorsToBeAdded){
+        Iterator<Interactor> interactorsToBeAddedIterator = interactorsToBeAdded.iterator();
+        while (interactorsToBeAddedIterator.hasNext()){
+            Interactor ref = interactorsToBeAddedIterator.next();
             // do not persist or merge interactors because of cascades
             Interactor expRef = (Interactor)interactorSynchronizer.synchronize(ref, true);
             // we have a different instance because needed to be synchronized
-            if (expRef != null && !synchronizedInteractors.contains(expRef)){
-                synchronizedInteractors.add(expRef);
+            if (expRef != ref){
+                if (expRef != null && !synchronizedInteractors.contains(expRef)){
+                    synchronizedInteractors.add(expRef);
+                }
+            }
+            else{
+                interactorsToBeAddedIterator.remove();
             }
         }
 
@@ -239,12 +295,19 @@ public class IntactEnricherUtils {
                                                             ConfidenceSynchronizer confidenceSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<C> synchronizedConfidences = new ArrayList<C>(confidencesToBeAdded.size());
-        for (C conf : confidencesToBeAdded){
+        Iterator<C> confidencesToBeAddedIterator = confidencesToBeAdded.iterator();
+        while (confidencesToBeAddedIterator.hasNext()){
+            C conf = confidencesToBeAddedIterator.next();
             // do not persist or merge confidences because of cascades
             C expConf = (C)confidenceSynchronizer.synchronize(conf, false);
             // we have a different instance because needed to be synchronized
-            if (expConf != null && !synchronizedConfidences.contains(expConf)){
-                synchronizedConfidences.add(expConf);
+            if (expConf != conf){
+                if (expConf != null && !synchronizedConfidences.contains(expConf)){
+                    synchronizedConfidences.add(expConf);
+                }
+            }
+            else{
+                confidencesToBeAddedIterator.remove();
             }
         }
 
@@ -264,12 +327,19 @@ public class IntactEnricherUtils {
                                                                            ParameterSynchronizer parameterSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<C> synchronizedParameters = new ArrayList<C>(parametersToBeAdded.size());
-        for (C para : parametersToBeAdded){
+        Iterator<C> parametersToBeAddedIterator = parametersToBeAdded.iterator();
+        while (parametersToBeAddedIterator.hasNext()){
+            C para = parametersToBeAddedIterator.next();
             // do not persist or merge parameters because of cascades
             C expConf = (C)parameterSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expConf != null && !synchronizedParameters.contains(expConf)){
-                synchronizedParameters.add(expConf);
+            if (expConf != para){
+                if (expConf != null && !synchronizedParameters.contains(expConf)){
+                    synchronizedParameters.add(expConf);
+                }
+            }
+            else{
+                parametersToBeAddedIterator.remove();
             }
         }
 
@@ -289,12 +359,19 @@ public class IntactEnricherUtils {
                                                                                ParticipantSynchronizer participantSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<C> synchronizedParticipants = new ArrayList<C>(participantsToBeAdded.size());
-        for (C para : participantsToBeAdded){
+        Iterator<C> participantsToBeAddedIterator = participantsToBeAdded.iterator();
+        while (participantsToBeAddedIterator.hasNext()){
+            C para = participantsToBeAddedIterator.next();
             // do not persist or merge participants because of cascades
             C expParticipant = (C)participantSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expParticipant != null && !synchronizedParticipants.contains(expParticipant)){
-                synchronizedParticipants.add(expParticipant);
+            if (expParticipant != para){
+                if (expParticipant != null && !synchronizedParticipants.contains(expParticipant)){
+                    synchronizedParticipants.add(expParticipant);
+                }
+            }
+            else{
+                participantsToBeAddedIterator.remove();
             }
         }
 
@@ -314,13 +391,20 @@ public class IntactEnricherUtils {
                                                                                         IntactDbSynchronizer interactionSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<InteractionEvidence> synchronizedInteractions = new ArrayList<InteractionEvidence>(addedInteractions.size());
-        for (InteractionEvidence para : addedInteractions){
+        Iterator<InteractionEvidence> addedInteractionsIterator = addedInteractions.iterator();
+        while (addedInteractionsIterator.hasNext()){
+            InteractionEvidence para = addedInteractionsIterator.next();
             // do not persist or merge interactions because of cascades
             InteractionEvidence expInteraction = (InteractionEvidence)interactionSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expInteraction != null && !synchronizedInteractions.contains(expInteraction)){
-                synchronizedInteractions.add(expInteraction);
+            if (expInteraction != para){
+                if (expInteraction != null && !synchronizedInteractions.contains(expInteraction)){
+                    synchronizedInteractions.add(expInteraction);
 
+                }
+            }
+            else{
+                addedInteractionsIterator.remove();
             }
         }
 
@@ -340,12 +424,19 @@ public class IntactEnricherUtils {
                                                       IntactDbSynchronizer experimentSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Experiment> synchronizedInteractions = new ArrayList<Experiment>(experimentsToBeAdded.size());
-        for (Experiment para : experimentsToBeAdded){
+        Iterator<Experiment> experimentsToBeAddedIterator = experimentsToBeAdded.iterator();
+        while (experimentsToBeAddedIterator.hasNext()){
+            Experiment para = experimentsToBeAddedIterator.next();
             // do not persist or merge experiments because of cascades
             Experiment expInteraction = (Experiment)experimentSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expInteraction != null && !synchronizedInteractions.contains(expInteraction)){
-                synchronizedInteractions.add(expInteraction);
+            if (expInteraction != para){
+                if (expInteraction != null && !synchronizedInteractions.contains(expInteraction)){
+                    synchronizedInteractions.add(expInteraction);
+                }
+            }
+            else{
+               experimentsToBeAddedIterator.remove();
             }
         }
 
@@ -365,12 +456,19 @@ public class IntactEnricherUtils {
                                                  IntactDbSynchronizer rangeSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<Range> synchronizedRanges = new ArrayList<Range>(rangesToBeAdded.size());
-        for (Range para : rangesToBeAdded){
+        Iterator<Range> rangesToBeAddedIterator = rangesToBeAdded.iterator();
+        while (rangesToBeAddedIterator.hasNext()){
+            Range para = rangesToBeAddedIterator.next();
             // do not persist or merge ranges because of cascades
             Range expInteraction = (Range)rangeSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expInteraction != null && !synchronizedRanges.contains(expInteraction)){
-                synchronizedRanges.add(expInteraction);
+            if (expInteraction != para){
+                if (expInteraction != null && !synchronizedRanges.contains(expInteraction)){
+                    synchronizedRanges.add(expInteraction);
+                }
+            }
+            else{
+                rangesToBeAddedIterator.remove();
             }
         }
 
@@ -390,12 +488,19 @@ public class IntactEnricherUtils {
                                                                        IntactDbSynchronizer featureSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<F> synchronizedfeatures = new ArrayList<F>(featuresToBeAdded.size());
-        for (F para : featuresToBeAdded){
+        Iterator<F> featuresToBeAddedIterator = featuresToBeAdded.iterator();
+        while (featuresToBeAddedIterator.hasNext()){
+            F para = featuresToBeAddedIterator.next();
             // do not persist or merge ranges because of cascades
             F expInteraction = (F)featureSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expInteraction != null && !synchronizedfeatures.contains(expInteraction)){
-                synchronizedfeatures.add(expInteraction);
+            if (expInteraction != para){
+                if (expInteraction != null && !synchronizedfeatures.contains(expInteraction)){
+                    synchronizedfeatures.add(expInteraction);
+                }
+            }
+            else{
+                featuresToBeAddedIterator.remove();
             }
         }
 
@@ -415,12 +520,19 @@ public class IntactEnricherUtils {
                                                                                              IntactDbSynchronizer crSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<F> synchronizedCr = new ArrayList<F>(crToBeAdded.size());
-        for (F para : crToBeAdded){
+        Iterator<F> crToBeAddedIterator = crToBeAdded.iterator();
+        while (crToBeAddedIterator.hasNext()){
+            F para = crToBeAddedIterator.next();
             // do not persist or merge causal relationships because of cascades
             F expInteraction = (F)crSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expInteraction != null && !synchronizedCr.contains(para)){
-                synchronizedCr.add(expInteraction);
+            if (expInteraction != para){
+                if (expInteraction != null && !synchronizedCr.contains(para)){
+                    synchronizedCr.add(expInteraction);
+                }
+            }
+            else{
+                crToBeAddedIterator.remove();
             }
         }
 
@@ -440,12 +552,20 @@ public class IntactEnricherUtils {
                                                                                      IntactDbSynchronizer lcSynchronizer) throws PersisterException, FinderException, SynchronizerException {
 
         List<C> synchronizedLc = new ArrayList<C>(lcToBeAdded.size());
-        for (C para : lcToBeAdded){
+        Iterator<C> lsToBeAddedIterator = lcToBeAdded.iterator();
+        while (lsToBeAddedIterator.hasNext()){
+            C para = lsToBeAddedIterator.next();
             // do not persist or merge lifecycle because of cascades
             C expLc = (C)lcSynchronizer.synchronize(para, false);
             // we have a different instance because needed to be synchronized
-            if (expLc != null && !synchronizedLc.contains(expLc)){
-                synchronizedLc.add(expLc);
+            if (expLc != para){
+                if (expLc != null && !synchronizedLc.contains(expLc)){
+                    synchronizedLc.add(expLc);
+                }
+            }
+            // we don't need more processing of this element so we can remove it from the list of added
+            else {
+                lsToBeAddedIterator.remove();
             }
         }
 
