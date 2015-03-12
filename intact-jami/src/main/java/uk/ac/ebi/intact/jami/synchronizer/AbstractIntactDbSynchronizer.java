@@ -53,13 +53,13 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         if (isObjectPartiallyInitialised((I) object)){
             // synchronise properties of dirty object
             synchronizePartiallyInitialisedProperties((I) object, object);
-            // store in normal cache
-            storeInCache((I)object, object, null);
             // then set userContext
             object.setLocalUserContext(getContext().getUserContext());
             // persist the object
             persistObject(object);
 
+            // store in normal cache
+            storeInCache((I)object, object, null);
             // reset entity manager flushMode
             resetEntityManagerFlushType(mode);
             return object;
@@ -70,8 +70,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             return processCachedObject((I)object, object, mode, true);
         }
 
-        // store in cache
-        storeInCache((I)object, object, null);
         // synchronize properties
         synchronizePartiallyInitialisedProperties((I)object, object);
         // then set userContext
@@ -79,6 +77,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
         // persist the object
         persistObject(object);
 
+        // store in cache
+        storeInCache((I)object, object, null);
         // reset entity manager flushMode
         resetEntityManagerFlushType(mode);
         return object;
@@ -159,15 +159,14 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             }
             // persisted instance attached to the session
             else{
-                // cache object to persist if allowed
-                storeInCache(object, intactObject, intactObject);
                 // synchronize properties if needed
                 if (needToSynchronizeProperties){
                     synchronizePartiallyInitialisedProperties(object, intactObject);
                 }
                 // then set userContext
                 intactObject.setLocalUserContext(getContext().getUserContext());
-
+                // cache object to persist if allowed
+                storeInCache(object, intactObject, intactObject);
                 // reinit flushmode
                 resetEntityManagerFlushType(mode);
                 return intactObject;
@@ -390,8 +389,6 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             throws FinderException, PersisterException, SynchronizerException {
         // find existing instance in the database
         T existingInstance = find((I)persistentObject);
-        // cache object to persist if necessary
-        storeInCache(originalObject, persistentObject, existingInstance);
         // the existing instance has been found in the DB and we need to merge existing persistent instance with the other instance
         if (existingInstance != null){
             // we merge the existing instance with the new instance if possible
@@ -406,6 +403,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
                 unregisterObjectAfterProcessing(originalObject, persistentObject, existingInstance);
 
                 // cache object to persist if allowed
+                // cache object to persist if necessary
+                storeInCache(originalObject, persistentObject, mergedObject);
                 storeInCache((I)mergedObject, persistentObject, mergedObject);
 
                 // then set userContext
@@ -421,6 +420,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
 
                 return mergedObject;
             }
+            // cache object to persist if necessary
+            storeInCache(originalObject, persistentObject, existingInstance);
             if (listener != null
                     && persistentObject instanceof IntactPrimaryObject){
                 listener.onReplacedWithDbInstance((IntactPrimaryObject)persistentObject, (IntactPrimaryObject)existingInstance);
@@ -440,6 +441,8 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             if (persist){
                 persistObject(persistentObject);
             }
+            // cache object to persist if necessary
+            storeInCache(originalObject, persistentObject, existingInstance);
             return persistentObject;
         }
     }
@@ -485,6 +488,7 @@ public abstract class AbstractIntactDbSynchronizer<I, T extends Auditable> imple
             // remove object and intact object from identity cache as not dirty anymore
             unregisterObjectAfterProcessing(object, intactEntity, existingInstance);
             // cache object to persist if allowed
+            storeInCache(object, intactEntity, merged);
             storeInCache((I)merged, intactEntity, merged);
 
             // then set userContext
