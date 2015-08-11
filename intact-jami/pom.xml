@@ -13,10 +13,17 @@
 
     <name>INTACT :: JAMI - Core interfaces, default implementations of IntAct API based on JAMI interfaces</name>
 
+    <!--<scm>-->
+        <!--<connection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-jami</connection>-->
+        <!--<developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-jami</developerConnection>-->
+        <!--<url>http://code.google.com/p/intact/source/browse/repo/core/trunk/intact-jami/</url>-->
+    <!--</scm>-->
+
     <scm>
-        <connection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-jami</connection>
-        <developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk/intact-jami</developerConnection>
-        <url>http://code.google.com/p/intact/source/browse/repo/core/trunk/intact-jami/</url>
+        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-jami.git</connection>
+        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-jami.git</developerConnection>
+        <url>https://bitbucket.org/intact-ebi/intact-bridges</url>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
