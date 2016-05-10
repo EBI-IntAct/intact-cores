@@ -29,7 +29,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jami.core.version>1.2.2-SNAPSHOT</jami.core.version>
         <jami.enricher.version>1.1.2-SNAPSHOT</jami.enricher.version>
-        <spring.version>3.2.4.RELEASE</spring.version>
+        <spring.version>3.2.9.RELEASE</spring.version>
     </properties>
 
     <build>
