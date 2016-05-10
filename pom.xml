@@ -18,12 +18,6 @@
     <description>Core Master POM</description>
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
-    <!--<scm>-->
-        <!--<connection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk</connection>-->
-        <!--<developerConnection>scm:svn:https://intact.googlecode.com/svn/repo/core/trunk</developerConnection>-->
-        <!--<url>http://code.google.com/p/intact/source/browse/repo/core/trunk</url>-->
-    <!--</scm>-->
-
     <scm>
         <connection>scm:git:https://bitbucket.org/intact-ebi/intact-cores.git</connection>
         <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-cores.git</developerConnection>
@@ -32,7 +26,7 @@
     </scm>
 
     <properties>
-        <spring.version>3.1.2.RELEASE</spring.version>
+        <spring.version>3.2.9.RELEASE</spring.version>
     </properties>
 
     <modules>
