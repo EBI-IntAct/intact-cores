@@ -61,12 +61,12 @@ public class ExperimentSynchronizerTest {
         IntactExperiment res1 = this.synchronizer.synchronize(exp, true);
         IntactExperiment res2 =this.synchronizer.synchronize(exp2, true);
 
-        Assert.assertEquals(exp.getShortLabel(), "bla_bla-2015-1");
+        Assert.assertEquals(exp.getShortLabel(), "bla_bla-2016-1");
         Assert.assertNull(exp2.getShortLabel());
         Assert.assertNull(exp2.getAc());
         Assert.assertNotNull(exp.getAc());
-        Assert.assertEquals(res1.getShortLabel(), "bla_bla-2015-1");
-        Assert.assertEquals(res2.getShortLabel(), "bla_bla-2015-1");
+        Assert.assertEquals(res1.getShortLabel(), "bla_bla-2016-1");
+        Assert.assertEquals(res2.getShortLabel(), "bla_bla-2016-1");
         Assert.assertTrue(res1 == res2);
         Assert.assertTrue(res1 == exp);
     }
