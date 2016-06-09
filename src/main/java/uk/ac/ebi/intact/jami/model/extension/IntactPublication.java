@@ -28,7 +28,9 @@ import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -1103,7 +1105,14 @@ public class IntactPublication extends AbstractIntactPrimaryObject implements Pu
         // publication year
         else if (AnnotationUtils.doesAnnotationHaveTopic(added, Annotation.PUBLICATION_YEAR_MI, Annotation.PUBLICATION_YEAR) && added.getValue() != null){
             try {
-                this.publicationDate = IntactUtils.YEAR_FORMAT.parse(added.getValue());
+
+                //below commented line is unsafe for multithreading as DateFormat is not thread safe
+                /*this.publicationDate = IntactUtils.YEAR_FORMAT.parse(added.getValue());*/
+                synchronized (this) {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy");
+                    this.publicationDate = dateFormat.parse(added.getValue());
+                    dateFormat = null;
+                }
                 return true;
             } catch (ParseException e) {
                 e.printStackTrace();
