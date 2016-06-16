@@ -19,9 +19,9 @@
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <scm>
-        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-cores.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-cores.git</developerConnection>
-        <url>https://bitbucket.org/intact-ebi/intact-cores</url>
+        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-cores-master.git</connection>
+        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-cores-master.git</developerConnection>
+        <url>https://bitbucket.org/intact-ebi/intact-cores-master</url>
         <tag>HEAD</tag>
     </scm>
 
