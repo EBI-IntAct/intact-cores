@@ -12,7 +12,7 @@
     <groupId>uk.ac.ebi.intact.core</groupId>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-    <version>2.6.11</version>
+    <version>2.6.12-SNAPSHOT</version>
 
     <name>IntAct Core</name>
     <description>Core Master POM</description>
@@ -22,7 +22,7 @@
         <connection>scm:git:https://bitbucket.org/intact-ebi/intact-cores-master.git</connection>
         <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-cores-master.git</developerConnection>
         <url>https://bitbucket.org/intact-ebi/intact-cores-master</url>
-        <tag>core-2.6.11</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
