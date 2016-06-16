@@ -10,18 +10,10 @@
 
     <artifactId>intact-core</artifactId>
     <packaging>jar</packaging>
-    <version>2.6.11-SNAPSHOT</version>
 
     <name>IntAct Core :: Core</name>
     <url>http://intact.googlecode.com</url>
     <description>Intact Core, which contains the base classes for all intact artifacts</description>
-
-    <scm>
-        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-core.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-core.git</developerConnection>
-        <url>https://bitbucket.org/intact-ebi/intact-core</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <properties>
         <maven.pmd.skip>true</maven.pmd.skip>

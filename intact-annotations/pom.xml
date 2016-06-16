@@ -10,17 +10,9 @@
 
     <artifactId>intact-annotations</artifactId>
     <packaging>jar</packaging>
-    <version>2.6.11-SNAPSHOT</version>
 
     <name>IntAct Core :: Annotations</name>
     <description>Intact Annotations, common annotations for all the IntAct modules</description>
-
-    <scm>
-        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-annotations.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-annotations.git</developerConnection>
-        <url>https://bitbucket.org/intact-ebi/intact-annotations</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <dependencies>
         <dependency>

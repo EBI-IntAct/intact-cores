@@ -10,17 +10,9 @@
 
     <artifactId>intact-batch</artifactId>
     <packaging>jar</packaging>
-    <version>2.6.11-SNAPSHOT</version>
 
     <name>IntAct Core :: Batch</name>
     <description>Spring Batch integration with IntAct Core</description>
-
-    <scm>
-        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-batch.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-batch.git</developerConnection>
-        <url>https://bitbucket.org/intact-ebi/intact-batch</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <dependencies>
         <dependency>
