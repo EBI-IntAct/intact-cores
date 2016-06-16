@@ -6,7 +6,7 @@
         <artifactId>intact-hibernate-master</artifactId>
         <version>44</version>
     </parent>
-
+    
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.ebi.intact.core</groupId>
@@ -19,9 +19,9 @@
     <url>http://www.ebi.ac.uk/~intact/devsite/core</url>
 
     <scm>
-        <connection>scm:git:https://bitbucket.org/intact-ebi/intact-cores-master.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/intact-ebi/intact-cores-master.git</developerConnection>
-        <url>https://bitbucket.org/intact-ebi/intact-cores-master</url>
+        <connection>scm:git:https://github.com/EBI-IntAct/intact-cores.git</connection>
+        <developerConnection>scm:git:https://github.com/EBI-IntAct/intact-cores.git</developerConnection>
+        <url>https://github.com/EBI-IntAct/intact-cores</url>
         <tag>HEAD</tag>
     </scm>
 
