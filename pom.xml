@@ -33,8 +33,7 @@
         <module>intact-annotations</module>
         <module>intact-core</module>
         <module>intact-batch</module>
-        <module>intact-jami</module>
-  </modules>
+    </modules>
 
     <build>
         <plugins>
