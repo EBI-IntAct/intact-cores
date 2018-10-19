@@ -12,8 +12,6 @@
     <packaging>jar</packaging>
 
     <name>IntAct Core :: Core</name>
-    <url>http://intact.googlecode.com</url>
-    <description>Intact Core, which contains the base classes for all intact artifacts</description>
 
     <properties>
         <maven.pmd.skip>true</maven.pmd.skip>
@@ -49,7 +47,7 @@
         <dependency>
             <groupId>uk.ac.ebi.intact.core</groupId>
             <artifactId>intact-annotations</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- third party deps -->
