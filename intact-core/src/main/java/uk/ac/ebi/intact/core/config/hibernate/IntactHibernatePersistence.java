@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.config.hibernate;
 
+import org.hibernate.cfg.Configuration;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;

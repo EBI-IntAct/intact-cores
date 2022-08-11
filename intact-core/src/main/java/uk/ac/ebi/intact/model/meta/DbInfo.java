@@ -49,7 +49,7 @@ public class DbInfo implements Auditable {
     @Size(max = 50)
     private String key;
 
-    @Column( name = "value", length = 512 )
+    @Column( name = "`value`", length = 512 )
     @Size(max = 512)
     private String value;
 

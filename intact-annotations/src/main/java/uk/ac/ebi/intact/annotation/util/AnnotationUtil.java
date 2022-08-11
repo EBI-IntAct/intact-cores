@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.annotation.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sun.misc.URLClassPath;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -32,7 +31,7 @@ import java.util.jar.JarFile;
 public class AnnotationUtil {
 
     private static final Log log = LogFactory.getLog(AnnotationUtil.class);
-    private static final String FILE_SEPARATOR = System.getProperty("file.separator");
+    private static final String FILE_SEPARATOR = System.getProperty("path.separator");
 
     /**
      * Gathers a list of classes with a defined Annotation
@@ -201,13 +200,9 @@ public class AnnotationUtil {
     }
 
     private static Collection<Class> getClassesWithAnnotationFromDir(Class<? extends Annotation> annotationClass, File dir, File parentDir, ClassLoader classLoader) {
-        Set<Class> classesFromDir = new HashSet<Class>();
+        Set<Class> classesFromDir = new HashSet<>();
 
-        File[] classFiles = dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".class");
-            }
-        });
+        File[] classFiles = dir.listFiles((dir1, name) -> name.endsWith(".class"));
 
         for (File classFile : classFiles) {
             String classFileWithoutDir = classFile.toString().substring(parentDir.toString().length());
@@ -218,11 +213,7 @@ public class AnnotationUtil {
                }
         }
 
-        File[] subdirs = dir.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        });
+        File[] subdirs = dir.listFiles(File::isDirectory);
 
         for (File subdir : subdirs) {
             Collection<Class> classesFromSubdir = getClassesWithAnnotationFromDir(annotationClass, subdir, parentDir, classLoader);
@@ -378,17 +369,8 @@ public class AnnotationUtil {
     }
 
     private static Collection<String> getClasspathElements() {
-        String classPath = System.getProperty("java.class.path");
-
-        URL[] classpathElements = URLClassPath.pathToURLs(classPath);
-
-        Set<String> classPathItems = new HashSet<String>();
-
-        for (URL cpElem : classpathElements) {
-            classPathItems.add(cpElem.getFile());
-        }
-
-        return classPathItems;
+        String[] split = System.getProperty("java.class.path").split(FILE_SEPARATOR);
+        return new HashSet<>(Set.of(split));
     }
 
     /**

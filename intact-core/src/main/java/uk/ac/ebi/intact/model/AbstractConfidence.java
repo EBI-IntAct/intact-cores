@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.model;
 
+import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -46,6 +47,7 @@ public abstract class AbstractConfidence extends BasicObjectImpl {
     }
 
     @Size(max = 4000)
+    @Column(name = "`value`")
     public String getValue() {
         return value;
     }

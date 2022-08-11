@@ -140,7 +140,7 @@ public class InteractionDaoTest extends IntactBasicTestCase {
                 "NP_011504", "NP_014800", "NP_011020", "NP_116708"};
 
         for (int i = 4; i < 14; i++) {
-            String[] primaryIds = Arrays.asList(all).subList(0, i).toArray(new String[i]);
+            String[] primaryIds = Arrays.copyOf(all, i);
             Interaction interaction = getMockBuilder().createInteraction(primaryIds);
 
             getCorePersister().saveOrUpdate(interaction);

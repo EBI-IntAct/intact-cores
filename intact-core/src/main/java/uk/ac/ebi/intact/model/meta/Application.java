@@ -16,8 +16,8 @@ import java.util.Collection;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_application" )
-public class Application extends IntactObjectImpl  {
+@Table(name = "ia_application")
+public class Application extends IntactObjectImpl {
 
     private String key;
 
@@ -43,7 +43,7 @@ public class Application extends IntactObjectImpl  {
     ///////////////////////////
     // Getters and Setters
 
-    @Column( nullable = false, unique = true )
+    @Column(nullable = false, unique = true, name = "`key`")
     public String getKey() {
         return key;
     }
@@ -63,12 +63,10 @@ public class Application extends IntactObjectImpl  {
     }
 
 
-    @OneToMany( mappedBy = "application",
-                cascade = {CascadeType.PERSIST,
-                           CascadeType.MERGE,
-                           CascadeType.REMOVE},
-                fetch = FetchType.EAGER )
-    @Cascade( value = org.hibernate.annotations.CascadeType.SAVE_UPDATE )
+    @OneToMany(mappedBy = "application",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            fetch = FetchType.EAGER)
+    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Collection<ApplicationProperty> getProperties() {
         return properties;
     }

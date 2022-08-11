@@ -42,6 +42,7 @@ public class ApplicationProperty extends IntactObjectImpl {
     // Getters and Setters
 
     @Index( name = "idx_app_prop_key" )
+    @Column(name = "`key`")
     public String getKey() {
         return key;
     }
@@ -52,6 +53,7 @@ public class ApplicationProperty extends IntactObjectImpl {
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name = "`value`")
     public String getValue() {
         return value;
     }
