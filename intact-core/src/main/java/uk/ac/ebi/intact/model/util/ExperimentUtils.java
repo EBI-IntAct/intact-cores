@@ -35,7 +35,7 @@ public final class ExperimentUtils {
 
 	private static final Log log = LogFactory.getLog(ExperimentUtils.class);
 
-	private static final String SYNCED_LABEL_PATTERN = "(\\w+)-((\\d{4})[a-z]*)-(\\d+)";
+	private static final String SYNCED_LABEL_PATTERN = "([\\w_]+)-((\\d{4})[a-z]*)-(\\d+)";
 	private static final String NOT_SYNCED_LABEL_PATTERN = "(\\w+)-(\\d{4})";
 
 	private ExperimentUtils() {
