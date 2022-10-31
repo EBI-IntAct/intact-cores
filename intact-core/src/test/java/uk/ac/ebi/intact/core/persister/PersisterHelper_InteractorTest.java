@@ -19,12 +19,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -38,6 +35,7 @@ import java.util.Iterator;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
 
     @Test
@@ -169,11 +167,8 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
-    @Transactional(propagation = Propagation.NEVER)
     public void test_move_all_components_no_features(){
-        DataContext context = getDataContext();
-        TransactionStatus status = context.beginTransaction();
+        TransactionStatus status = getDataContext().beginTransaction();
 
         Protein source = getMockBuilder().createProtein("P12345", "source");
 
@@ -190,13 +185,8 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
         Assert.assertEquals(1, source.getActiveInstances().size());
         Assert.assertEquals(0, destination.getActiveInstances().size());
 
-        context.commitTransaction(status);
-
-        DataContext context2 = getDataContext();
-        TransactionStatus status2 = context2.beginTransaction();
-
-        Protein sourceReloaded = context2.getDaoFactory().getProteinDao().getByAc(source.getAc());
-        Protein destinationReloaded = context2.getDaoFactory().getProteinDao().getByAc(destination.getAc());
+        Protein sourceReloaded = getDataContext().getDaoFactory().getProteinDao().getByAc(source.getAc());
+        Protein destinationReloaded = getDataContext().getDaoFactory().getProteinDao().getByAc(destination.getAc());
 
         Collection<Component> componentsToMove = new ArrayList<Component>();
         componentsToMove.addAll(sourceReloaded.getActiveInstances());
@@ -210,30 +200,21 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
             IntactCore.initialize(c.getExperimentalPreparations());
 
             c.setInteractor(destinationReloaded);
-            context2.getDaoFactory().getComponentDao().update(c);
+            getDataContext().getDaoFactory().getComponentDao().update(c);
         }
 
-        context2.commitTransaction(status2);
+        getDataContext().commitTransaction(status);
 
-        DataContext context3 = getDataContext();
-        TransactionStatus status3 = context3.beginTransaction();
-
-        Protein sourceReloaded2 = context2.getDaoFactory().getProteinDao().getByAc(source.getAc());
-        Protein destinationReloaded2 = context2.getDaoFactory().getProteinDao().getByAc(destination.getAc());
+        Protein sourceReloaded2 = getDataContext().getDaoFactory().getProteinDao().getByAc(source.getAc());
+        Protein destinationReloaded2 = getDataContext().getDaoFactory().getProteinDao().getByAc(destination.getAc());
 
         Assert.assertEquals(1, destinationReloaded2.getActiveInstances().size());
         Assert.assertEquals(0, sourceReloaded2.getActiveInstances().size());
-
-        context3.commitTransaction(status3);
     }
 
 
     @Test
-    @DirtiesContext
-    @Transactional(propagation = Propagation.NEVER)
     public void update_protein_delete_xref() throws Exception {
-        TransactionStatus transaction = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Protein protein = getMockBuilder().createProteinRandom();
 
         Assert.assertEquals(1, protein.getXrefs().size());
@@ -258,30 +239,19 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
                 xrefIter.remove();
             }
         }
-
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction);
 
         Assert.assertEquals(1, refreshedProt.getXrefs().size());
 
-        TransactionStatus transaction2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         getCorePersister().saveOrUpdate(refreshedProt);
 
         Protein refreshedProt2 = getDaoFactory().getProteinDao().getByAc(protein.getAc());
 
         Assert.assertEquals(1, refreshedProt2.getXrefs().size());
 
-
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction2);
-
     }
 
     @Test
-    @DirtiesContext
-    @Transactional(propagation = Propagation.NEVER)
     public void update_protein_delete_xref_2() throws Exception {
-        TransactionStatus transaction = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Protein protein = getMockBuilder().createProteinRandom();
 
         Assert.assertEquals(1, protein.getXrefs().size());
@@ -309,24 +279,14 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(refreshedProt);
 
-        getDataContext().commitTransaction(transaction);
-
         // retrieve the protein again and check number of xrefs - should be 1
-        TransactionStatus transaction2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Protein refreshedProt2 = getDaoFactory().getProteinDao().getByAc(protein.getAc());
 
         Assert.assertEquals(1, refreshedProt2.getXrefs().size());
-
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction2);
     }
 
     @Test
-    @DirtiesContext
-    @Transactional(propagation = Propagation.NEVER)
     public void update_protein_sequence_to_null() throws Exception {
-        TransactionStatus transaction = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Protein protein = getMockBuilder().createProteinRandom();
 
         Assert.assertEquals(1, protein.getXrefs().size());
@@ -343,15 +303,9 @@ public class PersisterHelper_InteractorTest extends IntactBasicTestCase {
 
         Assert.assertNull(refreshedProt.getSequence());
 
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Protein refreshedProt2 = getDaoFactory().getProteinDao().getByAc(protein.getAc());
 
         Assert.assertNull(refreshedProt2.getSequence());
-
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transaction2);
 
     }
 }

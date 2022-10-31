@@ -15,13 +15,11 @@
  */
 package uk.ac.ebi.intact.model.util;
 
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.SmallMolecule;
 import uk.ac.ebi.intact.model.InteractorXref;
 import org.junit.Test;
 import org.junit.Assert;
-
-import java.util.Collection;
 
 /**
  * Test class for SmallMoleculeUtils

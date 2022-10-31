@@ -21,12 +21,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;
@@ -43,6 +41,7 @@ import java.util.*;
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     private static final Log log = LogFactory.getLog( PersisterHelper_InteractionTest.class );
@@ -468,9 +467,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void fetchFromDatasource_differentExperiments() throws Exception {
-        //final Statistics statistics = getDaoFactory().getCurrentSession().getSessionFactory().getStatistics();
-        //statistics.setStatisticsEnabled(true);
-
         Interaction interaction = getMockBuilder().createDeterministicInteraction();
 
         getCorePersister().saveOrUpdate(interaction);
@@ -486,9 +482,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByAc(interaction.getAc()).getExperiments().size());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().getByAc(interaction2.getAc()).getExperiments().size());
-
-        //System.out.println(statistics);
-        //System.out.println(statistics.getQueryExecutionMaxTimeQueryString());
     }
 
     @Test
@@ -680,11 +673,15 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void persistSeveralInteractions() throws Exception {
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
+
         Interaction interaction1 = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction1);
 
         getDaoFactory().getEntityManager().clear();
+
+        getDataContext().commitTransaction(transactionStatus);
 
         final IntactCloner intactCloner = new IntactCloner();
         intactCloner.setExcludeACs(true);
@@ -703,9 +700,6 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void persistDuplicated() throws Exception {
-        //IntactContext.getCurrentInstance().close();
-        //IntactContext.initContext("intact-core-pg", new StandaloneSession());
-
         Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
 
         final IntactCloner intactCloner = new IntactCloner();
@@ -754,8 +748,12 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void persist_updateNewComponent() throws Exception {
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
+
         Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         getCorePersister().saveOrUpdate(interaction1);
+
+        getDataContext().commitTransaction(transactionStatus);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
@@ -776,8 +774,12 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
     @Test
     public void persist_updateFullName() throws Exception {
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
+
         Interaction interaction1 = getMockBuilder().createDeterministicInteraction();
         getCorePersister().saveOrUpdate(interaction1);
+
+        getDataContext().commitTransaction(transactionStatus);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
 
@@ -808,10 +810,7 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional( propagation = Propagation.NEVER )
-    @DirtiesContext
     public void persist_sameComponents() throws Exception {
-        TransactionStatus status = getDataContext().beginTransaction();
         Protein p = getMockBuilder().createProtein("P12345", "GOT2");
 
         Component c1 = getMockBuilder().createComponentNeutral( p );
@@ -827,13 +826,10 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
         Interaction interaction = getMockBuilder().createInteraction(c1, c2);
 
         getCorePersister().saveOrUpdate(interaction);
-        getDataContext().commitTransaction( status );
 
-        status = getDataContext().beginTransaction();
         Assert.assertEquals( 1, getDaoFactory().getInteractionDao().getAll().size() );
         Assert.assertEquals( 2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals( 2, getDaoFactory().getInteractionDao().getByAc( interaction.getAc() ).getComponents().size() );
-        getDataContext().commitTransaction( status );
     }
 
     @Test
@@ -922,22 +918,18 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void persist_addAdditionalComponentToExistingInteraction() throws Exception {
         Interaction interaction1 = null;
 
-        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+        TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
 
         Protein p = getMockBuilder().createProtein("P12345", "prot");
         Component c1 = getMockBuilder().createComponentBait(p);
         interaction1 = getMockBuilder().createInteraction(c1);
 
-
         getCorePersister().saveOrUpdate(interaction1);
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
 
-        final TransactionStatus transactionStatus2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
+        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
 
         Interaction refreshedInteraction = interaction1;
         Assert.assertEquals(1, refreshedInteraction.getComponents().size());
@@ -952,14 +944,8 @@ public class PersisterHelper_InteractionTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(refreshedInteraction);
 
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus2);
-
-        final TransactionStatus transactionStatus3 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Interaction finalInteraction = reloadByAc(refreshedInteraction);
         Assert.assertEquals(2, finalInteraction.getComponents().size());
-
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus3);
     }
 
     @Test

@@ -23,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import uk.ac.ebi.intact.core.config.ConfigurationHandler;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
@@ -163,7 +161,6 @@ public class IntactInitializer implements ApplicationContextAware{
         return (Institution) applicationContext.getBean("institutionUndefined");
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistInstitution(Institution candidateInstitution, boolean isDefault) {
         Institution institution = institutionDao.getByShortLabel(candidateInstitution.getShortLabel());
 
@@ -188,7 +185,6 @@ public class IntactInitializer implements ApplicationContextAware{
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void checkSchemaCompatibility() {
 
         if( ! configuration.isSkipSchemaCheck() ) {
@@ -223,7 +219,6 @@ public class IntactInitializer implements ApplicationContextAware{
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
      public void persistBasicCvObjects() {
 
         if (isAutoPersist() ) {
@@ -307,8 +302,6 @@ public class IntactInitializer implements ApplicationContextAware{
         corePersister.saveOrUpdate(cv);
     }
 
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createUsersIfNecessary() {
         createDefaultRoles();
 

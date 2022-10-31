@@ -1,11 +1,8 @@
 package uk.ac.ebi.intact.model.meta;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
-import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
 
@@ -17,7 +14,7 @@ import javax.persistence.*;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_application_prop" )
+@Table( name = "ia_application_prop" , indexes = @Index(name = "idx_app_prop_key", columnList = "key"))
 public class ApplicationProperty extends IntactObjectImpl {
 
     private String key;
@@ -40,9 +37,7 @@ public class ApplicationProperty extends IntactObjectImpl {
 
     ///////////////////////////
     // Getters and Setters
-
-    @Index( name = "idx_app_prop_key" )
-    @Column(name = "`key`")
+    @Column(name = "key")
     public String getKey() {
         return key;
     }
@@ -52,8 +47,7 @@ public class ApplicationProperty extends IntactObjectImpl {
     }
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name = "`value`")
+    @Type(type = "org.hibernate.type.MaterializedClobType")
     public String getValue() {
         return value;
     }

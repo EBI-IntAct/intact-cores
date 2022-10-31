@@ -1,7 +1,6 @@
 package uk.ac.ebi.intact.core.lifecycle.correctionassigner;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.Publication;
@@ -24,7 +23,6 @@ public class CorrectionAssigner {
 
     }
 
-    @Transactional
     public User assignReviewer(Publication publication) {
         final User owner = publication.getCurrentOwner();
         if (owner == null) {

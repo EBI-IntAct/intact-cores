@@ -17,7 +17,7 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.Annotation;
 import uk.ac.ebi.intact.model.CvTopic;

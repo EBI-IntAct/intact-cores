@@ -19,7 +19,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.config.IntactConfiguration;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
@@ -62,7 +61,6 @@ public class DefaultFinder implements Finder {
      */
     private static final Log log = LogFactory.getLog( DefaultFinder.class );
 
-    @Transactional
     public String findAc( AnnotatedObject annotatedObject ) {
         String ac;
 
@@ -100,7 +98,6 @@ public class DefaultFinder implements Finder {
     }
 
     @Override
-    @Transactional
     public String findAc( Role role ) {
         String ac = null;
 
@@ -751,15 +748,13 @@ public class DefaultFinder implements Finder {
             }
 
             for (String id : identifiersToTest){
-                Query query = getEntityManager().createQuery( "select r.ac from "+ cvClass.getName() +" r left join r.xrefs as xref where r.identifier = :primaryId or (xref.primaryId = :primaryId and (xref.cvXrefQualifier.shortLabel = :identity or xref.cvXrefQualifier.shortLabel = :secondary))" );
+                Query query = getEntityManager().createQuery( "select r.ac from "+ cvClass.getName() +" r left join r.xrefs as xref left join xref.cvXrefQualifier as qualifier where r.identifier = :primaryId or (xref.primaryId = :primaryId and (qualifier.shortLabel = :identity or qualifier.shortLabel = :secondary))" );
                 query.setParameter( "primaryId", id );
                 query.setParameter( "identity", "identity" );
                 query.setParameter( "secondary", CvXrefQualifier.SECONDARY_AC);
 
                 value = getFirstAcForQuery( query, cvObject );
-                if (value != null){
-                    return value;
-                }
+                if (value != null) return value;
             }
 
             String valueForShortLabel = findAcForCvObjectUsingShortLabel( cvObject, cvClass );
@@ -777,15 +772,15 @@ public class DefaultFinder implements Finder {
         return value;
     }
 
-    @Transactional
     private String getFirstAcForQuery( Query query, AnnotatedObject ao ) {
         List<String> results = query.getResultList();
         String ac = null;
 
         if ( !results.isEmpty() ) {
             ac = results.get( 0 );
-        } else if ( results.size() > 1 ) {
-            throw new IllegalStateException( "Found more than one AC (" + results + ") for " + ao.getClass().getSimpleName() + ": " + ao );
+            if ( results.size() > 1 ) {
+                log.warn("Found more than one AC (" + results + ") for " + ao.getClass().getSimpleName() + ": " + ao );
+            }
         }
 
         return ac;

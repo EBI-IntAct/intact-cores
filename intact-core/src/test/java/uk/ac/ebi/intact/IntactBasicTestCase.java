@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.core.unit;
+package uk.ac.ebi.intact;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,9 +21,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -31,6 +31,7 @@ import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persister.CoreDeleter;
 import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -44,9 +45,12 @@ import javax.persistence.PersistenceUnit;
  * @version $Id$
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact.spring.xml",
-        "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
+@ContextConfiguration(locations = {
+        "classpath*:/META-INF/intact.spring.xml",
+        "classpath*:/META-INF/persistent-db-test.xml"
+})
 @Transactional("transactionManager")
+@DirtiesContext
 public abstract class IntactBasicTestCase {
 
     @Autowired
@@ -68,11 +72,6 @@ public abstract class IntactBasicTestCase {
     @After
     public void afterBasicTest() throws Exception {
         mockBuilder = null;
-    }
-
-    @After
-    public void end() throws Exception {
-        //((ConfigurableApplicationContext)applicationContext).close();
     }
 
     protected IntactContext getIntactContext() {

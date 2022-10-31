@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>r06</version>
+            <version>31.1-jre</version>
         </dependency>
 
         <dependency>
@@ -116,7 +116,8 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.2.143</version>
+            <version>${h2.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- JODA Time Utils -->

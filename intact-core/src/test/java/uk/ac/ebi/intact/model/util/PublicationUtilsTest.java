@@ -4,11 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.lifecycle.LifecycleManager;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

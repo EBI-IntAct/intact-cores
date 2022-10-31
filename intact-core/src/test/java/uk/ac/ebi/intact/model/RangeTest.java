@@ -1,9 +1,8 @@
 package uk.ac.ebi.intact.model;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 
 /**
@@ -16,8 +15,6 @@ import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 public class RangeTest extends IntactBasicTestCase {
 
     @Test
-    @Ignore
-    // TODO fix the ranges in intact that do have their first AA missing before fixing intact-core and enabling this test  
     public void prepareSequence() throws Exception {
         final Institution owner = new Institution( "ebi" );
         IntactMockBuilder mockBuilder = new IntactMockBuilder( owner );

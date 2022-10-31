@@ -21,10 +21,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.TransientObjectException;
-import org.hibernate.ejb.HibernateEntityManager;
 import org.hibernate.engine.spi.EntityEntry;
 import org.hibernate.engine.spi.Status;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.jpa.HibernateEntityManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.annotations.IntactFlushMode;
@@ -150,19 +150,12 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     @Transactional
+    @IntactFlushMode(FlushModeType.COMMIT)
     public PersisterStatistics saveOrUpdate( AnnotatedObject ao ) {
         if (log.isDebugEnabled()) log.debug("Saving: "+DebugUtil.annotatedObjectToString( ao, false ));
 
-        dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
-        //dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
-
-        try {
-            synchronize( ao );
-            commit();
-        } finally {
-            dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.AUTO);
-        }
-
+        synchronize( ao );
+        commit();
         reload( ao );
 
         return statistics;
@@ -217,7 +210,7 @@ public class CorePersisterImpl implements CorePersister {
                 userDao.persist( user );
             } else {
                 final String ac = finder.findAc(user);
-                
+
                 if (ac != null) {
                     user.setAc(ac);
                     userDao.merge(user);
@@ -323,7 +316,7 @@ public class CorePersisterImpl implements CorePersister {
                     warnIfInteractionDuplicate( ao, managedObject );
 
                     // initialize collections for the managedObject object
-                    initializeCommonsIfNecessary(ao, managedObject);
+                    initializeCollectionsIfNecessary(ao, managedObject);
 
                     // updated the managed object based on ao's properties, but only add it to merge
                     // if something has been copied (it was not a duplicate)
@@ -380,7 +373,7 @@ public class CorePersisterImpl implements CorePersister {
                     }
 
                     // initialize collections for managed object
-                    initializeCommonsIfNecessary(ao, managedObject);
+                    initializeCollectionsIfNecessary(ao, managedObject);
 
                     // updated the managed object based on ao's properties, but only add it to merge
                     // if something has been copied (it was not a duplicate)
@@ -455,7 +448,7 @@ public class CorePersisterImpl implements CorePersister {
         return ao;
     }
 
-    private <T extends AnnotatedObject> void initializeCommonsIfNecessary(T ao, T managedObject) {
+    private <T extends AnnotatedObject> void initializeCollectionsIfNecessary(T ao, T managedObject) {
         if (IntactCore.isInitialized(ao.getXrefs()))
             IntactCore.initialize(managedObject.getXrefs());
 
@@ -464,6 +457,27 @@ public class CorePersisterImpl implements CorePersister {
 
         if (IntactCore.isInitialized(ao.getAliases())) {
             IntactCore.initialize(managedObject.getAliases());
+        }
+
+        if (ao instanceof Publication) {
+            IntactCore.initialize(((Publication) managedObject).getExperiments());
+            IntactCore.initialize(((Publication) managedObject).getLifecycleEvents());
+        } else if (ao instanceof Experiment) {
+            IntactCore.initialize(((Experiment) managedObject).getInteractions());
+        } else if (ao instanceof Interaction) {
+            IntactCore.initialize(((Interaction) managedObject).getComponents());
+            IntactCore.initialize(((Interaction) managedObject).getExperiments());
+            IntactCore.initialize(((Interaction) managedObject).getConfidences());
+            IntactCore.initialize(((Interaction) managedObject).getParameters());
+        } else if (ao instanceof Interactor) {
+            IntactCore.initialize(((Interactor) managedObject).getActiveInstances());
+        } else if (ao instanceof Component) {
+            IntactCore.initialize(((Component) managedObject).getCvBiologicalRole());
+            IntactCore.initialize(((Component) managedObject).getExperimentalPreparations());
+            IntactCore.initialize(((Component) managedObject).getParticipantDetectionMethods());
+            IntactCore.initialize(((Component) managedObject).getParameters());
+        } else if (ao instanceof Feature) {
+            IntactCore.initialize(((Feature) managedObject).getRanges());
         }
     }
 

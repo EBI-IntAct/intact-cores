@@ -14,7 +14,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.ejb.HibernateQuery;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
@@ -92,7 +91,6 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return getByPropertyNameLike("shortLabel", value, ignoreCase, firstResult, maxResults, orderAsc);
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
     public Iterator<T> getByShortLabelLikeIterator(String value, boolean ignoreCase) {
         Query query;
 
@@ -335,7 +333,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return (Long) query.getSingleResult();
     }
 
-
+    @Transactional
     @Override
     public int replaceInstitution(Institution sourceInstitution, Institution destinationInstitution) {
         verifyOwnable();
@@ -358,6 +356,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
                 .executeUpdate();
     }
 
+    @Transactional
     @Override
     public int replaceInstitution(Institution destinationInstitution, String createUser) {
         verifyOwnable();

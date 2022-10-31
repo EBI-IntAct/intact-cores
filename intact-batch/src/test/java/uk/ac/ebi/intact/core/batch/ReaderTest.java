@@ -18,15 +18,22 @@ package uk.ac.ebi.intact.core.batch;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.context.DataContext;
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
+import uk.ac.ebi.intact.core.persister.CorePersister;
+import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Interaction;
@@ -38,8 +45,13 @@ import javax.annotation.Resource;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath*:/META-INF/intact.spring.xml",
+        "classpath*:/META-INF/intact-test.spring.xml"
+})
 @Transactional(propagation = Propagation.NEVER)
-public class ReaderTest extends IntactBasicTestCase {
+public class ReaderTest {
 
     @Resource(name = "intactBatchJobLauncher")
     private JobLauncher jobLauncher;
@@ -47,8 +59,11 @@ public class ReaderTest extends IntactBasicTestCase {
     @Autowired
     private ApplicationContext applicationContext;
 
+    private IntactMockBuilder mockBuilder;
+
     @Before
     public void before() {
+        mockBuilder = new IntactMockBuilder(getIntactContext().getConfig().getDefaultInstitution());
         IntactObjectCounterWriter counter = (IntactObjectCounterWriter) applicationContext.getBean("intactObjectCounterWriter");
         counter.reset();
     }
@@ -56,7 +71,7 @@ public class ReaderTest extends IntactBasicTestCase {
     @Test
     @DirtiesContext
     public void readInteractions() throws Exception {
-        Experiment exp = getMockBuilder().createExperimentRandom(5);
+        Experiment exp = mockBuilder.createExperimentRandom(5);
         getCorePersister().saveOrUpdate(exp);
 
         Assert.assertEquals(5, getDaoFactory().getInteractionDao().countAll());
@@ -74,10 +89,10 @@ public class ReaderTest extends IntactBasicTestCase {
     public void readInteractionsNegative() throws Exception {
         Assert.assertEquals(0, getDaoFactory().getInteractionDao().countAll());
 
-        Experiment exp = getMockBuilder().createExperimentRandom(5);
+        Experiment exp = mockBuilder.createExperimentRandom(5);
 
         Interaction negativeInt = exp.getInteractions().iterator().next();
-        negativeInt.addAnnotation(getMockBuilder().createAnnotation("yes", "IA:xxx", CvTopic.NEGATIVE));
+        negativeInt.addAnnotation(mockBuilder.createAnnotation("yes", "IA:xxx", CvTopic.NEGATIVE));
 
         getCorePersister().saveOrUpdate(exp);
 
@@ -95,7 +110,7 @@ public class ReaderTest extends IntactBasicTestCase {
     @DirtiesContext
     public void readExperiments() throws Exception {
         for (int i=0; i<4; i++) {
-            getCorePersister().saveOrUpdate(getMockBuilder().createExperimentEmpty());
+            getCorePersister().saveOrUpdate(mockBuilder.createExperimentEmpty());
         }
 
         Assert.assertEquals(4, getDaoFactory().getExperimentDao().countAll());
@@ -111,7 +126,7 @@ public class ReaderTest extends IntactBasicTestCase {
     @Test
     @DirtiesContext
     public void readInteractors() throws Exception {
-        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
+        Interaction interaction = mockBuilder.createInteractionRandomBinary();
         getCorePersister().saveOrUpdate(interaction);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
@@ -128,8 +143,8 @@ public class ReaderTest extends IntactBasicTestCase {
     @Test
     @DirtiesContext
     public void readInteractors_excludeNonInteracting() throws Exception {
-        Interaction interaction = getMockBuilder().createInteractionRandomBinary();
-        Protein prot = getMockBuilder().createProteinRandom();
+        Interaction interaction = mockBuilder.createInteractionRandomBinary();
+        Protein prot = mockBuilder.createProteinRandom();
         getCorePersister().saveOrUpdate(interaction, prot);
 
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());
@@ -144,4 +159,19 @@ public class ReaderTest extends IntactBasicTestCase {
         Assert.assertEquals(2, counter.getCount());
     }
 
+    protected IntactContext getIntactContext() {
+        return (IntactContext) applicationContext.getBean("intactContext");
+    }
+
+    protected DataContext getDataContext() {
+        return getIntactContext().getDataContext();
+    }
+
+    public CorePersister getCorePersister() {
+        return getIntactContext().getCorePersister();
+    }
+
+    protected DaoFactory getDaoFactory() {
+        return getDataContext().getDaoFactory();
+    }
 }

@@ -2,10 +2,8 @@ package uk.ac.ebi.intact.core.users.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.dao.DataIntegrityViolationException;
-import uk.ac.ebi.intact.core.persistence.dao.user.RoleDao;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 

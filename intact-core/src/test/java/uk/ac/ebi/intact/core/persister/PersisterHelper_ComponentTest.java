@@ -1,14 +1,9 @@
 package uk.ac.ebi.intact.core.persister;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvExperimentalRole;
@@ -27,10 +22,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PersisterHelper_ComponentTest extends IntactBasicTestCase
-{
-
-    private static final Log log = LogFactory.getLog( PersisterHelper_ComponentTest.class );
+public class PersisterHelper_ComponentTest extends IntactBasicTestCase {
 
 
     @Test
@@ -56,8 +48,13 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
     @Test
     public void persistComponent_detached() throws Exception {
+        TransactionStatus transactionStatus1 = getDataContext().beginTransaction();
+
         Component component = getMockBuilder().createDeterministicInteraction().getComponents().iterator().next();
         getCorePersister().saveOrUpdate(component);
+
+        getDataContext().commitTransaction(transactionStatus1);
+        TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
         Assert.assertEquals(1, component.getBindingDomains().size());
@@ -74,6 +71,8 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
         Assert.assertTrue(getDaoFactory().getBaseDao().isTransient(component));
 
         getCorePersister().saveOrUpdate(component);
+
+        getDataContext().commitTransaction(transactionStatus2);
 
         Assert.assertEquals(2, getDaoFactory().getComponentDao().countAll());
 
@@ -108,11 +107,7 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void persistComponent_updateExpRole() {
-        TransactionStatus transactionStatus = getDataContext().beginTransaction();
-
         CvExperimentalRole baitExperimentalRole = getMockBuilder().createCvObject( CvExperimentalRole.class, CvExperimentalRole.BAIT_PSI_REF, CvExperimentalRole.BAIT );
 
         Component comp = getMockBuilder().createComponentBait( getMockBuilder().createDeterministicProtein( "P1", "baaa" ) );
@@ -120,10 +115,6 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
         comp.getExperimentalRoles().add(baitExperimentalRole);
 
         getCorePersister().saveOrUpdate(comp);
-
-        getDataContext().commitTransaction(transactionStatus);
-
-        TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
 
         Component refreshed = getDaoFactory().getComponentDao().getByAc(comp.getAc());
 
@@ -134,19 +125,10 @@ public class PersisterHelper_ComponentTest extends IntactBasicTestCase
 
         getCorePersister().saveOrUpdate(neutralExperimentalRole, refreshed);
 
-        getDataContext().commitTransaction(transactionStatus2);
-
-        TransactionStatus transactionStatus4 = getDataContext().beginTransaction();
-
         Component refreshed2 = getDaoFactory().getComponentDao().getByAc(comp.getAc());
 
         Assert.assertEquals(1, refreshed2.getExperimentalRoles().size());
         Assert.assertEquals(CvExperimentalRole.NEUTRAL_PSI_REF, refreshed2.getExperimentalRoles().iterator().next().getIdentifier());
-
-        getDataContext().commitTransaction(transactionStatus4);
-
-
-
     }
 
     @Test

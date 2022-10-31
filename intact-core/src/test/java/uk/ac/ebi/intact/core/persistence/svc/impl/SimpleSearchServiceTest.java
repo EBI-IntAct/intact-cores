@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.core.persistence.svc.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.model.ProteinImpl;
 import uk.ac.ebi.intact.model.Searchable;

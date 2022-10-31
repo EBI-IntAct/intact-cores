@@ -17,8 +17,7 @@ package uk.ac.ebi.intact.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 
 import java.util.List;
 
@@ -83,7 +82,6 @@ public class InteractorImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
     public void synchShortlabelEnabled() throws Exception {
 
         final Protein baitProtein = getMockBuilder().createProtein( "P12345", "bait" );
@@ -112,7 +110,6 @@ public class InteractorImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
     public void synchShortlabelDisabled() throws Exception {
 
         final Protein baitProtein = getMockBuilder().createProtein( "P12345", "bait" );

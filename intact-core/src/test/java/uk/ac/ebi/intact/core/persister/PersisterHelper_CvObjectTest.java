@@ -19,15 +19,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import uk.ac.ebi.intact.core.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.core.config.SequenceManager;
+import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;
+
+import java.util.Set;
 
 /**
  * PersisterHelper tester.
@@ -82,7 +83,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void persist_existing_object() throws Exception {
         final String expRoleLabel = "EXP_ROLE";
 
@@ -99,7 +99,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test (expected = PersisterException.class)
-    @DirtiesContext
     public void add_annotation_on_existing_cv() throws Exception {
         final String expRoleLabel = "EXP_ROLE";
 
@@ -115,7 +114,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void add_annotation_on_existing_cv_transientsPersisted() throws Exception {
         final String expRoleLabel = "EXP_ROLE";
 
@@ -140,7 +138,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void persist_prepareMi() throws Exception {
         CvObject cv = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.UNIPARC_MI_REF, CvDatabase.UNIPARC);
         Assert.assertNotNull(cv.getIdentifier());
@@ -193,7 +190,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void persist_duplicatedInHierarchy() throws Exception {
         CvDatabase citation = getMockBuilder().createCvObject(CvDatabase.class, "MI:0444", "database citation");
         CvDatabase psiMi = getMockBuilder().createCvObject(CvDatabase.class, CvDatabase.PSI_MI_MI_REF, CvDatabase.PSI_MI);
@@ -216,7 +212,6 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void persist_parameterType_duplicated() throws Exception {
         CvParameterType paramType1 = getMockBuilder().createCvObject(CvParameterType.class, "MI:0835", "koff");
         getCorePersister().saveOrUpdate(paramType1);
@@ -296,8 +291,8 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
     @Test
     public void prePersist_prepareIdentifier() throws Exception {
         SequenceManager seqManager = (SequenceManager) IntactContext.getCurrentInstance().getSpringContext().getBean("sequenceManager");
-        seqManager.createSequenceIfNotExists(IntactAuxiliaryConfigurator.CV_LOCAL_SEQ);
-        Long seqValue = seqManager.getNextValueForSequence(IntactAuxiliaryConfigurator.CV_LOCAL_SEQ);
+        seqManager.createSequenceIfNotExists(IntactHibernatePersistenceProvider.CV_LOCAL_SEQ);
+        Long seqValue = seqManager.getNextValueForSequence(IntactHibernatePersistenceProvider.CV_LOCAL_SEQ);
 
         CvDatabase premDb = getMockBuilder().createCvObject(CvDatabase.class,  null, "prem-db");
         CvDatabase brunoDb = getMockBuilder().createCvObject(CvDatabase.class,  null, "bruno-db");
@@ -322,8 +317,12 @@ public class PersisterHelper_CvObjectTest extends IntactBasicTestCase {
         Assert.assertNotNull(refreshedBrunoDb);
         Assert.assertNotNull(refreshedBrunoDb.getIdentifier());
 
-        Assert.assertTrue(refreshedPremDb.getIdentifier().equals("IA:000"+(seqValue+1)) || refreshedPremDb.getIdentifier().equals("IA:000"+(seqValue+2)));
-        Assert.assertTrue(refreshedBrunoDb.getIdentifier().equals("IA:000"+(seqValue+1)) || refreshedBrunoDb.getIdentifier().equals("IA:000"+(seqValue+2)));
+        String identifierFormat = "IA:%04d";
+        Set<String> possibleIdentifiers = Set.of(
+                String.format(identifierFormat, seqValue + 1),
+                String.format(identifierFormat, seqValue + 2));
+        Assert.assertTrue(possibleIdentifiers.contains(refreshedPremDb.getIdentifier()));
+        Assert.assertTrue(possibleIdentifiers.contains(refreshedBrunoDb.getIdentifier()));
 
         Assert.assertEquals(1, refreshedBrunoDb.getXrefs().size());
     }

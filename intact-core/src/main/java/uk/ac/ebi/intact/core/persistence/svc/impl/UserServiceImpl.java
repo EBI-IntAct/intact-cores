@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.core.persistence.svc.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,7 +62,6 @@ public class UserServiceImpl implements UserService {
      *                            with given ones.
      */
     @Override
-    @Transactional
     public void importUsers( Collection<User> users, boolean updateExistingUsers ) {
 
         final EntityManager entityManager = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager();

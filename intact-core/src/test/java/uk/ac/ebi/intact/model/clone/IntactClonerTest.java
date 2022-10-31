@@ -4,11 +4,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.visitor.BaseIntactVisitor;
 import uk.ac.ebi.intact.model.visitor.DefaultTraverser;
@@ -390,24 +387,15 @@ public class IntactClonerTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
     public void cloneProtein2() throws Exception {
-
-        TransactionStatus status = getDataContext().beginTransaction();
-
         Protein prot = getMockBuilder().createProteinRandom();
         getCorePersister().saveOrUpdate(prot);
 
-        getDataContext().commitTransaction(status);
-
         Assert.assertNotNull(prot.getAc());
-
-        TransactionStatus status2 = getDataContext().beginTransaction();
 
         Protein protReloaded = getDaoFactory().getProteinDao().getByAc(prot.getAc());
 
         clone( protReloaded );
-        getDataContext().commitTransaction(status2);
     }
 
     @Test

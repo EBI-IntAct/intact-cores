@@ -1,12 +1,12 @@
 /**
  * Copyright 2008 The European Bioinformatics Institute, and others.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.core.IntactException;
-import uk.ac.ebi.intact.core.config.IntactAuxiliaryConfigurator;
 import uk.ac.ebi.intact.core.config.SequenceCreationException;
 import uk.ac.ebi.intact.core.config.SequenceManager;
+import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.CvDatabase;
 import uk.ac.ebi.intact.model.CvObject;
@@ -44,7 +44,7 @@ import java.util.Collection;
  */
 public class CvObjectIdentifierGenerator {
 
-    private static final Log log = LogFactory.getLog( CvObjectIdentifierGenerator.class );
+    private static final Log log = LogFactory.getLog(CvObjectIdentifierGenerator.class);
 
     /**
      * Populates the identifier property of the CvObject, by getting the value from the primaryId of
@@ -64,7 +64,7 @@ public class CvObjectIdentifierGenerator {
         String identifier = cvObject.getIdentifier();
 
         if (identifier == null) {
-            if (log.isDebugEnabled()) log.debug("Populating identifier for: "+cvObject.getShortLabel());
+            if (log.isDebugEnabled()) log.debug("Populating identifier for: " + cvObject.getShortLabel());
 
             Collection<CvObjectXref> miIdXrefs = AnnotatedObjectUtils.searchXrefs(cvObject, CvDatabase.PSI_MI_MI_REF, CvXrefQualifier.IDENTITY_MI_REF);
 
@@ -78,12 +78,13 @@ public class CvObjectIdentifierGenerator {
                     identifier = idXrefs.iterator().next().getPrimaryId();
                 } else {
                     // no identities found in object. Create a local identity if createXrefIfLocalCv.
-                    
-                    if (log.isDebugEnabled()) log.debug("New identifier will be generated for: "+cvObject.getShortLabel());
+
+                    if (log.isDebugEnabled())
+                        log.debug("New identifier will be generated for: " + cvObject.getShortLabel());
                     try {
                         identifier = nextLocalIdentifier();
                     } catch (SequenceCreationException e) {
-                        throw new IntactException("Problem generating sequence for a CvObject without identifier: "+cvObject);
+                        throw new IntactException("Problem generating sequence for a CvObject without identifier: " + cvObject, e);
                     }
 
                     if (createXrefIfLocalCv) {
@@ -92,10 +93,10 @@ public class CvObjectIdentifierGenerator {
                         CvDatabase intact = daoFactory.getCvObjectDao(CvDatabase.class).getByPsiMiRef(CvDatabase.INTACT_MI_REF);
 
                         if (identity == null || intact == null) {
-                            throw new IllegalStateException("Cannot create a local identity xref, as the \"identity\" CvXrefQualifier ("+
-                                                            CvXrefQualifier.IDENTITY_MI_REF+") and the \"intact\" CvDatabase ("+CvDatabase.INTACT_MI_REF+
-                                                            ") must exist in the database if a CvObject without identity is persisted. This is necessary " +
-                                                            "to create a new generated identity for this object: "+cvObject);
+                            throw new IllegalStateException("Cannot create a local identity xref, as the \"identity\" CvXrefQualifier (" +
+                                    CvXrefQualifier.IDENTITY_MI_REF + ") and the \"intact\" CvDatabase (" + CvDatabase.INTACT_MI_REF +
+                                    ") must exist in the database if a CvObject without identity is persisted. This is necessary " +
+                                    "to create a new generated identity for this object: " + cvObject);
                         }
 
                         CvObjectXref xref = new CvObjectXref(cvObject.getOwner(), intact, identifier, identity);
@@ -125,10 +126,10 @@ public class CvObjectIdentifierGenerator {
 
         SequenceManager seqManager = (SequenceManager) context.getSpringContext().getBean("sequenceManager");
 
-        seqManager.createSequenceIfNotExists(IntactAuxiliaryConfigurator.CV_LOCAL_SEQ, max+1);
+        seqManager.createSequenceIfNotExists(IntactHibernatePersistenceProvider.CV_LOCAL_SEQ, max+1);
 
-        String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactAuxiliaryConfigurator.CV_LOCAL_SEQ));
-        return prefix+":" + StringUtils.leftPad(nextIntegerAsString, 4, "0");
+        String nextIntegerAsString = String.valueOf(seqManager.getNextValueForSequence(IntactHibernatePersistenceProvider.CV_LOCAL_SEQ));
+        return prefix + ":" + StringUtils.leftPad(nextIntegerAsString, 4, "0");
     }
 
 }

@@ -19,9 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -33,7 +31,6 @@ public class DataContextTest extends IntactBasicTestCase {
     private DataContext dataContext;
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
     public void testCommitTransaction() throws Exception {
 
         TransactionStatus transactionStatus = dataContext.beginTransaction();

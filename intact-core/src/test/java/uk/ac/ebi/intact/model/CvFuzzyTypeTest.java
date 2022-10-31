@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 
 /**
  * CvFuzzyType Tester.

@@ -2,14 +2,8 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.List;
@@ -184,7 +178,6 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
     public void replaceInstitution() throws Exception {
         Institution sourceInstitution = getMockBuilder().createInstitution("IA:xxx1", "Lala Source Institute");
         Institution destInstitution = getMockBuilder().createInstitution("IA:xxx2", "Lala Destination Institute");
@@ -210,7 +203,6 @@ public class AnnotatedObjectDaoImplTest extends IntactBasicTestCase {
     }
 
     @Test
-    @DirtiesContext
     public void replaceInstitutionForCreator() throws Exception {
         Institution sourceInstitution = getMockBuilder().createInstitution("IA:xxx1", "Lala Source Institute");
         Institution destInstitution = getMockBuilder().createInstitution("IA:xxx2", "Lala Destination Institute");

@@ -1057,7 +1057,7 @@ public boolean isUndetermined() {
 
     @Lob
     @Column(name = "full_sequence")
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.MaterializedClobType")
     public String getFullSequence() {
         return fullSequence;
     }

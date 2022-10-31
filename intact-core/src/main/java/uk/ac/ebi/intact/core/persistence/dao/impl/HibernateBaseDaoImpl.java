@@ -11,9 +11,8 @@ import org.hibernate.Criteria;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
-import org.hibernate.ejb.HibernateEntityManager;
 import org.hibernate.engine.spi.SessionImplementor;
-import org.springframework.transaction.annotation.Propagation;
+import org.hibernate.jpa.HibernateEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -38,7 +37,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
 
-    public static final Log log = LogFactory.getLog( HibernateBaseDaoImpl.class );
+    public static final Log log = LogFactory.getLog(HibernateBaseDaoImpl.class);
 
     private Class<T> entityClass;
     private IntactSession intactSession;
@@ -49,31 +48,28 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     @PersistenceUnit(unitName = "intact-core-default")
     private EntityManagerFactory entityManagerFactory;
 
-    public HibernateBaseDaoImpl() {}
+    public HibernateBaseDaoImpl() {
+    }
 
-    public HibernateBaseDaoImpl( Class<T> entityClass) {
+    public HibernateBaseDaoImpl(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
-    public HibernateBaseDaoImpl( Class<T> entityClass, EntityManager entityManager) {
+    public HibernateBaseDaoImpl(Class<T> entityClass, EntityManager entityManager) {
         this.entityClass = entityClass;
         //this.entityManager = entityManager;
     }
 
-    public HibernateBaseDaoImpl( Class<T> entityClass, EntityManager entityManager, IntactSession intactSession ) {
+    public HibernateBaseDaoImpl(Class<T> entityClass, EntityManager entityManager, IntactSession intactSession) {
         this(entityClass, entityManager);
         this.intactSession = intactSession;
     }
 
     public Session getSession() {
-        Session session = ((HibernateEntityManager)getEntityManager()).getSession();
-        return session;
+        return ((HibernateEntityManager) getEntityManager()).getSession();
     }
 
     public EntityManager getEntityManager() {
-//        if (entityManager != null && !entityManager.isOpen()) {
-//            entityManager = IntactContext.getCurrentInstance().getDataContext().getDaoFactory().getEntityManager();
-//        }
         if (entityManager != null && !entityManager.isOpen()) {
             entityManager = entityManagerFactory.createEntityManager();
         }
@@ -94,42 +90,37 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      *
      * @return String the database name, or an empty String if the query fails
      */
-    @Transactional(readOnly = true)
     public String getDbName() throws SQLException {
         String url = null;
-        HibernateEntityManager hFactory = (HibernateEntityManager)getEntityManager();
+        HibernateEntityManager hFactory = (HibernateEntityManager) getEntityManager();
         if (hFactory.getSession() != null) {
-            SessionImplementor settings = (SessionImplementor)hFactory.getSession();
+            SessionImplementor settings = (SessionImplementor) hFactory.getSession();
             Connection connection = settings.connection();
             url = connection.getMetaData().getURL();
         }
 
-        if ( url.contains( ":" ) ) {
-            url = url.substring( url.lastIndexOf( ":" ) + 1, url.length() );
+        if (url.contains(":")) {
+            url = url.substring(url.lastIndexOf(":") + 1, url.length());
         }
         return url;
     }
 
-    @Transactional(readOnly = true)
     public List<T> getAll() {
-        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o").getResultList();
+        return getEntityManager().createQuery("select o from " + getEntityClass().getName() + " o").getResultList();
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Iterator<T> getAllIterator() {
-        return getSession().createQuery("from "+getEntityClass().getSimpleName()).iterate();
+        return getSession().createQuery("from " + getEntityClass().getSimpleName()).iterate();
     }
 
-    @Transactional(readOnly = true)
-    public List<T> getAll( int firstResult, int maxResults ) {
-        return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o")
-                .setFirstResult( firstResult )
-                .setMaxResults( maxResults ).getResultList();
+    public List<T> getAll(int firstResult, int maxResults) {
+        return getEntityManager().createQuery("select o from " + getEntityClass().getName() + " o")
+                .setFirstResult(firstResult)
+                .setMaxResults(maxResults).getResultList();
     }
 
-    @Transactional(readOnly = true)
     public List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant) {
-        String strQuery = "from "+getEntityClass().getSimpleName()+" order by "+sortProperty+" "+((ascendant)? "asc" : "desc");
+        String strQuery = "from " + getEntityClass().getSimpleName() + " order by " + sortProperty + " " + ((ascendant) ? "asc" : "desc");
         Query query = getEntityManager().createQuery(strQuery);
 
         query.setFirstResult(firstResult);
@@ -138,7 +129,6 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return query.getResultList();
     }
 
-    @Transactional(readOnly = true)
     public int countAll() {
         final Long count = (Long) getSession()
                 .createCriteria(getEntityClass())
@@ -151,15 +141,13 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * Provides the user name that is connecting to the DB.
      *
      * @return String the user name
-     *
      * @throws SQLException thrown if the metatdata can't be obtained
      */
-    @Transactional(readOnly = true)
     public String getDbUserName() throws SQLException {
         String name = null;
-        HibernateEntityManager hFactory = (HibernateEntityManager)getEntityManager();
+        HibernateEntityManager hFactory = (HibernateEntityManager) getEntityManager();
         if (hFactory.getSession() != null) {
-            SessionImplementor settings = (SessionImplementor)hFactory.getSession();
+            SessionImplementor settings = (SessionImplementor) hFactory.getSession();
             Connection connection = settings.connection();
             String dbURL = connection.getMetaData().getURL();
             name = connection.getMetaData().getUserName();
@@ -167,63 +155,64 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return name;
     }
 
-    @Transactional(readOnly = false)
-    public void update( T objToUpdate ) {
+    @Transactional
+    public void update(T objToUpdate) {
         checkReadOnly();
 
-        getSession().update( objToUpdate );
+        getSession().update(objToUpdate);
     }
 
-    @Transactional(readOnly = false)
-    public void persist( T objToPersist ) {
+    @Transactional
+    public void persist(T objToPersist) {
         checkReadOnly();
 
-        getEntityManager().persist( objToPersist );
+        getEntityManager().persist(objToPersist);
     }
 
-    @Transactional(readOnly = false)
-    public void persistAll( Collection<T> objsToPersist ) {
+    @Transactional
+    public void persistAll(Collection<T> objsToPersist) {
         checkReadOnly();
 
-        for ( T objToPersist : objsToPersist ) {
-            persist( objToPersist );
+        for (T objToPersist : objsToPersist) {
+            persist(objToPersist);
         }
     }
 
-    @Transactional(readOnly = false)
-    public void delete( T objToDelete ) {
+    @Transactional
+    public void delete(T objToDelete) {
         checkReadOnly();
 
-        getSession().delete( objToDelete );
+        getSession().delete(objToDelete);
     }
 
-    @Transactional(readOnly = false)
-    public void deleteAll( Collection<T> objsToDelete ) {
+    @Transactional
+    public void deleteAll(Collection<T> objsToDelete) {
         checkReadOnly();
 
-        for ( T objToDelete : objsToDelete ) {
-            delete( objToDelete );
+        for (T objToDelete : objsToDelete) {
+            delete(objToDelete);
         }
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public int deleteAll() {
         // TODO fix this
         Query query = getEntityManager().createQuery("delete from " + getEntityClass());
         return query.executeUpdate();
     }
 
-    @Transactional(readOnly = false)
-    public void saveOrUpdate( T objToPersist ) {
+    @Transactional
+    public void saveOrUpdate(T objToPersist) {
         checkReadOnly();
 
-        getSession().saveOrUpdate( objToPersist );
+        getSession().saveOrUpdate(objToPersist);
     }
 
-    public void refresh( T objToRefresh ) {
-        getSession().refresh( objToRefresh );
+    public void refresh(T objToRefresh) {
+        getSession().refresh(objToRefresh);
     }
 
+    @Transactional
     public void evict(T objToEvict) {
         getSession().evict(objToEvict);
     }
@@ -232,6 +221,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         replicate(objToReplicate, true);
     }
 
+    @Transactional
     public void replicate(T objToReplicate, boolean ignoreIfExisting) {
         ReplicationMode replicationMode;
 
@@ -243,16 +233,16 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         getSession().replicate(objToReplicate, replicationMode);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void merge(T objToMerge) {
         getSession().merge(objToMerge);
     }
 
     /**
      * Checks if an object is transient (not contained in the current session)
+     *
      * @param object the object to check
      * @return True if the object is transient - may contain uninitialized lazy collections
-     *
      * @since 1.8.0
      */
     public boolean isTransient(T object) {
@@ -265,17 +255,17 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      *
      * @param entity The entity to validate
      */
-    public static void validateEntity( Class<? extends IntactObject> entity ) {
-        if ( entity.getAnnotation( Entity.class ) == null ) {
-            throw new NotAnEntityException( entity );
+    public static void validateEntity(Class<? extends IntactObject> entity) {
+        if (entity.getAnnotation(Entity.class) == null) {
+            throw new NotAnEntityException(entity);
         }
     }
 
-    protected T getByPropertyName( String propertyName, String value ) {
-        return getByPropertyName( propertyName, value, false );
+    protected T getByPropertyName(String propertyName, String value) {
+        return getByPropertyName(propertyName, value, false);
     }
 
-    protected T getByPropertyName( String propertyName, String value, boolean ignoreCase ) {
+    protected T getByPropertyName(String propertyName, String value, boolean ignoreCase) {
         Query query = getQueryByPropertyName(propertyName, value, ignoreCase);
 
         List<T> results = query.getResultList();
@@ -285,93 +275,92 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return results.iterator().next();
     }
 
-    public Collection<T> getColByPropertyName( String propertyName, String value ) {
-        return getColByPropertyName( propertyName, value, false );
+    public Collection<T> getColByPropertyName(String propertyName, String value) {
+        return getColByPropertyName(propertyName, value, false);
     }
 
-    protected Collection<T> getColByPropertyName( String propertyName, String value, boolean ignoreCase ) {
-        if ( value.startsWith( "%" ) || value.endsWith( "%" ) ) {
-            return getByPropertyNameLike( propertyName, value, ignoreCase, -1, -1 );
+    protected Collection<T> getColByPropertyName(String propertyName, String value, boolean ignoreCase) {
+        if (value.startsWith("%") || value.endsWith("%")) {
+            return getByPropertyNameLike(propertyName, value, ignoreCase, -1, -1);
         }
 
-        return getQueryByPropertyName( propertyName, value, ignoreCase ).getResultList();
+        return getQueryByPropertyName(propertyName, value, ignoreCase).getResultList();
     }
 
     protected Query getQueryByPropertyName(String propertyName, String value, boolean ignoreCase) {
         Query query;
 
         if (ignoreCase) {
-            query = getEntityManager().createQuery("from "+getEntityClass().getSimpleName()+" where lower("+propertyName+") = lower(:propValue)");
+            query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where lower(" + propertyName + ") = lower(:propValue)");
         } else {
-            query = getEntityManager().createQuery("from "+getEntityClass().getSimpleName()+" where "+propertyName+" = :propValue");
+            query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where " + propertyName + " = :propValue");
         }
 
         query.setParameter("propValue", value);
         return query;
     }
 
-    protected Collection<T> getByPropertyNameLike( String propertyName, String value ) {
-        return getByPropertyNameLike( propertyName, value, true, -1, -1 );
+    protected Collection<T> getByPropertyNameLike(String propertyName, String value) {
+        return getByPropertyNameLike(propertyName, value, true, -1, -1);
     }
 
-    protected Collection<T> getByPropertyNameLike( String propertyName, String value, boolean ignoreCase ) {
-        return getByPropertyNameLike( propertyName, value, ignoreCase, -1, -1 );
+    protected Collection<T> getByPropertyNameLike(String propertyName, String value, boolean ignoreCase) {
+        return getByPropertyNameLike(propertyName, value, ignoreCase, -1, -1);
     }
 
-    protected Collection<T> getByPropertyNameLike( String propertyName, String value, boolean ignoreCase, int firstResult, int maxResults ) {
-        return getByPropertyNameLike( propertyName, value, ignoreCase, firstResult, maxResults, false );
+    protected Collection<T> getByPropertyNameLike(String propertyName, String value, boolean ignoreCase, int firstResult, int maxResults) {
+        return getByPropertyNameLike(propertyName, value, ignoreCase, firstResult, maxResults, false);
     }
 
-    protected Collection<T> getByPropertyNameLike( String propertyName, String value, boolean ignoreCase, int firstResult, int maxResults, boolean orderAsc ) {
-        Criteria criteria = getSession().createCriteria( entityClass );
+    protected Collection<T> getByPropertyNameLike(String propertyName, String value, boolean ignoreCase, int firstResult, int maxResults, boolean orderAsc) {
+        Criteria criteria = getSession().createCriteria(entityClass);
 
-        SimpleExpression rest = Restrictions.like( propertyName, value );
+        SimpleExpression rest = Restrictions.like(propertyName, value);
 
-        if ( ignoreCase ) {
+        if (ignoreCase) {
             rest.ignoreCase();
         }
 
-        criteria.add( rest );
+        criteria.add(rest);
 
-        if ( firstResult >= 0 ) {
-            criteria.setFirstResult( firstResult );
+        if (firstResult >= 0) {
+            criteria.setFirstResult(firstResult);
         }
 
-        if ( maxResults > 0 ) {
-            criteria.setMaxResults( maxResults );
+        if (maxResults > 0) {
+            criteria.setMaxResults(maxResults);
         }
 
-        if ( orderAsc ) {
-            criteria.addOrder( Order.asc( propertyName ) );
-        }
-        else {
-            criteria.addOrder( Order.desc( propertyName ) );
+        if (orderAsc) {
+            criteria.addOrder(Order.asc(propertyName));
+        } else {
+            criteria.addOrder(Order.desc(propertyName));
         }
 
         return criteria.list();
     }
 
-    protected Disjunction disjunctionForArray( String propertyName, String[] values ) {
-        return disjunctionForArray( propertyName, values, false );
+    protected Disjunction disjunctionForArray(String propertyName, String[] values) {
+        return disjunctionForArray(propertyName, values, false);
     }
 
-    protected Disjunction disjunctionForArray( String propertyName, String[] values, boolean ignoreCase ) {
+    protected Disjunction disjunctionForArray(String propertyName, String[] values, boolean ignoreCase) {
         Disjunction disj = Restrictions.disjunction();
 
-        for ( String value : values ) {
+        for (String value : values) {
             SimpleExpression res;
 
-            if ( value.contains( "%" ) ) {
-                res = Restrictions.like( propertyName, value );
+            if (value.contains("%")) {
+                res = Restrictions.like(propertyName, value);
             } else {
-                res = Restrictions.eq( propertyName, value );
+                res = Restrictions.eq(propertyName, value);
             }
 
-            if ( ignoreCase ) {
+            if (ignoreCase) {
                 res.ignoreCase();
             }
 
-            disj.add( res );
+            disj.add(res);
         }
 
         return disj;
@@ -381,14 +370,14 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return entityClass;
     }
 
-    public Object executeDetachedCriteria( DetachedCriteria crit ) {
-        return crit.getExecutableCriteria( getSession() ).list();
+    public Object executeDetachedCriteria(DetachedCriteria crit) {
+        return crit.getExecutableCriteria(getSession()).list();
     }
 
-    public Object executeDetachedCriteria( DetachedCriteria crit, int firstResult, int maxResults ) {
-        return crit.getExecutableCriteria( getSession() )
-                .setFirstResult( firstResult )
-                .setMaxResults( maxResults )
+    public Object executeDetachedCriteria(DetachedCriteria crit, int firstResult, int maxResults) {
+        return crit.getExecutableCriteria(getSession())
+                .setFirstResult(firstResult)
+                .setMaxResults(maxResults)
                 .list();
     }
 

@@ -7,7 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import uk.ac.ebi.intact.core.persister.IntactCore;
+import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
@@ -245,6 +245,8 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     }
 
     @Column(name="shortLabel", insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "publication_generator")
+    @SequenceGenerator(name = "publication_generator", sequenceName = IntactHibernatePersistenceProvider.UNASSIGNED_SEQ, initialValue = 1)
     public String getPublicationId() {
         return super.getShortLabel();
     }

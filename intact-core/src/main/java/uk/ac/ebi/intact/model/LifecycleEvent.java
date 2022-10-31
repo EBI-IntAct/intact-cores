@@ -87,7 +87,7 @@ public class LifecycleEvent extends IntactObjectImpl {
     }
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.MaterializedClobType")
     public String getNote() {
         return note;
     }

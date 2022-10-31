@@ -21,7 +21,7 @@ import uk.ac.ebi.intact.core.persistence.dao.query.QueryModifier;
 import uk.ac.ebi.intact.core.persistence.dao.query.QueryPhrase;
 import uk.ac.ebi.intact.core.persistence.dao.query.QueryTerm;
 import uk.ac.ebi.intact.core.persistence.dao.query.impl.SearchableQuery;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Protein;
 import uk.ac.ebi.intact.model.ProteinImpl;
 

@@ -99,7 +99,6 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
         return crit.list();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<MineInteraction> getAll( int firstResult, int maxResults ) {
         return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o order by o.pk")

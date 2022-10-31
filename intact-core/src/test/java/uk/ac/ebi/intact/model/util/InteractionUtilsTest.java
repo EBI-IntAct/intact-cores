@@ -4,7 +4,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Interaction;
 

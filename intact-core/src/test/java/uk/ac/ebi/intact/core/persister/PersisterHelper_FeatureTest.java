@@ -17,8 +17,9 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
+import uk.ac.ebi.intact.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
@@ -106,12 +107,18 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
 
     @Test
     public void persistFeature_addingARange() throws Exception {
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
+
         Feature feature = getMockBuilder().createFeatureRandom();
         feature.getRanges().clear();
         feature.addRange(getMockBuilder().createRangeRandom());
 
         getCorePersister().saveOrUpdate(feature);
 
+        getDataContext().commitTransaction(transactionStatus);
+
+        Assert.assertEquals( 1, getDaoFactory().getFeatureDao().countAll() );
+        Assert.assertEquals( 1, getDaoFactory().getRangeDao().countAll() );
         Assert.assertEquals(1, feature.getRanges().size());
 
         IntactCloner cloner = new IntactCloner();
@@ -122,6 +129,7 @@ public class PersisterHelper_FeatureTest extends IntactBasicTestCase {
         getCorePersister().saveOrUpdate(feature2);
 
         Assert.assertEquals( 1, getDaoFactory().getFeatureDao().countAll() );
+        Assert.assertEquals( 2, getDaoFactory().getRangeDao().countAll() );
 
         Feature refreshed = getDaoFactory().getFeatureDao().getByAc(feature2.getAc());
         Assert.assertEquals(2, refreshed.getRanges().size());
