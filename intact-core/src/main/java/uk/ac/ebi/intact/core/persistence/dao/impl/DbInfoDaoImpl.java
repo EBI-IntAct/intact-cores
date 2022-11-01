@@ -58,7 +58,6 @@ public class DbInfoDaoImpl extends HibernateBaseDaoImpl<DbInfo> implements DbInf
         return getEntityManager().createQuery( "from DbInfo" ).getResultList();
     }
 
-    @Transactional
     public void persist( DbInfo dbInfo ) {
         getEntityManager().persist( dbInfo );
     }

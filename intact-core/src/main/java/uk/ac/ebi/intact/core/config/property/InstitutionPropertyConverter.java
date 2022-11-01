@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.intact.core.config.property;
 
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.annotations.PersistentPropertyConverter;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.Institution;
@@ -30,6 +31,7 @@ public class InstitutionPropertyConverter implements PropertyConverter<Instituti
     }
 
     @Override
+    @Transactional
     public Institution convertFromString(String str) {
         if (str == null) return null;
 

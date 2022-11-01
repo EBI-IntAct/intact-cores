@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.annotations.PersistentConfiguration;
 import uk.ac.ebi.intact.core.annotations.PersistentProperty;
 import uk.ac.ebi.intact.core.config.property.*;
@@ -61,6 +62,7 @@ public class ConfigurationHandler {
         supportedPrimitiveConverter.put( java.lang.Character.TYPE, springContext.getBean( CharPropertyConverter.class ) );
     }
 
+    @Transactional
     public Application loadConfiguration(Application application) {
         Application appFromDb = getApplicationDao().getByKey(application.getKey());
 
@@ -115,6 +117,7 @@ public class ConfigurationHandler {
         return application;
     }
 
+    @Transactional
     public void persistConfiguration() {
         // update the Application object with the latest changes, since the last time the config was loaded
         Application application = IntactContext.getCurrentInstance().getApplication();

@@ -16,6 +16,7 @@
 package uk.ac.ebi.intact.core.persistence.util;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
 import uk.ac.ebi.intact.model.Institution;
@@ -40,6 +41,7 @@ public class InstitutionMerger {
      * @param removeMerged           Whether to remove the merged institutions or not.
      * @return number of updated records
      */
+    @Transactional
     public int merge(Institution[] sourceInstitutions, Institution destinationInstitution, boolean removeMerged) {
         int updated = 0;
 

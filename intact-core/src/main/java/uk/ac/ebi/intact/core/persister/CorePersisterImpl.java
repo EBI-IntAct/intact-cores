@@ -150,12 +150,19 @@ public class CorePersisterImpl implements CorePersister {
     }
 
     @Transactional
-    @IntactFlushMode(FlushModeType.COMMIT)
     public PersisterStatistics saveOrUpdate( AnnotatedObject ao ) {
         if (log.isDebugEnabled()) log.debug("Saving: "+DebugUtil.annotatedObjectToString( ao, false ));
 
-        synchronize( ao );
-        commit();
+        dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.COMMIT);
+        //dataContext.getDaoFactory().getDataConfig().setAutoFlush(false);
+
+        try {
+            synchronize( ao );
+            commit();
+        } finally {
+            dataContext.getDaoFactory().getEntityManager().setFlushMode(FlushModeType.AUTO);
+        }
+
         reload( ao );
 
         return statistics;

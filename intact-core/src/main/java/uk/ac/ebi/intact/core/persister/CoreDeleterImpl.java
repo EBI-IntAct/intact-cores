@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.annotations.IntactFlushMode;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.AnnotatedObject;
@@ -12,8 +11,6 @@ import uk.ac.ebi.intact.model.BioSource;
 import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.model.Interactor;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
-
-import javax.persistence.FlushModeType;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -34,11 +31,12 @@ public class CoreDeleterImpl implements CoreDeleter {
     }
 
     @Override
-    @Transactional
-    @IntactFlushMode(FlushModeType.COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void delete(IntactObject intactObject) {
          if (intactObject.getAc() != null) {
-            if (log.isDebugEnabled()) log.debug("Deleting: " + DebugUtil.intactObjectToString(intactObject, false));
+            if (log.isDebugEnabled()) {
+                log.debug("Deleting: " + DebugUtil.intactObjectToString(intactObject, false));
+            }
 
              IntactObject ioToRemove = intactObject;
              AnnotatedObject parent = AnnotatedObjectUtils.findParent(intactObject);
@@ -51,8 +49,6 @@ public class CoreDeleterImpl implements CoreDeleter {
                  }
 
                  AnnotatedObjectUtils.removeChild(parent, ioToRemove);
-
-//                 intactContext.getDaoFactory().getEntityManager().merge(parent);
              }
              else{
                  checkAnnotatedObjectDetachedFromOtherObjects(intactObject);

@@ -13,6 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.jpa.HibernateEntityManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -90,6 +91,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      *
      * @return String the database name, or an empty String if the query fails
      */
+    @Transactional(readOnly = true)
     public String getDbName() throws SQLException {
         String url = null;
         HibernateEntityManager hFactory = (HibernateEntityManager) getEntityManager();
@@ -105,20 +107,24 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return url;
     }
 
+    @Transactional(readOnly = true)
     public List<T> getAll() {
         return getEntityManager().createQuery("select o from " + getEntityClass().getName() + " o").getResultList();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
     public Iterator<T> getAllIterator() {
         return getSession().createQuery("from " + getEntityClass().getSimpleName()).iterate();
     }
 
+    @Transactional(readOnly = true)
     public List<T> getAll(int firstResult, int maxResults) {
         return getEntityManager().createQuery("select o from " + getEntityClass().getName() + " o")
                 .setFirstResult(firstResult)
                 .setMaxResults(maxResults).getResultList();
     }
 
+    @Transactional(readOnly = true)
     public List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant) {
         String strQuery = "from " + getEntityClass().getSimpleName() + " order by " + sortProperty + " " + ((ascendant) ? "asc" : "desc");
         Query query = getEntityManager().createQuery(strQuery);
@@ -129,6 +135,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return query.getResultList();
     }
 
+    @Transactional(readOnly = true)
     public int countAll() {
         final Long count = (Long) getSession()
                 .createCriteria(getEntityClass())
@@ -143,6 +150,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * @return String the user name
      * @throws SQLException thrown if the metatdata can't be obtained
      */
+    @Transactional(readOnly = true)
     public String getDbUserName() throws SQLException {
         String name = null;
         HibernateEntityManager hFactory = (HibernateEntityManager) getEntityManager();
@@ -212,7 +220,6 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         getSession().refresh(objToRefresh);
     }
 
-    @Transactional
     public void evict(T objToEvict) {
         getSession().evict(objToEvict);
     }
@@ -221,7 +228,6 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         replicate(objToReplicate, true);
     }
 
-    @Transactional
     public void replicate(T objToReplicate, boolean ignoreIfExisting) {
         ReplicationMode replicationMode;
 

@@ -17,6 +17,7 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.Annotation;
@@ -49,6 +50,7 @@ public class BulkOperationsImpl implements BulkOperations {
      * @return the accessions that have been modified
      */
     @Override
+    @Transactional
     public String[] addAnnotation(Annotation annotation, String[] acs, Class<? extends AnnotatedObject> aoClass, boolean replaceIfTopicMatch) {
         Collection<String> updatedAcs = new ArrayList<String>(acs.length);
 

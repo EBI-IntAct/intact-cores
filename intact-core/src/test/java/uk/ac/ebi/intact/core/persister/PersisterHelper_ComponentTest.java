@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
  */
 public class PersisterHelper_ComponentTest extends IntactBasicTestCase {
 
-
     @Test
     public void persist_default() throws Exception {
         Component component = getMockBuilder().createComponentRandom();

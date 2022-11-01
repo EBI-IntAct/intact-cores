@@ -100,6 +100,7 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
         return getAllIterator();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<T> getAll( int firstResult, int maxResults ) {
         return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o order by o.ac")

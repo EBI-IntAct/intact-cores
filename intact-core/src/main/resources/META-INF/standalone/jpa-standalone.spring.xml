@@ -31,7 +31,7 @@
         </property>
 
         <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            <bean class="uk.ac.ebi.intact.core.config.hibernate.IntactHibernateJpaVendorAdapter">
                 <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect"/>
                 <property name="showSql" value="false"/>
                 <property name="generateDdl" value="false"/>
@@ -42,7 +42,6 @@
     <bean id="intactCoreDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.h2.Driver"/>
         <property name="url" value="jdbc:h2:mem:intactcore;DB_CLOSE_DELAY=-1;LOCK_MODE=0"/>
-<!--        <property name="url" value="jdbc:h2:./target/intactcore;AUTO_SERVER=TRUE"/>-->
         <property name="username" value="sa"/>
         <property name="password" value=""/>
     </bean>

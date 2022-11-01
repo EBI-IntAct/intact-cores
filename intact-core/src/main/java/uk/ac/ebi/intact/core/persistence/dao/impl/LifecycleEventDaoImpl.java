@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.LifecycleEventDao;
 import uk.ac.ebi.intact.model.LifecycleEvent;
@@ -20,7 +19,6 @@ import java.util.List;
  * @since 2.5
  */
 @Repository
-@Transactional(readOnly = true)
 public class LifecycleEventDaoImpl extends HibernateBaseDaoImpl<LifecycleEvent> implements LifecycleEventDao {
 
     public LifecycleEventDaoImpl() {

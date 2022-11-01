@@ -17,11 +17,16 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.intact.core.annotations.IntactFlushMode;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
 import uk.ac.ebi.intact.model.AnnotatedObject;
 import uk.ac.ebi.intact.model.IntactEntry;
 import uk.ac.ebi.intact.model.Interaction;
+
+import javax.persistence.FlushModeType;
 
 /**
  * Helper class to reduce the code needed to save or update an Annotated object.
@@ -61,6 +66,8 @@ public class PersisterHelperImpl implements PersisterHelper {
         }
     }
 
+    @Transactional
+    @IntactFlushMode(FlushModeType.COMMIT)
     @Deprecated
     public PersisterStatistics save( AnnotatedObject... annotatedObjects ) throws PersisterException {
         CorePersister corePersister = getCorePersister();
@@ -71,6 +78,7 @@ public class PersisterHelperImpl implements PersisterHelper {
 
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Deprecated
     public PersisterStatistics saveInNewTransaction(AnnotatedObject... annotatedObjects ) throws PersisterException {
         return save(annotatedObjects);

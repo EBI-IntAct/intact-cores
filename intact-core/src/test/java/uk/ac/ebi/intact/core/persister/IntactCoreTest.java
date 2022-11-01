@@ -74,12 +74,21 @@ public class IntactCoreTest extends IntactBasicTestCase {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     public void testIsInitialized_no_try_delete() throws Exception {
+        TransactionStatus transaction = getDataContext().beginTransaction();
+
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
+        getDataContext().commitTransaction(transaction);
+
+        TransactionStatus transaction2 = getDataContext().beginTransaction();
+
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
+
+        getDataContext().commitTransaction(transaction2);
 
         getCoreDeleter().delete(refreshedInteraction);
         Assert.assertNull(getDataContext().getDaoFactory().getInteractionDao().getByAc(refreshedInteraction.getAc()));
