@@ -43,7 +43,7 @@ public class Application extends IntactObjectImpl {
     ///////////////////////////
     // Getters and Setters
 
-    @Column(nullable = false, unique = true, name = "key")
+    @Column( nullable = false, unique = true )
     public String getKey() {
         return key;
     }

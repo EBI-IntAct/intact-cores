@@ -1,6 +1,5 @@
 package uk.ac.ebi.intact.model.meta;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
@@ -14,7 +13,7 @@ import javax.persistence.*;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_application_prop" , indexes = @Index(name = "idx_app_prop_key", columnList = "key"))
+@Table(name = "ia_application_prop", indexes = @Index(name = "idx_app_prop_key", columnList = "key"))
 public class ApplicationProperty extends IntactObjectImpl {
 
     private String key;
@@ -37,7 +36,7 @@ public class ApplicationProperty extends IntactObjectImpl {
 
     ///////////////////////////
     // Getters and Setters
-    @Column(name = "key")
+
     public String getKey() {
         return key;
     }
@@ -57,8 +56,7 @@ public class ApplicationProperty extends IntactObjectImpl {
     }
 
     @ManyToOne
-    @JoinColumn( name = "application_ac" )
-    @ForeignKey(name="FK_PROP_APPLICATION")
+    @JoinColumn(name = "application_ac", foreignKey = @ForeignKey(name="FK_PROP_APPLICATION"))
     public Application getApplication() {
         return application;
     }

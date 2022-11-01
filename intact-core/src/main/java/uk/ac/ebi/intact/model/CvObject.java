@@ -22,9 +22,10 @@ import java.util.Collection;
  * @version $Id$
  */
 @Entity
-@Table(name = "ia_controlledvocab",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"objclass", "shortlabel"})},
-        indexes = {@Index(name = "cvobject_id_idx", columnList = "identifier")})
+@Table(
+        name = "ia_controlledvocab",
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "objclass", "shortlabel" }) },
+        indexes = { @Index(name = "cvobject_id_idx", columnList = "identifier") })
 @DiscriminatorColumn(name = "objclass", discriminatorType = DiscriminatorType.STRING, length = 255)
 public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjectAlias> implements Searchable {
 
@@ -34,8 +35,6 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * PSI-MI Identifier for this object, which is a de-normalization of the
      * value contained in the 'identity' xref
      */
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cv-generator")
-    @SequenceGenerator(name = "cv-generator", sequenceName = IntactHibernatePersistenceProvider.CV_LOCAL_SEQ, initialValue = 1)
     private String identifier;
 
     public CvObject() {

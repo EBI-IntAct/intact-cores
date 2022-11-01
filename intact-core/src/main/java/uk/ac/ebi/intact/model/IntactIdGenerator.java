@@ -102,7 +102,6 @@ public class IntactIdGenerator extends SequenceStyleGenerator {
         return stringId;
     }
 
-
     public String getSequenceName() {
         return INTACT_AC_SEQUENCE_NAME;
     }

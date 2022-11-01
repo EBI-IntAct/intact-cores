@@ -6,8 +6,6 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.model.user.User;
 
 import javax.persistence.*;
@@ -21,7 +19,7 @@ import java.util.*;
  * @since 1.5
  */
 @Entity
-@Table( name = "ia_publication" )
+@Table(name = "ia_publication")
 public class Publication extends OwnedAnnotatedObject<PublicationXref, PublicationAlias> implements Editable {
 
     /**
@@ -137,8 +135,7 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     }
 
     @ManyToOne
-    @JoinColumn( name = "status_ac" )
-    @ForeignKey(name="FK_PUBLICATION_STATUS")
+    @JoinColumn(name = "status_ac", foreignKey = @ForeignKey(name="FK_PUBLICATION_STATUS"))
     public CvPublicationStatus getStatus() {
         return status;
     }
@@ -147,9 +144,8 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
         this.status = status;
     }
 
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "owner_pk" )
-    @ForeignKey(name="FK_PUBLICATION_OWNER")
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "owner_pk", foreignKey = @ForeignKey(name="FK_PUBLICATION_OWNER"))
     public User getCurrentOwner() {
         return currentOwner;
     }
@@ -158,9 +154,8 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
         this.currentOwner = currentOwner;
     }
 
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "reviewer_pk" )
-    @ForeignKey(name="FK_PUBLICATION_REVIEWER")
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "reviewer_pk", foreignKey = @ForeignKey(name="FK_PUBLICATION_REVIEWER"))
     public User getCurrentReviewer() {
         return currentReviewer;
     }
@@ -245,8 +240,6 @@ public class Publication extends OwnedAnnotatedObject<PublicationXref, Publicati
     }
 
     @Column(name="shortLabel", insertable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "publication_generator")
-    @SequenceGenerator(name = "publication_generator", sequenceName = IntactHibernatePersistenceProvider.UNASSIGNED_SEQ, initialValue = 1)
     public String getPublicationId() {
         return super.getShortLabel();
     }

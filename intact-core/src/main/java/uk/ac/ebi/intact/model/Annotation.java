@@ -19,8 +19,8 @@ import javax.validation.constraints.Size;
  * @author hhe
  * @version $Id$
  */
-@Entity()
-@Table( name = "ia_annotation" )
+@Entity
+@Table(name = "ia_annotation")
 public class Annotation extends BasicObjectImpl {
 
     private static final Log log = LogFactory.getLog( Annotation.class );

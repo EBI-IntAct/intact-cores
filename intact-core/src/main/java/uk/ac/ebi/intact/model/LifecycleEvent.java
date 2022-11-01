@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.model;
 
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.user.User;
 
@@ -16,8 +14,13 @@ import java.util.Date;
  * @since TODO add POM version
  */
 @Entity
-@Table( name = "ia_lifecycle_event" )
-@javax.persistence.SequenceGenerator( name="SEQ_MISC", sequenceName="misc_seq", initialValue = 1 )
+@Table(
+        name = "ia_lifecycle_event",
+        indexes = {
+                @Index(name = "idx_event_event", columnList = "event_ac"),
+                @Index(name = "idx_event_who", columnList = "user_ac")
+        })
+@SequenceGenerator(name="SEQ_MISC", sequenceName="misc_seq", initialValue = 1)
 public class LifecycleEvent extends IntactObjectImpl {
 
     private Long pk;
@@ -52,10 +55,8 @@ public class LifecycleEvent extends IntactObjectImpl {
         this( event, who, new Date(), note );
     }
 
-    @ManyToOne( optional = false )
-    @JoinColumn( name = "event_ac" )
-    @ForeignKey(name="FK_LIFECYCLE_EVENT_EVENT")
-    @Index( name = "idx_event_event" )
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event_ac", foreignKey = @ForeignKey(name="FK_LIFECYCLE_EVENT_EVENT"))
     public CvLifecycleEvent getEvent() {
         return event;
     }
@@ -64,10 +65,8 @@ public class LifecycleEvent extends IntactObjectImpl {
         this.event = event;
     }
 
-    @ManyToOne( optional = false )
-    @JoinColumn( name = "user_ac" )
-    @ForeignKey(name="FK_LIFECYCLE_EVENT_USER")
-    @Index( name = "idx_event_who" )
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_ac", foreignKey = @ForeignKey(name="FK_LIFECYCLE_EVENT_USER"))
     public User getWho() {
         return who;
     }
@@ -96,9 +95,8 @@ public class LifecycleEvent extends IntactObjectImpl {
         this.note = note;
     }
 
-    @ManyToOne( targetEntity = Publication.class, fetch = FetchType.LAZY, optional = false )
-    @JoinColumn( name = "publication_ac" )
-    @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION")
+    @ManyToOne(targetEntity = Publication.class, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "publication_ac", foreignKey = @ForeignKey(name="FK_LIFECYCLE_EVENT_PUBLICATION"))
     public Publication getPublication() {
         return publication;
     }

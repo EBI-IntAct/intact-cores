@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.model.user;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
@@ -16,7 +14,9 @@ import javax.persistence.*;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_preference" )
+@Table(
+        name = "ia_preference",
+        indexes = { @Index(name = "idx_preference_key", columnList = "key") })
 public class Preference extends IntactObjectImpl {
 
     public static final String KEY_INSTITUTION_AC = "editor.institution.ac";
@@ -53,8 +53,6 @@ public class Preference extends IntactObjectImpl {
     ///////////////////////////
     // Getters and Setters
 
-    @Index( name = "idx_preference_key" )
-    @Column(name = "key")
     public String getKey() {
         return key;
     }
@@ -73,9 +71,8 @@ public class Preference extends IntactObjectImpl {
         this.value = value;
     }
 
-    @ManyToOne( targetEntity = User.class )
-    @JoinColumn( name = "user_ac" )
-    @ForeignKey(name="FK_PREF_USER")
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_ac", foreignKey = @ForeignKey(name="FK_PREF_USER"))
     public User getUser() {
         return user;
     }
