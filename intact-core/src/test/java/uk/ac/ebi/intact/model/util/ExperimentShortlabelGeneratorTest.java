@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.model.util;
 
 import org.junit.Test;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 
 import static org.junit.Assert.assertEquals;
 

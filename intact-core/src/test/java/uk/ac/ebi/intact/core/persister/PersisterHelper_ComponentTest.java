@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.Component;
 import uk.ac.ebi.intact.model.CvExperimentalRole;

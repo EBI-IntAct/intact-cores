@@ -23,7 +23,7 @@ import uk.ac.ebi.intact.core.config.SequenceManager;
 import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 import uk.ac.ebi.intact.model.util.CvObjectBuilder;

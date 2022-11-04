@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.persistence.dao;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 

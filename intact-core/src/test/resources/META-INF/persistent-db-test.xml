@@ -20,6 +20,10 @@
         <qualifier value="core"/>
     </bean>
 
+    <!--<tx:annotation-driven transaction-manager="transactionManager"/>-->
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-core-default"/>
         <property name="dataSource" ref="coreDataSource"/>
@@ -28,7 +32,7 @@
             <props>
                 <prop key="hibernate.generate_statistics">true</prop>
                 <prop key="hibernate.format_sql">false</prop>
-                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
             </props>
         </property>
 

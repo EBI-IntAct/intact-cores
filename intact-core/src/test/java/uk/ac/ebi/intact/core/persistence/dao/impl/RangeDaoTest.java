@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ebi.intact.core.persistence.dao.RangeDao;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
 

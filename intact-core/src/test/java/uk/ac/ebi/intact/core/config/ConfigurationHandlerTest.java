@@ -18,7 +18,7 @@ package uk.ac.ebi.intact.core.config;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.meta.Application;
 import uk.ac.ebi.intact.model.meta.ApplicationProperty;

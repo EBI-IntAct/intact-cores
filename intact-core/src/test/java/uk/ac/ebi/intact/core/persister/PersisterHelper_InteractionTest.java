@@ -24,7 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
 import uk.ac.ebi.intact.core.persister.stats.PersisterStatistics;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.core.util.DebugUtil;
 import uk.ac.ebi.intact.model.*;

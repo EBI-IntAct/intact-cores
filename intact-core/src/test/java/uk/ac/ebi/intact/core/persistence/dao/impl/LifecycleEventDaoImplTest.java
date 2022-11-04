@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persistence.dao.LifecycleEventDao;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvLifecycleEvent;
 import uk.ac.ebi.intact.model.LifecycleEvent;
 import uk.ac.ebi.intact.model.Publication;

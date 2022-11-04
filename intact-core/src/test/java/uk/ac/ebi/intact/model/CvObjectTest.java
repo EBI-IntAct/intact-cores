@@ -17,7 +17,7 @@ package uk.ac.ebi.intact.model;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)

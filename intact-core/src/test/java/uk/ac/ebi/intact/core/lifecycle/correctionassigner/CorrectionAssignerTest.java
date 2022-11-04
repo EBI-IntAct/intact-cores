@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.core.lifecycle.correctionassigner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Publication;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.UserUtils;

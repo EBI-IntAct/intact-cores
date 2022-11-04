@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.core.persister;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
 /**

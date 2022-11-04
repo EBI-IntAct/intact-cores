@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.model;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 
 /**
  * Parameter Tester.

@@ -2,7 +2,7 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.Experiment;
 import uk.ac.ebi.intact.model.Publication;
 

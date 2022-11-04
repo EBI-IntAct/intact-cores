@@ -3,7 +3,7 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.ebi.intact.core.persistence.dao.InteractionDao;
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.List;

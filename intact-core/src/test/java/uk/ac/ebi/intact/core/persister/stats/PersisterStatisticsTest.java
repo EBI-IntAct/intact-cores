@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.intact.core.persister.stats;
 
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.InteractionImpl;
 import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.Interactor;

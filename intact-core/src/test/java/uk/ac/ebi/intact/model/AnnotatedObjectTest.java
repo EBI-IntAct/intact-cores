@@ -1,6 +1,6 @@
 package uk.ac.ebi.intact.model;
 
-import uk.ac.ebi.intact.IntactBasicTestCase;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import org.junit.Test;
 import org.junit.Assert;
 

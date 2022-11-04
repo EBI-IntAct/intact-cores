@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact;
+package uk.ac.ebi.intact.core.unit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +31,6 @@ import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.core.persister.CoreDeleter;
 import uk.ac.ebi.intact.core.persister.CorePersister;
 import uk.ac.ebi.intact.core.persister.PersisterHelper;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -47,7 +46,7 @@ import javax.persistence.PersistenceUnit;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath*:/META-INF/intact.spring.xml",
-        "classpath*:/META-INF/persistent-db-test.xml"
+        "classpath*:/META-INF/standalone/*-standalone.spring.xml"
 })
 @Transactional("transactionManager")
 @DirtiesContext
