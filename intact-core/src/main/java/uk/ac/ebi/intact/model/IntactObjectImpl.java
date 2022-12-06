@@ -31,7 +31,7 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
     //access methods for attributes
 
     @Id
-    @GeneratedValue(generator = "intact-id-generator")
+    @GeneratedValue(generator = "intact-id-generator", strategy = GenerationType.SEQUENCE)
     @GenericGenerator(name = "intact-id-generator", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator")
     @Column(length = 30)
     public String getAc() {

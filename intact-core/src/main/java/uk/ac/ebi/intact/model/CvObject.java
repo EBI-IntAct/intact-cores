@@ -6,7 +6,6 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 

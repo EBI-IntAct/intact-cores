@@ -36,11 +36,6 @@ public class IntactIdGenerator extends SequenceStyleGenerator {
 
     private static final Log log = LogFactory.getLog(IntactIdGenerator.class);
 
-    /**
-     * The sequence parameter
-     */
-    public static final String SEQUENCE = "sequence";
-
     public static final String INTACT_AC_SEQUENCE_NAME = "intact_ac";
     private String sequenceCallSyntax;
 

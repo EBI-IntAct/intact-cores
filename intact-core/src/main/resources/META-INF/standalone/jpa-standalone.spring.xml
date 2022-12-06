@@ -20,6 +20,7 @@
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="intact-core-default"/>
+        <property name="persistenceXmlLocation" value="classpath*:/META-INF/persistence.xml"/>
         <property name="dataSource" ref="intactCoreDataSource"/>
         
         <property name="jpaProperties">
