@@ -17,7 +17,6 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,6 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void testIsInitialized_yes() throws Exception {
         TransactionStatus transaction = getDataContext().beginTransaction();
 
@@ -56,7 +54,6 @@ public class IntactCoreTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
     public void testIsInitialized_vanilla_yes() throws Exception {
         Experiment exp = getMockBuilder().createExperimentEmpty();
         Assert.assertTrue(IntactCore.isInitialized(exp.getAnnotations()));
@@ -65,21 +62,12 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void testIsInitialized_no() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getComponents()));
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getConfidences()));
@@ -87,7 +75,6 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void testIsInitialized_no_try_delete() throws Exception {
         TransactionStatus transaction = getDataContext().beginTransaction();
 
@@ -109,7 +96,6 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
      public void testIsInitialized_no_try_delete_and_remove_from_experiment() throws Exception {
         TransactionStatus transaction = getDataContext().beginTransaction();
 
@@ -169,68 +155,38 @@ public class IntactCoreTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void testIsInitializedAndDirty_yes() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
-
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
 
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
         refreshedInteraction.addComponent(getMockBuilder().createComponentRandom());
 
         Assert.assertTrue(IntactCore.isInitializedAndDirty(refreshedInteraction.getComponents()));
         Assert.assertFalse(IntactCore.isInitializedAndDirty(refreshedInteraction.getConfidences()));
-
-        getDataContext().commitTransaction(transaction2);
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void testIsInitializedAndDirty_yes2() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
-
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
 
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
         refreshedInteraction.getComponents().iterator().next().getBindingDomains().clear();
 
         Assert.assertFalse(IntactCore.isInitializedAndDirty(refreshedInteraction.getComponents()));
         Assert.assertFalse(IntactCore.isInitializedAndDirty(refreshedInteraction.getConfidences()));
-
-        getDataContext().commitTransaction(transaction2);
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void testIsInitializedAndDirty_no() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitializedAndDirty(refreshedInteraction.getComponents()));
         Assert.assertFalse(IntactCore.isInitializedAndDirty(refreshedInteraction.getConfidences()));
@@ -260,21 +216,12 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void isInitiallized_collections() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
@@ -283,21 +230,12 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void ensuresInitializedAnnotations1() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAnnotations()));
 
@@ -310,21 +248,12 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void ensuresInitializedXrefs() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getXrefs()));
 
@@ -337,21 +266,12 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void ensuresInitializedAliases() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getAliases()));
 
@@ -364,20 +284,11 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void ensuresInitializedParticipant() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getComponents()));
 
@@ -388,21 +299,12 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void ensuresInitializedConfidence() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         interaction.addConfidence(getMockBuilder().createDeterministicConfidence());
         getCorePersister().saveOrUpdate(interaction);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Interaction refreshedInteraction = getDaoFactory().getInteractionDao().getByAc(interaction.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedInteraction.getConfidences()));
 
@@ -413,20 +315,11 @@ public class IntactCoreTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void ensureInitializedSequence() throws Exception {
-        TransactionStatus transaction = getDataContext().beginTransaction();
-
         Protein protein = getMockBuilder().createProteinRandom();
         getCorePersister().saveOrUpdate(protein);
 
-        getDataContext().commitTransaction(transaction);
-
-        TransactionStatus transaction2 = getDataContext().beginTransaction();
-
         Protein refreshedProtein = getDaoFactory().getProteinDao().getByAc(protein.getAc());
-
-        getDataContext().commitTransaction(transaction2);
 
         Assert.assertFalse(IntactCore.isInitialized(refreshedProtein.getSequenceChunks()));
 

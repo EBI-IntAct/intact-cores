@@ -6,7 +6,6 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
 import uk.ac.ebi.intact.model.util.CvObjectIdentifierGenerator;
 
@@ -22,9 +21,11 @@ import java.util.Collection;
  * @version $Id$
  */
 @Entity
-@Table( name = "ia_controlledvocab",
-        uniqueConstraints = {@UniqueConstraint(columnNames={"objclass", "shortlabel"})})
-@DiscriminatorColumn( name = "objclass", discriminatorType = DiscriminatorType.STRING, length = 255 )
+@Table(
+        name = "ia_controlledvocab",
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "objclass", "shortlabel" }) },
+        indexes = { @Index(name = "cvobject_id_idx", columnList = "identifier") })
+@DiscriminatorColumn(name = "objclass", discriminatorType = DiscriminatorType.STRING, length = 255)
 public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjectAlias> implements Searchable {
 
     private String objClass;
@@ -45,16 +46,15 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * owner specified.
      *
      * @param shortLabel The memorable label to identify this CvObject
-     *
      * @throws NullPointerException thrown if either parameters are not specified
      */
-    protected CvObject( String shortLabel ) {
-        super( shortLabel );
+    protected CvObject(String shortLabel) {
+        super(shortLabel);
     }
 
     @Deprecated
-    protected CvObject( Institution owner, String shortLabel ) {
-        super( shortLabel, owner );
+    protected CvObject(Institution owner, String shortLabel) {
+        super(shortLabel, owner);
     }
 
     /////////////////////////////
@@ -80,48 +80,48 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     /////////////////////////////
     // Entity fields
 
-    @Column( name = "objclass", insertable = false, updatable = false )
+    @Column(name = "objclass", insertable = false, updatable = false)
     public String getObjClass() {
         if (objClass == null) {
-            objClass = CgLibUtil.removeCglibEnhanced( getClass() ).getName();
+            objClass = CgLibUtil.removeCglibEnhanced(getClass()).getName();
         }
         return objClass;
     }
 
-    public void setObjClass( String objClass ) {
+    public void setObjClass(String objClass) {
         this.objClass = objClass;
     }
 
-    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(
             name = "ia_cvobject2annot",
-            joinColumns = {@JoinColumn( name = "cvobject_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
+            joinColumns = {@JoinColumn(name = "cvobject_ac")},
+            inverseJoinColumns = {@JoinColumn(name = "annotation_ac")}
     )
     @Override
     public Collection<Annotation> getAnnotations() {
         return super.getAnnotations();
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @Cascade(value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
             org.hibernate.annotations.CascadeType.MERGE,
-                org.hibernate.annotations.CascadeType.REFRESH,
-                org.hibernate.annotations.CascadeType.DETACH} )
+            org.hibernate.annotations.CascadeType.REFRESH,
+            org.hibernate.annotations.CascadeType.DETACH})
     @Override
     public Collection<CvObjectXref> getXrefs() {
         return super.getXrefs();
     }
 
-    @OneToMany( mappedBy = "parent", orphanRemoval = true)
-    @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST,
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @Cascade(value = {org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.SAVE_UPDATE,
             org.hibernate.annotations.CascadeType.MERGE,
-                org.hibernate.annotations.CascadeType.REFRESH,
-                org.hibernate.annotations.CascadeType.DETACH} )
+            org.hibernate.annotations.CascadeType.REFRESH,
+            org.hibernate.annotations.CascadeType.DETACH})
     @Override
     public Collection<CvObjectAlias> getAliases() {
         return super.getAliases();
@@ -141,12 +141,12 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
     /**
      * PSI-MI Identifier for this object, which is a de-normalization of the
      * value contained in the 'identity' xref from the 'psimi' database
+     *
      * @return the MI Identifier for this CVObject
      * @since 1.9.x
      */
     @Column(name = "identifier", length = 30)
     @Size(max = 30)
-    @Index(name = "cvobject_id_idx")
     public String getIdentifier() {
         return identifier;
     }
@@ -161,25 +161,23 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
      * equals methods
      *
      * @param obj The object to check
-     *
      * @return true if given object has an identity xref and its primary id matches to this' object's primary id or
-     *         short label if there is no identity xref.
-     *
+     * short label if there is no identity xref.
      * @see Xref
      */
     @Override
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof CvObject ) ) {
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CvObject)) {
             return false;
         }
 
-        final CvObject other = ( CvObject ) obj;
+        final CvObject other = (CvObject) obj;
         if (!getObjClass().equals(other.getObjClass())) {
             return false;
         }
 
 
-        if (( identifier != null && !identifier.equals(other.getIdentifier()))) {
+        if ((identifier != null && !identifier.equals(other.getIdentifier()))) {
             return false;
         }
 
@@ -196,10 +194,10 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
         int result = super.hashCode();
 
         //need check as we still have no-arg constructor...
-        if ( identifier != null ) {
+        if (identifier != null) {
             result = 29 * result + identifier.hashCode();
         } else {
-            result = 29 * result + ( ( getShortLabel() == null ) ? 31 : getShortLabel().hashCode() );
+            result = 29 * result + ((getShortLabel() == null) ? 31 : getShortLabel().hashCode());
         }
 
         return result;
@@ -207,7 +205,7 @@ public abstract class CvObject extends AnnotatedObjectImpl<CvObjectXref, CvObjec
 
     @Override
     public String toString() {
-        return "Id="+ identifier +", "+super.toString();
+        return "Id=" + identifier + ", " + super.toString();
     }
 } // end CvObject
 

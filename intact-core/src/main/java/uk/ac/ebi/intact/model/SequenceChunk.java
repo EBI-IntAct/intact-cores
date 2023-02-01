@@ -57,8 +57,8 @@ public class SequenceChunk extends AbstractAuditable {
     ///////////////////////////////////////
     // associations
     @Id
-    @GeneratedValue( generator = "intact-id" )
-    @GenericGenerator( name = "intact-id", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator" )
+    @GeneratedValue(generator = "intact-id", strategy = GenerationType.SEQUENCE)
+    @GenericGenerator(name = "intact-id", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator")
     public String getAc() {
         return ac;
     }

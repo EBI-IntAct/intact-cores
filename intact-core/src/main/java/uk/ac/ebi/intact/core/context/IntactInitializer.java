@@ -307,7 +307,6 @@ public class IntactInitializer implements ApplicationContextAware{
         corePersister.saveOrUpdate(cv);
     }
 
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createUsersIfNecessary() {
         createDefaultRoles();

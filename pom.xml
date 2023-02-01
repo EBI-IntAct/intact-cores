@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.ac.ebi.intact.maven</groupId>
         <artifactId>intact-hibernate-master</artifactId>
-        <version>45-SNAPSHOT</version>
+        <version>46</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <groupId>uk.ac.ebi.intact.core</groupId>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-    <version>2.7.0-SNAPSHOT</version>
+    <version>2.7.0</version>
 
     <name>IntAct Core</name>
     <description>Core Master POM</description>
@@ -120,7 +120,8 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.4.200</version>
+                <version>${h2.version}</version>
+                <scope>test</scope>
             </dependency>
             <!-- We have dbunit and junit in the compile classpath because they are
             used for the creation/drop of the schema and test base classes, that need to be
@@ -188,15 +189,15 @@
     <repositories>
         <repository>
             <id>nexus-ebi-repo-old</id>
-            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
         </repository>
         <repository>
             <id>nexus-ebi-release-repo</id>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
         </repository>
         <repository>
             <id>nexus-ebi-snapshot-repo</id>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
         </repository>
     </repositories>
 
@@ -206,14 +207,14 @@
         <repository>
             <id>pst-release</id>
             <name>EBI Nexus Repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release/</url>
         </repository>
         <!-- EBI SNAPSHOT repo -->
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>pst-snapshots</id>
             <name>EBI Nexus Snapshots Repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

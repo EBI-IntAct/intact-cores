@@ -43,7 +43,7 @@ public class Application extends IntactObjectImpl {
     ///////////////////////////
     // Getters and Setters
 
-    @Column(nullable = false, unique = true, name = "`key`")
+    @Column( nullable = false, unique = true )
     public String getKey() {
         return key;
     }
@@ -53,7 +53,7 @@ public class Application extends IntactObjectImpl {
     }
 
     @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.MaterializedClobType")
     public String getDescription() {
         return description;
     }

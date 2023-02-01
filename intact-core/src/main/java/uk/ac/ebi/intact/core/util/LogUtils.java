@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.hibernate.type.NullableType;
+import org.hibernate.type.AbstractStandardBasicType;
 
 /**
  * Utilities to help with the login
@@ -34,7 +34,7 @@ public class LogUtils {
 
     private static final Logger[] LOG_HIBERNATE_SQL = { LogManager.getLogger("org.hibernate.SQL"),
                                                         LogManager.getLogger("org.hibernate.type"),
-                                                        LogManager.getLogger(NullableType.class)};
+                                                        LogManager.getLogger(AbstractStandardBasicType.class)};
 
     /**
      * Whether to log or not SQL statements

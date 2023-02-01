@@ -36,5 +36,7 @@ public class SchemaUtilsTest {
         Assert.assertEquals(189, SchemaUtils.generateCreateSchemaDDLForPostgreSQL().length);
         Assert.assertEquals(189, SchemaUtils.generateCreateSchemaDDLForHSQL().length);
         Assert.assertEquals(189, SchemaUtils.generateCreateSchemaDDLForH2().length);
+
+        Assert.assertEquals(53, SchemaUtils.getTableNames().length);
     }
 }

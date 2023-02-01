@@ -66,7 +66,6 @@ public class PersisterHelperImpl implements PersisterHelper {
         }
     }
 
-
     @Transactional
     @IntactFlushMode(FlushModeType.COMMIT)
     @Deprecated

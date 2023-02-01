@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.intact.core.context;
 
-import org.hibernate.ejb.HibernateEntityManagerFactory;
+import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.hibernate.stat.Statistics;
 import org.junit.Assert;
 import org.junit.Test;

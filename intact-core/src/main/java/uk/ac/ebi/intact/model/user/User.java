@@ -1,8 +1,6 @@
 package uk.ac.ebi.intact.model.user;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
@@ -16,7 +14,12 @@ import java.util.*;
  * @since 2.2.1
  */
 @Entity
-@Table(name = "ia_user")
+@Table(
+        name = "ia_user",
+        indexes = {
+                @Index(name = "idx_user_login", columnList = "login"),
+                @Index(name = "idx_user_email", columnList = "email")
+        })
 public class User extends IntactObjectImpl {
 
     private String login;
@@ -66,7 +69,6 @@ public class User extends IntactObjectImpl {
     // Getters and Setters
 
     @Column(nullable = false, unique = true)
-    @Index(name = "idx_user_login")
     public String getLogin() {
         return login;
     }
@@ -105,7 +107,6 @@ public class User extends IntactObjectImpl {
     }
 
     @Column(nullable = false, unique = true)
-    @Index(name = "idx_user_email")
     public String getEmail() {
         return email;
     }
@@ -144,10 +145,10 @@ public class User extends IntactObjectImpl {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(
             name = "ia_user2role",
-            joinColumns = {@JoinColumn(name = "user_ac")},
-            inverseJoinColumns = {@JoinColumn(name = "role_ac")}
-    )
-    @ForeignKey(name = "FK_USER_ROLES", inverseName = "FK_ROLE_USER")
+            joinColumns = { @JoinColumn(name = "user_ac" )},
+            inverseJoinColumns = { @JoinColumn(name = "role_ac") },
+            foreignKey = @ForeignKey(name = "FK_USER_ROLES"),
+            inverseForeignKey = @ForeignKey(name = "FK_ROLE_USER"))
     public Set<Role> getRoles() {
         return roles;
     }

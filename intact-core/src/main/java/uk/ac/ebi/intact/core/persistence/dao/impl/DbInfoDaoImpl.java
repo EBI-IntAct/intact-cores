@@ -23,7 +23,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.DbInfoDao;
-import uk.ac.ebi.intact.model.MineInteraction;
 import uk.ac.ebi.intact.model.meta.DbInfo;
 
 import javax.persistence.EntityManager;

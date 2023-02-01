@@ -7,10 +7,13 @@
  *
  */
 
-package agitar.uk.ac.ebi.intact.modelt; import uk.ac.ebi.intact.core.context.IntactContext;
-import uk.ac.ebi.intact.model.*;
+package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
+import uk.ac.ebi.intact.core.context.IntactContext;
+import uk.ac.ebi.intact.model.Annotation;
+import uk.ac.ebi.intact.model.CvTopic;
+import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 

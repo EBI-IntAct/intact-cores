@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.core.persister;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +17,8 @@ public class CoreDeleterImplTest extends IntactBasicTestCase {
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void delete_interaction() throws Exception {
-        final TransactionStatus transactionStatus = getDataContext().beginTransaction();
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
 
         Experiment exp = getMockBuilder().createExperimentRandom(2);
         getCorePersister().saveOrUpdate(exp);
@@ -33,7 +31,7 @@ public class CoreDeleterImplTest extends IntactBasicTestCase {
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getComponentDao().countAll());
 
-        final TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
+        TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
         getCoreDeleter().delete(inter);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());

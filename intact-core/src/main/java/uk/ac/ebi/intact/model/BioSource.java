@@ -6,7 +6,6 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.annotation.EditorTopic;
 
 import javax.persistence.*;
@@ -19,9 +18,8 @@ import java.util.Collection;
  * @version $id$
  */
 @Entity
-@Table( name = "ia_biosource" )
-@AssociationOverride( name = "annotations",
-                      joinColumns = {@JoinColumn( name = "annotation_ac" )} )
+@Table(name = "ia_biosource")
+@AssociationOverride(name = "annotations", joinColumns = { @JoinColumn(name = "annotation_ac") })
 @EditorTopic
 public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias> implements Editable, Searchable {
 
@@ -99,10 +97,10 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE,  CascadeType.REFRESH, CascadeType.DETACH} )
     @JoinTable(
             name = "ia_biosource2annot",
-            joinColumns = {@JoinColumn( name = "biosource_ac" )},
-            inverseJoinColumns = {@JoinColumn( name = "annotation_ac" )}
-    )
-    @ForeignKey(name = "FK_BIO2ANNOT$ANNOTATION", inverseName = "FK_BIO2ANNOT$BIOSOURCE")
+            joinColumns = { @JoinColumn(name = "biosource_ac") },
+            inverseJoinColumns = { @JoinColumn(name = "annotation_ac") },
+            foreignKey = @ForeignKey(name = "FK_BIO2ANNOT$ANNOTATION"),
+            inverseForeignKey = @ForeignKey(name = "FK_BIO2ANNOT$BIOSOURCE"))
     @Override
     public Collection<Annotation> getAnnotations() {
         return super.getAnnotations();
@@ -158,8 +156,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     ///////////////////////////////////////
     // access methods for associations
     @ManyToOne
-    @JoinColumn( name = "tissue_ac" )
-    @ForeignKey(name = "FK_BIOSOURCE$TISSUE")
+    @JoinColumn(name = "tissue_ac", foreignKey = @ForeignKey(name = "FK_BIOSOURCE$TISSUE"))
     public CvTissue getCvTissue() {
         return cvTissue;
     }
@@ -169,8 +166,7 @@ public class BioSource extends AnnotatedObjectImpl<BioSourceXref, BioSourceAlias
     }
 
     @ManyToOne
-    @JoinColumn( name = "celltype_ac" )
-    @ForeignKey(name = "FK_BIOSOURCE$CELLTYPE")
+    @JoinColumn(name = "celltype_ac", foreignKey = @ForeignKey(name = "FK_BIOSOURCE$CELLTYPE"))
     public CvCellType getCvCellType() {
         return cvCellType;
     }

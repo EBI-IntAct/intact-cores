@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
@@ -20,8 +19,8 @@ import javax.validation.constraints.Size;
  * @author hhe
  * @version $Id$
  */
-@Entity()
-@Table( name = "ia_annotation" )
+@Entity
+@Table(name = "ia_annotation")
 public class Annotation extends BasicObjectImpl {
 
     private static final Log log = LogFactory.getLog( Annotation.class );
@@ -128,8 +127,7 @@ public class Annotation extends BasicObjectImpl {
     ///////////////////////////////////////
     // access methods for associations
     @ManyToOne
-    @JoinColumn( name = "topic_ac" )
-    @ForeignKey(name = "FK_ANNOTATION$TOPIC")
+    @JoinColumn( name = "topic_ac" , foreignKey = @ForeignKey(name = "FK_ANNOTATION$TOPIC"))
     public CvTopic getCvTopic() {
         return cvTopic;
     }

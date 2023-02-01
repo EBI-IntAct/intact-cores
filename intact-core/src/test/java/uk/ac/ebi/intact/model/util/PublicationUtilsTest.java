@@ -8,7 +8,6 @@ import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
