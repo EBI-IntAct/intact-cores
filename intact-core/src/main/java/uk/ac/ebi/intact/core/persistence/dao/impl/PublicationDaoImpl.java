@@ -12,6 +12,7 @@ import uk.ac.ebi.intact.core.persistence.dao.PublicationDao;
 import uk.ac.ebi.intact.model.Publication;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +72,12 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
                                                      "where p.ac = :ac");
         query.setParameter("ac", ac);
 
-        return ((Long) query.getSingleResult()).intValue();
+        try {
+            return ((Long) query.getSingleResult()).intValue();
+        } catch (NoResultException e) {
+            // Nothing to do, the query did not find any result
+            return 0;
+        }
     }
 
     public int countInteractionsForPublicationAc( String ac ) {
@@ -83,6 +89,11 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
                                                      "where p.ac = :ac");
         query.setParameter("ac", ac);
 
-        return ((Long) query.getSingleResult()).intValue();
+        try {
+            return ((Long) query.getSingleResult()).intValue();
+        } catch (NoResultException e) {
+            // Nothing to do, the query did not find any result
+            return 0;
+        }
     }
 }

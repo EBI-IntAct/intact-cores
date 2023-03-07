@@ -22,6 +22,7 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.Collection;
 import java.util.Collections;
@@ -332,7 +333,12 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
                 "where ao.owner.ac = :ownerAc")
                 .setParameter("ownerAc", institutionAc);
 
-        return (Long) query.getSingleResult();
+        try {
+            return (Long) query.getSingleResult();
+        } catch (NoResultException e) {
+            // Nothing to do, the query did not find any result
+            return 0;
+        }
     }
 
 

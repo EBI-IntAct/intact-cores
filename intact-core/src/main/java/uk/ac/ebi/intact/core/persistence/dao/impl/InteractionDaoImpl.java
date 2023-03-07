@@ -20,6 +20,7 @@ import uk.ac.ebi.intact.model.util.InteractionUtils;
 import uk.ac.ebi.intact.model.util.XrefUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.*;
 
@@ -144,7 +145,15 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         Query interactorQuery = getEntityManager().createQuery("SELECT COUNT (i) FROM InteractorImpl i WHERE i.ac = :interactorAc");
         interactorQuery.setParameter("interactorAc", protAc);
 
-        if ((Long)interactorQuery.getSingleResult() == 0) {
+        Long interactorQueryCount = 0L;
+
+        try {
+            interactorQueryCount = (Long) interactorQuery.getSingleResult();
+        } catch (NoResultException e) {
+            // Nothing to do, the query did not find any result
+        }
+
+        if (interactorQueryCount == 0) {
             Query secondaryQuery = getEntityManager().createQuery("SELECT xref.parent.ac FROM InteractorXref xref WHERE xref.primaryId = :primaryId");
             secondaryQuery.setParameter("primaryId", protAc);
 
@@ -332,7 +341,12 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
                                                          "                 where a.cvTopic.shortLabel = 'negative'" +
                                                          "               )");
 //            query.setParameter("interactionClass", InteractionImpl.class.getName());
-            return ((Long) query.getSingleResult()).intValue();
+            try {
+                return ((Long) query.getSingleResult()).intValue();
+            } catch (NoResultException e) {
+                // Nothing to do, the query did not find any result
+                return 0;
+            }
         }
 
         return countAll();

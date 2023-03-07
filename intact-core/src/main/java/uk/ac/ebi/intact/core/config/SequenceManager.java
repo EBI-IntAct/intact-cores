@@ -112,11 +112,11 @@ public class SequenceManager {
     @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
     public List<String> getExistingSequenceNames(EntityManager entityManager) {
         Query query;
-        String sql = dialect.getQuerySequencesString();
-        if (sql == null || sql.length() == 0) {
+        String dialectQuerySequencesString = dialect.getQuerySequencesString();
+        if (dialectQuerySequencesString == null || dialectQuerySequencesString.length() == 0) {
             query = entityManager.createNativeQuery(getQuerySequencesString());
         } else {
-            query = entityManager.createNativeQuery(dialect.getQuerySequencesString());
+            query = entityManager.createNativeQuery(getQuerySequenceNamesFromQuerySequences(dialectQuerySequencesString));
         }
 
         return query.getResultList();
@@ -152,6 +152,16 @@ public class SequenceManager {
      */
     private String getQuerySequencesString() {
         return "select sequence_name from all_sequences";
+    }
+
+    /**
+     * Oracle dialect getQuerySequencesString method queries not only the sequence names, but all the sequences'
+     * fields, so we need to only get the names from it.
+     * @param dialectQuerySequencesString - SQL query to get sequences provided by Oracle dialect
+     * @return SQL query to fetch only the sequence names
+     */
+    private String getQuerySequenceNamesFromQuerySequences(String dialectQuerySequencesString) {
+        return String.format("select sequence_name from (%s)", dialectQuerySequencesString);
     }
 
 }
