@@ -27,6 +27,7 @@ import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.AnnotatedObjectUtils;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,10 +147,13 @@ public class IntactCore {
             Query query = intactContext.getDaoFactory().getEntityManager().createQuery(strQuery);
             query.setParameter("ac", ac);
 
-            boolean found = ((Long) query.getSingleResult()) > 0;
-
-            if (found) {
-                return clazz;
+            try {
+                boolean found = ((Long) query.getSingleResult()) > 0;
+                if (found) {
+                    return clazz;
+                }
+            } catch (NoResultException e) {
+                // Nothing to do, the query did not find any result
             }
         }
 

@@ -11,6 +11,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.intact.model.IntactObject;
 
+import javax.sql.DataSource;
 import java.util.*;
 
 @Component
@@ -19,7 +20,7 @@ public class IntactHibernatePersistenceProvider extends HibernatePersistenceProv
     public static final String CV_LOCAL_SEQ = "cv_local_seq";
     public static final String UNASSIGNED_SEQ = "unassigned_seq";
 
-    public MetadataBuilder getBasicMetaDataBuilder(String dialect) {
+    public MetadataBuilder getBasicMetaDataBuilder(DataSource dataSource, String dialect) {
         StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
 
         Properties properties = new Properties();
@@ -29,12 +30,12 @@ public class IntactHibernatePersistenceProvider extends HibernatePersistenceProv
         }
 
         MetadataSources metadata = new MetadataSources(registryBuilder.build());
-        HibernateConfig basicConfiguration = getBasicConfiguration(properties);
+        HibernateConfig basicConfiguration = getBasicConfiguration(dataSource, properties);
         basicConfiguration.getEntityClasses().forEach(metadata::addAnnotatedClass); // Add package classes
         return configure(metadata.getMetadataBuilder()); // Add custom sequences
     }
 
-    public HibernateConfig getBasicConfiguration(Properties props) {
+    public HibernateConfig getBasicConfiguration(DataSource dataSource, Properties props) {
         if (props == null) props = new Properties();
         final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setPersistenceXmlLocation("classpath*:/META-INF/persistence.xml");
@@ -42,6 +43,7 @@ public class IntactHibernatePersistenceProvider extends HibernatePersistenceProv
         final IntactHibernateJpaVendorAdapter jpaVendorAdapter = new IntactHibernateJpaVendorAdapter();
         jpaVendorAdapter.setDatabasePlatform(Dialect.getDialect(props).getClass().getName());
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter);
+        factoryBean.setDataSource(dataSource);
         factoryBean.afterPropertiesSet();
 
         factoryBean.getNativeEntityManagerFactory().close();
