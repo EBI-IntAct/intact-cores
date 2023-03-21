@@ -23,6 +23,7 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.*;
 
@@ -150,7 +151,12 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
     public long countAllInteractors() {
         Query query = getEntityManager().createQuery("select count(*) from InteractorImpl  where objClass <> :interactionClass");
         query.setParameter("interactionClass", InteractionImpl.class.getName());
-        return (Long) query.getSingleResult();
+        try {
+            return (Long) query.getSingleResult();
+        } catch (NoResultException e) {
+            // Nothing to do, the query did not find any result
+            return 0;
+        }
     }
 
     /**
@@ -239,7 +245,12 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
     }
 
     public long countByInteractorType(String cvIdentifer, boolean includeChildren) {
-        return (Long) createGetByInteractorTypeQuery(cvIdentifer, includeChildren, true).getSingleResult();
+        try {
+            return (Long) createGetByInteractorTypeQuery(cvIdentifer, includeChildren, true).getSingleResult();
+        } catch (NoResultException e) {
+            // Nothing to do, the query did not find any result
+            return 0;
+        }
     }
 
     private Query createGetByInteractorTypeQuery(String cvIdentifer, boolean includeChildren, boolean isCount) {
