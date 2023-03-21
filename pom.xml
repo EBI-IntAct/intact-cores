@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.ac.ebi.intact.maven</groupId>
         <artifactId>intact-hibernate-master</artifactId>
-        <version>47</version>
+        <version>47-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,9 +31,9 @@
     </properties>
 
     <modules>
-        <module>intact-annotations</module>
+<!--        <module>intact-annotations</module>-->
         <module>intact-core</module>
-        <module>intact-batch</module>
+<!--        <module>intact-batch</module>-->
     </modules>
 
     <build>

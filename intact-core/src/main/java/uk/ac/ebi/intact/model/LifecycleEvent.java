@@ -20,7 +20,7 @@ import java.util.Date;
                 @Index(name = "idx_event_event", columnList = "event_ac"),
                 @Index(name = "idx_event_who", columnList = "user_ac")
         })
-@SequenceGenerator(name="SEQ_MISC", sequenceName="misc_seq", initialValue = 1)
+@SequenceGenerator(name="SEQ_MISC", sequenceName="misc_seq", allocationSize = 1)
 public class LifecycleEvent extends IntactObjectImpl {
 
     private Long pk;

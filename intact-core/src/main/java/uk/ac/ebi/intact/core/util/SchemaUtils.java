@@ -17,28 +17,28 @@ package uk.ac.ebi.intact.core.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.dialect.*;
 import org.hibernate.mapping.Collection;
 import org.hibernate.mapping.Property;
 import org.hibernate.mapping.Table;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.Target;
+import org.hibernate.tool.schema.TargetType;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.IntactTransactionException;
 import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.context.IntactInitializer;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -66,21 +66,21 @@ public class SchemaUtils {
      * @param dialect the dialect to use (complete class name for the hibernate dialect object)
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDL(String dialect) {
+    public static String[] generateCreateSchemaDDL(DataSource dataSource, String dialect) {
         return exportSchema(
                 "create",
-                new SchemaExport((MetadataImplementor) persistence.getBasicMetaDataBuilder(dialect).build()),
-                Target.SCRIPT,
-                SchemaExport.Type.CREATE);
+                persistence.getBasicMetaDataBuilder(dataSource, dialect).build(),
+                EnumSet.of(TargetType.SCRIPT),
+                SchemaExport.Action.CREATE);
     }
 
 
-    public static String[] generateUpdateSchemaDDL(String dialect, Connection connection) throws SQLException {
+    public static String[] generateUpdateSchemaDDL(DataSource dataSource, String dialect) {
         return exportSchema(
                 "update",
-                new SchemaExport((MetadataImplementor) persistence.getBasicMetaDataBuilder(dialect).build(), connection),
-                Target.BOTH,
-                SchemaExport.Type.BOTH);
+                persistence.getBasicMetaDataBuilder(dataSource, dialect).build(),
+                EnumSet.allOf(TargetType.class),
+                SchemaExport.Action.BOTH);
     }
 
     /**
@@ -89,21 +89,26 @@ public class SchemaUtils {
      * @param dialect the dialect to use (complete class name for the hibernate dialect object)
      * @return an array containing the SQL statements
      */
-    public static String[] generateDropSchemaDDL(String dialect) {
+    public static String[] generateDropSchemaDDL(DataSource dataSource, String dialect) {
         return exportSchema(
                 "drop",
-                new SchemaExport((MetadataImplementor) persistence.getBasicMetaDataBuilder(dialect).build()),
-                Target.SCRIPT,
-                SchemaExport.Type.DROP);
+                persistence.getBasicMetaDataBuilder(dataSource, dialect).build(),
+                EnumSet.of(TargetType.SCRIPT),
+                SchemaExport.Action.DROP);
     }
 
-    private static String[] exportSchema(String tempFileName, SchemaExport export, Target target, SchemaExport.Type exportType) {
+    private static String[] exportSchema(
+            String tempFileName,
+            Metadata metadata,
+            EnumSet<TargetType> targetTypes,
+            SchemaExport.Action action) {
+
         String[] sqls;
         try {
             File file = File.createTempFile(tempFileName, ".sql");
-            export.setDelimiter(";")
+            new SchemaExport().setDelimiter(";")
                     .setOutputFile(file.getAbsolutePath())
-                    .execute(target, exportType);
+                    .execute(targetTypes, action, metadata);
             try (Stream<String> lines = Files.lines(file.toPath())) {
                 sqls = lines.toArray(String[]::new);
             }
@@ -115,8 +120,8 @@ public class SchemaUtils {
     }
 
 
-    private static Configuration createConfiguration(Properties props) {
-        return new IntactHibernatePersistenceProvider().getBasicConfiguration(props).addProperties(props);
+    private static Configuration createConfiguration(DataSource dataSource, Properties props) {
+        return new IntactHibernatePersistenceProvider().getBasicConfiguration(dataSource, props).addProperties(props);
     }
 
     /**
@@ -124,8 +129,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForOracle() {
-        return generateCreateSchemaDDL(Oracle12cDialect.class.getName());
+    public static String[] generateCreateSchemaDDLForOracle(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
@@ -133,8 +138,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForOracle(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(Oracle12cDialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForOracle(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
@@ -142,8 +147,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForPostgreSQL() {
-        return generateCreateSchemaDDL(PostgreSQL82Dialect.class.getName());
+    public static String[] generateCreateSchemaDDLForPostgreSQL(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, PostgreSQL82Dialect.class.getName());
     }
 
     /**
@@ -151,8 +156,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForPostgreSQL(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(PostgreSQL82Dialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForPostgreSQL(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, PostgreSQL82Dialect.class.getName());
     }
 
     /**
@@ -160,8 +165,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForHSQL() {
-        return generateCreateSchemaDDL(HSQLDialect.class.getName());
+    public static String[] generateCreateSchemaDDLForHSQL(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, HSQLDialect.class.getName());
     }
 
     /**
@@ -169,8 +174,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForHSQL(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(HSQLDialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForHSQL(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, HSQLDialect.class.getName());
     }
 
 
@@ -179,8 +184,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForH2() {
-        return generateCreateSchemaDDL(H2Dialect.class.getName());
+    public static String[] generateCreateSchemaDDLForH2(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, H2Dialect.class.getName());
     }
 
     /**
@@ -188,12 +193,12 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForH2(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(H2Dialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForH2(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, H2Dialect.class.getName());
     }
 
-    public static String[] getTableNames() {
-        return persistence.getBasicMetaDataBuilder(Oracle12cDialect.class.getName()).build()
+    public static String[] getTableNames(DataSource dataSource) {
+        return persistence.getBasicMetaDataBuilder(dataSource, Oracle12cDialect.class.getName()).build()
                 .getEntityBindings()
                 .stream()
                 .map(persistentClass -> {
@@ -223,8 +228,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateDropSchemaDDLForOracle() {
-        return generateDropSchemaDDL(Oracle12cDialect.class.getName());
+    public static String[] generateDropSchemaDDLForOracle(DataSource dataSource) {
+        return generateDropSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
@@ -232,8 +237,8 @@ public class SchemaUtils {
      *
      * @return an array containing the SQL statements
      */
-    public static String[] generateDropSchemaDDLForPostgreSQL() {
-        return generateDropSchemaDDL(PostgreSQL82Dialect.class.getName());
+    public static String[] generateDropSchemaDDLForPostgreSQL(DataSource dataSource) {
+        return generateDropSchemaDDL(dataSource, PostgreSQL82Dialect.class.getName());
     }
 
     /**
@@ -251,8 +256,8 @@ public class SchemaUtils {
     public static void createSchema(boolean initializeDatabase) {
         if (log.isDebugEnabled()) log.debug("Creating schema");
 
-        SchemaExport se = newSchemaExport();
-        se.create(false, true);
+        SchemaExport se = new SchemaExport();
+        se.create(EnumSet.noneOf(TargetType.class), newMetadata());
 
         if (initializeDatabase) {
             if (log.isDebugEnabled()) log.debug("Initializing database");
@@ -266,9 +271,9 @@ public class SchemaUtils {
         }
     }
 
-    protected static SchemaExport newSchemaExport() {
+    protected static Metadata newMetadata() {
         MetadataSources metadata = new MetadataSources(new StandardServiceRegistryBuilder().build());
-        return new SchemaExport((MetadataImplementor) persistence.configure(metadata.getMetadataBuilder()).build());
+        return persistence.configure(metadata.getMetadataBuilder()).build();
     }
 
     /**
@@ -277,8 +282,8 @@ public class SchemaUtils {
     public static void dropSchema() {
         if (log.isDebugEnabled()) log.debug("Droping schema");
 
-        SchemaExport se = newSchemaExport();
-        se.drop(false, true);
+        SchemaExport se = new SchemaExport();
+        se.drop(EnumSet.noneOf(TargetType.class), newMetadata());
     }
 
     /**
