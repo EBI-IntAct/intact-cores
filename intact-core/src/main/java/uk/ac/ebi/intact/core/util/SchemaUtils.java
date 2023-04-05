@@ -130,7 +130,7 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateCreateSchemaDDLForOracle(DataSource dataSource) {
-        return generateCreateSchemaDDL(dataSource, Oracle10gDialect.class.getName());
+        return generateCreateSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
@@ -139,7 +139,7 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateUpdateSchemaDDLForOracle(DataSource dataSource) {
-        return generateUpdateSchemaDDL(dataSource, Oracle10gDialect.class.getName());
+        return generateUpdateSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
@@ -198,7 +198,7 @@ public class SchemaUtils {
     }
 
     public static String[] getTableNames(DataSource dataSource) {
-        return persistence.getBasicMetaDataBuilder(dataSource, Oracle10gDialect.class.getName()).build()
+        return persistence.getBasicMetaDataBuilder(dataSource, Oracle12cDialect.class.getName()).build()
                 .getEntityBindings()
                 .stream()
                 .map(persistentClass -> {
@@ -229,7 +229,7 @@ public class SchemaUtils {
      * @return an array containing the SQL statements
      */
     public static String[] generateDropSchemaDDLForOracle(DataSource dataSource) {
-        return generateDropSchemaDDL(dataSource, Oracle10gDialect.class.getName());
+        return generateDropSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
