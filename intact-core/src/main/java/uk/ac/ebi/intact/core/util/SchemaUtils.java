@@ -17,27 +17,32 @@ package uk.ac.ebi.intact.core.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.*;
-import org.hibernate.ejb.Ejb3Configuration;
-import org.hibernate.mapping.PersistentClass;
-import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
+import org.hibernate.mapping.Collection;
+import org.hibernate.mapping.Property;
+import org.hibernate.mapping.Table;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+import org.hibernate.tool.schema.TargetType;
 import uk.ac.ebi.intact.core.IntactException;
 import uk.ac.ebi.intact.core.IntactTransactionException;
-import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistence;
+import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.context.IntactInitializer;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 /**
  * IntAct schema utils, that contains methods to create/drop the database schema, create DDLs...
@@ -51,165 +56,189 @@ public class SchemaUtils {
      * Sets up a logger for that class.
      */
     private static final Log log = LogFactory.getLog(SchemaUtils.class);
+    private static final IntactHibernatePersistenceProvider persistence = new IntactHibernatePersistenceProvider();
 
-    private SchemaUtils(){}
+    private SchemaUtils() {
+    }
 
     /**
      * Generates the DDL schema
      * @param dialect the dialect to use (complete class name for the hibernate dialect object)
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDL(String dialect) {
-        Properties props = new Properties();
-        props.put(Environment.DIALECT, dialect);
-
-        Configuration cfg = createConfiguration(props);
-
-        String[] sqls = cfg.generateSchemaCreationScript(Dialect.getDialect(props));
-        addDelimiters(sqls);
-
-        return sqls;
+    public static String[] generateCreateSchemaDDL(DataSource dataSource, String dialect) {
+        return exportSchema(
+                "create",
+                persistence.getBasicMetaDataBuilder(dataSource, dialect).build(),
+                EnumSet.of(TargetType.SCRIPT),
+                SchemaExport.Action.CREATE);
     }
 
-    public static String[] generateUpdateSchemaDDL(String dialect, Connection connection) throws SQLException {
-        Properties props = new Properties();
-        props.put(Environment.DIALECT, dialect);
 
-        Configuration cfg = createConfiguration(props);
-
-        final Dialect dialectObj = Dialect.getDialect(props);
-
-        String[] sqls = cfg.generateSchemaUpdateScript(dialectObj, new DatabaseMetadata(connection, dialectObj) );
-        addDelimiters(sqls);
-
-        return sqls;
+    public static String[] generateUpdateSchemaDDL(DataSource dataSource, String dialect) {
+        return exportSchema(
+                "update",
+                persistence.getBasicMetaDataBuilder(dataSource, dialect).build(),
+                EnumSet.allOf(TargetType.class),
+                SchemaExport.Action.BOTH);
     }
 
-    private static void addDelimiters(String[] sqls) {
-        for (int i=0; i<sqls.length; i++) {
-            sqls[i] = sqls[i]+";";
+    /**
+     * Generates the DDL schema
+     *
+     * @param dialect the dialect to use (complete class name for the hibernate dialect object)
+     * @return an array containing the SQL statements
+     */
+    public static String[] generateDropSchemaDDL(DataSource dataSource, String dialect) {
+        return exportSchema(
+                "drop",
+                persistence.getBasicMetaDataBuilder(dataSource, dialect).build(),
+                EnumSet.of(TargetType.SCRIPT),
+                SchemaExport.Action.DROP);
+    }
+
+    private static String[] exportSchema(
+            String tempFileName,
+            Metadata metadata,
+            EnumSet<TargetType> targetTypes,
+            SchemaExport.Action action) {
+
+        String[] sqls;
+        try {
+            File file = File.createTempFile(tempFileName, ".sql");
+            new SchemaExport().setDelimiter(";")
+                    .setOutputFile(file.getAbsolutePath())
+                    .execute(targetTypes, action, metadata);
+            try (Stream<String> lines = Files.lines(file.toPath())) {
+                sqls = lines.toArray(String[]::new);
+            }
+            if (file.delete()) log.debug("Temp file deleted");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        return sqls;
     }
 
-    private static Configuration createConfiguration(Properties props) {
-        Ejb3Configuration ejbConfig = new IntactHibernatePersistence().getBasicConfiguration(props);
 
-        ejbConfig.addProperties(props);
-
-        return ejbConfig.getHibernateConfiguration();
+    private static Configuration createConfiguration(DataSource dataSource, Properties props) {
+        return new IntactHibernatePersistenceProvider().getBasicConfiguration(dataSource, props).addProperties(props);
     }
 
     /**
      * Generates the DDL schema for Oracle 9i.
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForOracle() {
-        return generateCreateSchemaDDL(Oracle9iDialect.class.getName());
+    public static String[] generateCreateSchemaDDLForOracle(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
      * Generates the UPDATE DDL schema for Oracle .
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForOracle(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(Oracle10gDialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForOracle(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
      * Generates the DDL schema for PostgreSQL.
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForPostgreSQL() {
-        return generateCreateSchemaDDL(PostgreSQLDialect.class.getName());
+    public static String[] generateCreateSchemaDDLForPostgreSQL(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, PostgreSQL82Dialect.class.getName());
     }
 
     /**
      * Generates the UPDATE DDL schema for PostgreSQL .
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForPostgreSQL(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(PostgreSQLDialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForPostgreSQL(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, PostgreSQL82Dialect.class.getName());
     }
 
     /**
      * Generates the DDL schema for HSQL DB.
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForHSQL() {
-        return generateCreateSchemaDDL(HSQLDialect.class.getName());
+    public static String[] generateCreateSchemaDDLForHSQL(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, HSQLDialect.class.getName());
     }
 
     /**
      * Generates the UPDATE DDL schema for HSQL .
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForHSQL(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(HSQLDialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForHSQL(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, HSQLDialect.class.getName());
     }
 
 
     /**
      * Generates the DDL schema for HSQL DB.
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateCreateSchemaDDLForH2() {
-        return generateCreateSchemaDDL(H2Dialect.class.getName());
+    public static String[] generateCreateSchemaDDLForH2(DataSource dataSource) {
+        return generateCreateSchemaDDL(dataSource, H2Dialect.class.getName());
     }
 
     /**
      * Generates the UPDATE DDL schema for H2.
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateUpdateSchemaDDLForH2(Connection connection) throws SQLException {
-        return generateUpdateSchemaDDL(H2Dialect.class.getName(), connection);
+    public static String[] generateUpdateSchemaDDLForH2(DataSource dataSource) {
+        return generateUpdateSchemaDDL(dataSource, H2Dialect.class.getName());
     }
 
-    /**
-     * Generates the DDL schema
-     * @param dialect the dialect to use (complete class name for the hibernate dialect object)
-     * @return an array containing the SQL statements
-     */
-    public static String[] generateDropSchemaDDL(String dialect) {
-        Properties props = new Properties();
-        props.put(Environment.DIALECT, dialect);
-
-        Configuration cfg = createConfiguration(props);
-
-        String[] sqls = cfg.generateSchemaCreationScript(Dialect.getDialect(props));
-        addDelimiters(sqls);
-
-        return sqls;
-    }
-
-    public static String[] getTableNames() {
-        List<String> tableNames = new ArrayList<String>();
-
-        Configuration cfg = createConfiguration(new Properties());
-
-        Iterator<PersistentClass> classMappings = cfg.getClassMappings();
-
-        while (classMappings.hasNext()) {
-            PersistentClass o =  classMappings.next();
-            tableNames.add(o.getTable().getName());
-        }
-
-        return tableNames.toArray(new String[tableNames.size()]);
+    public static String[] getTableNames(DataSource dataSource) {
+        return persistence.getBasicMetaDataBuilder(dataSource, Oracle12cDialect.class.getName()).build()
+                .getEntityBindings()
+                .stream()
+                .map(persistentClass -> {
+                    List<String> tableNames = new ArrayList<>();
+                    if (!persistentClass.isAbstract()) {
+                        tableNames.add(persistentClass.getTable().getName());
+                    }
+                    Iterator propertiesIterator = persistentClass.getPropertyIterator();
+                    while (propertiesIterator.hasNext()) {
+                        Property property = (Property) propertiesIterator.next();
+                        if (property.getValue().getType().isCollectionType()) {
+                            Table collectionTable = ((Collection) property.getValue()).getCollectionTable();
+                            if (collectionTable != null) {
+                                tableNames.add(collectionTable.getName());
+                            }
+                        }
+                    }
+                    return tableNames;
+                })
+                .flatMap(List::stream)
+                .distinct()
+                .toArray(String[]::new);
     }
 
     /**
      * Generates the DDL schema for Oracle
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateDropSchemaDDLForOracle() {
-        return generateDropSchemaDDL(Oracle9iDialect.class.getName());
+    public static String[] generateDropSchemaDDLForOracle(DataSource dataSource) {
+        return generateDropSchemaDDL(dataSource, Oracle12cDialect.class.getName());
     }
 
     /**
      * Generates the DDL schema for PostgreSQL
+     *
      * @return an array containing the SQL statements
      */
-    public static String[] generateDropSchemaDDLForPostgreSQL() {
-        return generateDropSchemaDDL(PostgreSQLDialect.class.getName());
+    public static String[] generateDropSchemaDDLForPostgreSQL(DataSource dataSource) {
+        return generateDropSchemaDDL(dataSource, PostgreSQL82Dialect.class.getName());
     }
 
     /**
@@ -221,13 +250,14 @@ public class SchemaUtils {
 
     /**
      * Creates a schema
+     *
      * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
      */
     public static void createSchema(boolean initializeDatabase) {
         if (log.isDebugEnabled()) log.debug("Creating schema");
 
-        SchemaExport se = newSchemaExport();
-        se.create(false, true);
+        SchemaExport se = new SchemaExport();
+        se.create(EnumSet.noneOf(TargetType.class), newMetadata());
 
         if (initializeDatabase) {
             if (log.isDebugEnabled()) log.debug("Initializing database");
@@ -238,18 +268,12 @@ public class SchemaUtils {
             } catch (Exception e) {
                 throw new IntactException("Problem re-initializing core", e);
             }
-        } 
+        }
     }
 
-    protected static SchemaExport newSchemaExport() {
-        LocalEntityManagerFactoryBean factoryBean = (LocalEntityManagerFactoryBean) IntactContext.getCurrentInstance().getSpringContext()
-                .getBean("&entityFactoryManager");
-
-        PersistenceUnitInfo persistenceUnitInfo = factoryBean.getPersistenceUnitInfo();
-        Configuration config = new Ejb3Configuration().configure(persistenceUnitInfo, null).getHibernateConfiguration();
-        
-        SchemaExport se =  new SchemaExport(config);
-        return se;
+    protected static Metadata newMetadata() {
+        MetadataSources metadata = new MetadataSources(new StandardServiceRegistryBuilder().build());
+        return persistence.configure(metadata.getMetadataBuilder()).build();
     }
 
     /**
@@ -258,8 +282,8 @@ public class SchemaUtils {
     public static void dropSchema() {
         if (log.isDebugEnabled()) log.debug("Droping schema");
 
-        SchemaExport se = newSchemaExport();
-        se.drop(false, true);
+        SchemaExport se = new SchemaExport();
+        se.drop(EnumSet.noneOf(TargetType.class), newMetadata());
     }
 
     /**
@@ -271,6 +295,7 @@ public class SchemaUtils {
 
     /**
      * Drops and creates the schema. Beware that it commits transactions
+     *
      * @param initializeDatabase If false, do not initialize the database (e.g. don't create Institution)
      */
     public static void resetSchema(boolean initializeDatabase) throws IntactTransactionException {

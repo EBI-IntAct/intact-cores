@@ -24,7 +24,6 @@ import uk.ac.ebi.intact.model.CvLifecycleEventType;
 import uk.ac.ebi.intact.model.CvPublicationStatus;
 import uk.ac.ebi.intact.model.CvPublicationStatusType;
 import uk.ac.ebi.intact.model.Publication;
-import uk.ac.ebi.intact.model.util.PublicationUtils;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)

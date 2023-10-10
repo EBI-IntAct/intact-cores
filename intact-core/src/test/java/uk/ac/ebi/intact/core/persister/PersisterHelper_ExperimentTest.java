@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 import uk.ac.ebi.intact.model.*;
@@ -20,6 +17,7 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     
     @Test
@@ -39,18 +37,12 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void persistExperiment_publication3333() throws Exception {
-        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Experiment exp = getMockBuilder().createExperimentRandom(10);
         exp.setShortLabel("lala-2005");
         exp.setPublication(getMockBuilder().createPublication("1234567"));
 
         getCorePersister().saveOrUpdate(exp);
-
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
 
         int initialBioSources = getDaoFactory().getBioSourceDao().countAll();
 
@@ -211,8 +203,8 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void existingExperimentWithoutPubInfo() throws Exception {
+        TransactionStatus transactionStatus1 = getDataContext().beginTransaction();
 
         // create an experiment without publication or xrefs
 
@@ -222,6 +214,9 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         expWithout.getXrefs().clear();
 
         getCorePersister().saveOrUpdate(expWithout);
+
+        getDataContext().commitTransaction(transactionStatus1);
+        TransactionStatus transactionStatus2 = getDataContext().beginTransaction();
 
         Experiment expWith = getMockBuilder().createExperimentRandom(1);
         expWith.setShortLabel("nopub-2006-1");
@@ -235,6 +230,8 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(expWith);
 
+        getDataContext().commitTransaction(transactionStatus2);
+
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
 
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
@@ -245,11 +242,7 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void existingExperiment_aliases() throws Exception {
-        TransactionStatus status = getDataContext().beginTransaction();
-
         Experiment expWithout = getMockBuilder().createExperimentRandom(0);
         expWithout.setShortLabel("nopub-2006-1");
         expWithout.setPublication(null);
@@ -259,10 +252,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         expWithout.getInteractions().clear();
 
         getCorePersister().saveOrUpdate(expWithout);
-
-        getDataContext().commitTransaction(status);
-
-        TransactionStatus status2 = getDataContext().beginTransaction();
 
         Experiment expWith = getMockBuilder().createExperimentRandom(0);
         expWith.setShortLabel("nopub-2006-1");
@@ -277,20 +266,13 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         persister.setUpdateWithoutAcEnabled(true);
         persister.saveOrUpdate(expWith);
 
-        getDataContext().commitTransaction(status2);
-
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
-
-        TransactionStatus status3 = getDataContext().beginTransaction();
 
         Experiment reloadedExp = getDaoFactory().getExperimentDao().getByShortLabel("nopub-2006-1");
         Assert.assertEquals(1, reloadedExp.getAliases().size());
-
-        getDataContext().commitTransaction(status3);
     }
 
     @Test
-
     public void differentExperiment_samePubId() throws Exception {
         final String pubId = "1234567";
         Experiment exp1 = getMockBuilder().createExperimentEmpty("exp-2007-1", pubId);
@@ -306,7 +288,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void newExperiment_existingInteraction() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
 
@@ -334,7 +315,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-
     public void existingExperiment_existingInteraction() throws Exception {
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         Experiment experiment = getMockBuilder().createExperimentEmpty();
@@ -437,6 +417,8 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
     @Test
     public void persist_correctLabeling() throws Exception {
+        TransactionStatus transactionStatus = getDataContext().beginTransaction();
+
         final Experiment exp1 = getMockBuilder().createExperimentEmpty("lala-2007", "17560331");
         exp1.getBioSource().setTaxId("1");
         getCorePersister().saveOrUpdate(exp1);
@@ -454,6 +436,8 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         getCorePersister().saveOrUpdate(exp3);
 
         Assert.assertEquals("lala-2007-3", exp3.getShortLabel());
+
+        getDataContext().commitTransaction(transactionStatus);
 
         IntactCloner cloner = new IntactCloner();
         cloner.setExcludeACs(true);
@@ -476,7 +460,6 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
         Assert.assertEquals("lala-2007b-1", exp5.getShortLabel());
         
         Assert.assertEquals(5, getDaoFactory().getExperimentDao().countAll());
-
     }
 
     @Test
@@ -527,12 +510,7 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
-    @DirtiesContext
     public void removeInteractionByAcFromExperiment() throws Exception {
-
-        final TransactionStatus transactionStatus = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
-
         Experiment experiment = getMockBuilder().createExperimentEmpty();
         Interaction interaction = getMockBuilder().createInteractionRandomBinary();
         interaction.getExperiments().clear();
@@ -543,15 +521,11 @@ public class PersisterHelper_ExperimentTest extends IntactBasicTestCase {
 
         getCorePersister().saveOrUpdate(experiment);
 
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus);
-
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(2, getDaoFactory().getInteractionDao().countAll());
         Assert.assertEquals(4, getDaoFactory().getProteinDao().countAll());
 
-        final TransactionStatus transactionStatus2 = IntactContext.getCurrentInstance().getDataContext().beginTransaction();
         getDaoFactory().getInteractionDao().deleteByAc(interaction2.getAc());
-        IntactContext.getCurrentInstance().getDataContext().commitTransaction(transactionStatus2);
 
         Assert.assertEquals(1, getDaoFactory().getExperimentDao().countAll());
         Assert.assertEquals(1, getDaoFactory().getInteractionDao().countAll());

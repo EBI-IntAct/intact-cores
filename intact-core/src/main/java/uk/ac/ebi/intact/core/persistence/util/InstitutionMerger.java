@@ -15,17 +15,13 @@
  */
 package uk.ac.ebi.intact.core.persistence.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persistence.dao.AnnotatedObjectDao;
-import uk.ac.ebi.intact.core.persistence.dao.DaoFactory;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.OwnedAnnotatedObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**

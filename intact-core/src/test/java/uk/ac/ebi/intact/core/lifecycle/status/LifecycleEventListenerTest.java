@@ -10,7 +10,6 @@ import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.user.User;
 import uk.ac.ebi.intact.model.util.PublicationUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**

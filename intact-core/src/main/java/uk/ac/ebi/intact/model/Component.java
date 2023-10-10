@@ -10,7 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
 import uk.ac.ebi.intact.core.util.HashCodeUtils;
 import uk.ac.ebi.intact.model.util.ComplexUtils;
 
@@ -28,7 +27,7 @@ import java.util.Collection;
  * @version $Id: Component.java 8310 2007-04-30 15:50:46Z skerrien $
  */
 @Entity
-@Table( name = "ia_component" )
+@Table(name = "ia_component")
 public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias> implements Parameterizable<ComponentParameter>, ConfidenceHolder<ComponentConfidence> {
 
     private static final Log log = LogFactory.getLog( Component.class );
@@ -335,9 +334,8 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return list of items for property 'componentParameters'.
      */
-    @OneToMany( mappedBy = "component", orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE} )
-    @ForeignKey(name="FK_COMPONENT_PARAMETER")
+    @OneToMany(orphanRemoval = true, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "component_ac", foreignKey = @ForeignKey(name="FK_COMPONENT_PARAMETER"))
     public Collection<ComponentParameter> getParameters() {
         return this.componentParameters;
     }
@@ -392,7 +390,6 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * @return Value for property 'expressedIn'.
      */
     @ManyToOne
-
     @JoinColumn( name = "expressedin_ac" )
     public BioSource getExpressedIn() {
         return expressedIn;

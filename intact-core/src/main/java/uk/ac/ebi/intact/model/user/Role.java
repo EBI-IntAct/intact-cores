@@ -1,10 +1,10 @@
 package uk.ac.ebi.intact.model.user;
 
-import org.hibernate.annotations.Index;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 /**
@@ -15,7 +15,9 @@ import javax.persistence.Table;
  * @since 2.2.1
  */
 @Entity
-@Table( name = "ia_role" )
+@Table(
+        name = "ia_role",
+        indexes = { @Index(name = "idx_role_name", columnList = "name") })
 public class Role extends IntactObjectImpl {
 
     public static final String ROLE_ADMIN = "ADMIN";
@@ -42,7 +44,6 @@ public class Role extends IntactObjectImpl {
     // Getters and Setters
 
     @Column( unique = true, nullable = false )
-    @Index( name = "idx_role_name" )
     public String getName() {
         return name;
     }

@@ -24,7 +24,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.DataContext;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -45,10 +44,12 @@ import javax.persistence.PersistenceUnit;
  * @version $Id$
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/intact.spring.xml",
-        "classpath*:/META-INF/standalone/*-standalone.spring.xml"})
-@TransactionConfiguration
-@Transactional
+@ContextConfiguration(locations = {
+        "classpath*:/META-INF/intact.spring.xml",
+        "classpath*:/META-INF/standalone/*-standalone.spring.xml"
+})
+@Transactional("transactionManager")
+@DirtiesContext
 public abstract class IntactBasicTestCase {
 
     @Autowired
@@ -70,11 +71,6 @@ public abstract class IntactBasicTestCase {
     @After
     public void afterBasicTest() throws Exception {
         mockBuilder = null;
-    }
-
-    @After
-    public void end() throws Exception {
-        //((ConfigurableApplicationContext)applicationContext).close();
     }
 
     protected IntactContext getIntactContext() {

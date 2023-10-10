@@ -7,11 +7,7 @@ package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
+import javax.persistence.*;
 
 /**
  * This is the top level class for all intact model object.
@@ -22,7 +18,7 @@ import java.io.Serializable;
 @MappedSuperclass
 public abstract class IntactObjectImpl extends AbstractAuditable implements IntactObject, Cloneable {
 
-    protected static final String NEW_LINE = System.getProperty( "line.separator" );
+    protected static final String NEW_LINE = System.getProperty("line.separator");
 
     protected String ac;
 
@@ -35,9 +31,9 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
     //access methods for attributes
 
     @Id
-    @GeneratedValue( generator = "intact-id-generator" )
-    @GenericGenerator( name = "intact-id-generator", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator")
-    @Column( length = 30 )
+    @GeneratedValue(generator = "intact-id-generator", strategy = GenerationType.SEQUENCE)
+    @GenericGenerator(name = "intact-id-generator", strategy = "uk.ac.ebi.intact.model.IntactIdGenerator")
+    @Column(length = 30)
     public String getAc() {
         return ac;
     }
@@ -48,7 +44,7 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
      *
      * @param ac
      */
-    public void setAc( String ac ) {
+    public void setAc(String ac) {
         this.ac = ac;
     }
 
@@ -56,7 +52,7 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
         return deprecated;
     }
 
-    public void setDeprecated( boolean deprecated ) {
+    public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
     }
 
@@ -65,18 +61,17 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
      * Makes a clone of this intact object.
      *
      * @return a cloned version of the current instance.
-     *
      * @throws CloneNotSupportedException to indicate that an instance cannot be cloned.
      */
     @Override
     public Object clone() throws CloneNotSupportedException {
-        IntactObjectImpl copy = ( IntactObjectImpl ) super.clone();
+        IntactObjectImpl copy = (IntactObjectImpl) super.clone();
         // Reset the AC.
-        copy.setAc( null );
+        copy.setAc(null);
 
         // Sets the dates to the current date.
-        copy.setCreated( null );
-        copy.setUpdated( null );
+        copy.setCreated(null);
+        copy.setUpdated(null);
 
         return copy;
     }
@@ -96,7 +91,7 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
         IntactObjectImpl that = (IntactObjectImpl) o;
 
         if (ac != null && that.getAc() != null) {
-             return ac.equals(that.getAc());
+            return ac.equals(that.getAc());
         }
 
         return true;

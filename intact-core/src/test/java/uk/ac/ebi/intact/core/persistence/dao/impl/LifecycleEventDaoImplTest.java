@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 import uk.ac.ebi.intact.core.persistence.dao.LifecycleEventDao;
 import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.CvLifecycleEvent;

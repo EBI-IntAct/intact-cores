@@ -23,6 +23,7 @@ public class InteractorXref extends Xref {
 
     private static final Log log = LogFactory.getLog( InteractorXref.class );
 
+    private String category;
 
     public InteractorXref() {
     }
@@ -46,15 +47,12 @@ public class InteractorXref extends Xref {
         return super.getParentAc();
     }
 
-    @Column(name = "category")
-    /**
-     * For forward compatibility with intact-jami only
-     */
-    private String getCategory() {
-        return "simple";
+    @Column
+    public String getCategory() {
+        return category != null ? category : "simple";
     }
 
-    private void setCategory(String category) {
-        // nothing to do
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

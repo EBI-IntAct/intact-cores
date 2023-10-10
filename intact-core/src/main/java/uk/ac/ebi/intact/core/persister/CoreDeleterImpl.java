@@ -34,7 +34,9 @@ public class CoreDeleterImpl implements CoreDeleter {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void delete(IntactObject intactObject) {
          if (intactObject.getAc() != null) {
-            if (log.isDebugEnabled()) log.debug("Deleting: " + DebugUtil.intactObjectToString(intactObject, false));
+            if (log.isDebugEnabled()) {
+                log.debug("Deleting: " + DebugUtil.intactObjectToString(intactObject, false));
+            }
 
              IntactObject ioToRemove = intactObject;
              AnnotatedObject parent = AnnotatedObjectUtils.findParent(intactObject);
@@ -47,8 +49,6 @@ public class CoreDeleterImpl implements CoreDeleter {
                  }
 
                  AnnotatedObjectUtils.removeChild(parent, ioToRemove);
-
-//                 intactContext.getDaoFactory().getEntityManager().merge(parent);
              }
              else{
                  checkAnnotatedObjectDetachedFromOtherObjects(intactObject);

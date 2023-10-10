@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.model.util;
 
+import uk.ac.ebi.intact.core.config.SequenceCreationException;
 import uk.ac.ebi.intact.core.config.SequenceManager;
+import uk.ac.ebi.intact.core.config.hibernate.IntactHibernatePersistenceProvider;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.core.persister.IntactCore;
 import uk.ac.ebi.intact.model.*;
@@ -134,9 +136,10 @@ public final class PublicationUtils {
         return false;
     }
 
-    public static String nextUnassignedId(IntactContext intactContext) {
+    public static String nextUnassignedId(IntactContext intactContext) throws SequenceCreationException {
         SequenceManager sequenceManager = (SequenceManager) intactContext.getSpringContext().getBean("sequenceManager");
-        return "unassigned" + sequenceManager.getNextValueForSequence("unassigned_seq");
+        sequenceManager.createSequenceIfNotExists(IntactHibernatePersistenceProvider.UNASSIGNED_SEQ, 1);
+        return "unassigned" + sequenceManager.getNextValueForSequence(IntactHibernatePersistenceProvider.UNASSIGNED_SEQ);
     }
 
     /**

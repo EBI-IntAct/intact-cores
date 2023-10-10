@@ -16,18 +16,18 @@
 package uk.ac.ebi.intact.core.context;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+@DirtiesContext
 public class IntactContextTest {
 
     @Test
-    @Ignore("It is messing with the Spring context, making other tests to fail")
     public void initContext() throws Exception {
         Assert.assertFalse(IntactContext.currentInstanceExists());
 
@@ -35,7 +35,7 @@ public class IntactContextTest {
 
         Assert.assertTrue(IntactContext.currentInstanceExists());
 
-        Assert.assertEquals("lalaInstitution", IntactContext.getCurrentInstance().getInstitution().getShortLabel());
+        Assert.assertEquals("nanaInstitution", IntactContext.getCurrentInstance().getInstitution().getShortLabel());
 
         final ConfigurableApplicationContext springContext = IntactContext.getCurrentInstance().getSpringContext();
         

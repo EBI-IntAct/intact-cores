@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.intact.model;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import uk.ac.ebi.intact.model.event.AuditableEventListener;
 
 import javax.persistence.*;
@@ -28,7 +30,8 @@ import java.util.Date;
  * @version $Id$
  */
 @MappedSuperclass
-@org.hibernate.annotations.Entity(dynamicUpdate = true, dynamicInsert = true)
+@DynamicInsert
+@DynamicUpdate
 @EntityListeners(value = {AuditableEventListener.class})
 public abstract class AbstractAuditable implements Auditable {
 

@@ -6,11 +6,11 @@ in the root directory of this distribution.
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,7 +169,7 @@ public class PolymerImpl extends InteractorImpl implements Polymer {
 
     @OneToMany( mappedBy = "parent", orphanRemoval = true)
     @Cascade( value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @IndexColumn( name = "sequence_index" )
+    @OrderColumn( name = "sequence_index" )
     public List<SequenceChunk> getSequenceChunks() {
         return sequenceChunks;
     }

@@ -21,8 +21,6 @@ import uk.ac.ebi.intact.model.InteractorXref;
 import org.junit.Test;
 import org.junit.Assert;
 
-import java.util.Collection;
-
 /**
  * Test class for SmallMoleculeUtils
  *
