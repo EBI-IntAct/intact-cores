@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.ac.ebi.intact.maven</groupId>
         <artifactId>intact-hibernate-master</artifactId>
-        <version>47</version>
+        <version>48-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <groupId>uk.ac.ebi.intact.core</groupId>
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-    <version>2.8.1</version>
+    <version>3.0.0-SNAPSHOT</version>
 
     <name>IntAct Core</name>
     <description>Core Master POM</description>

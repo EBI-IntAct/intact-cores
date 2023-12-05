@@ -52,8 +52,7 @@ public class Application extends IntactObjectImpl {
         this.key = key;
     }
 
-    @Lob
-    @Type(type = "org.hibernate.type.MaterializedClobType")
+    @Type(type = "org.hibernate.type.TextType")
     public String getDescription() {
         return description;
     }

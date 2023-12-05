@@ -1055,9 +1055,8 @@ public boolean isUndetermined() {
         return !st.equals( "N" );
     }
 
-    @Lob
     @Column(name = "full_sequence")
-    @Type(type = "org.hibernate.type.MaterializedClobType")
+    @Type(type = "org.hibernate.type.TextType")
     public String getFullSequence() {
         return fullSequence;
     }
