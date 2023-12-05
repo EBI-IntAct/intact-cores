@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.model.user;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 import uk.ac.ebi.intact.model.IntactObjectImpl;
 
 import javax.persistence.*;
@@ -187,6 +188,7 @@ public class User extends IntactObjectImpl {
         return false;
     }
 
+    @Type(type = "org.hibernate.type.NumericBooleanType")
     public boolean isDisabled() {
         return disabled;
     }
