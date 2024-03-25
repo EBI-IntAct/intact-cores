@@ -17,8 +17,8 @@ import java.util.*;
 @Component
 public class IntactHibernatePersistenceProvider extends HibernatePersistenceProvider {
 
-    public static final String CV_LOCAL_SEQ = "cv_local_seq";
-    public static final String UNASSIGNED_SEQ = "unassigned_seq";
+    public static final String CV_LOCAL_SEQ = "intact.cv_local_seq";
+    public static final String UNASSIGNED_SEQ = "intact.unassigned_seq";
 
     public MetadataBuilder getBasicMetaDataBuilder(DataSource dataSource, String dialect) {
         StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
