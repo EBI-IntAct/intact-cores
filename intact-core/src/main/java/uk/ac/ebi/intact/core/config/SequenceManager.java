@@ -161,7 +161,7 @@ public class SequenceManager {
      * @return SQL query to fetch only the sequence names
      */
     private String getQuerySequenceNamesFromQuerySequences(String dialectQuerySequencesString) {
-        return String.format("select sequence_name from (%s)", dialectQuerySequencesString);
+        return String.format("select sequence_schema || '.' || sequence_name from (%s) all_sequences", dialectQuerySequencesString);
     }
 
 }
