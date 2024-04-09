@@ -50,6 +50,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      * be 2.
      */
     private float stoichiometry = STOICHIOMETRY_NOT_DEFINED;
+    private float maxStoichiometry = STOICHIOMETRY_NOT_DEFINED;
 
     /**
      * The species the interactor was expressed into for the purpose of this interaction.
@@ -316,6 +317,7 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @return Value for property 'stoichiometry'.
      */
+    @Column(name = "stoichiometry")
     public float getStoichiometry() {
         return stoichiometry;
     }
@@ -898,11 +900,11 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
     }
 
     @Column(name = "maxstoichiometry")
-    private float getMaxStoichiometry() {
-        return this.stoichiometry;
+    public float getMaxStoichiometry() {
+        return this.maxStoichiometry;
     }
 
-    private void setMaxStoichiometry(float max) {
-        this.stoichiometry = max;
+    public void setMaxStoichiometry(float max) {
+        this.maxStoichiometry = max;
     }
 }
