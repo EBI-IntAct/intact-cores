@@ -327,8 +327,10 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
      *
      * @param stoichiometry Value to set for property 'stoichiometry'.
      */
-    public void setStoichiometry( float stoichiometry ) {
-        this.stoichiometry = stoichiometry;
+    public void setStoichiometry(Float stoichiometry) {
+        if (stoichiometry != null) {
+            this.stoichiometry = stoichiometry;
+        }
     }
 
     /**
@@ -904,7 +906,9 @@ public class Component extends AnnotatedObjectImpl<ComponentXref, ComponentAlias
         return this.maxStoichiometry;
     }
 
-    public void setMaxStoichiometry(float max) {
-        this.maxStoichiometry = max;
+    public void setMaxStoichiometry(Float max) {
+        if (max != null) {
+            this.maxStoichiometry = max;
+        }
     }
 }
