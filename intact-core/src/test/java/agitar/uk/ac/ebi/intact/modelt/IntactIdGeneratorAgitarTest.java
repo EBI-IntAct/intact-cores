@@ -18,7 +18,7 @@ public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
 
     public void testConstructor() throws Throwable {
         IntactIdGenerator intactIdGenerator = new IntactIdGenerator();
-        assertEquals( "intactIdGenerator.getSequenceName()", "intact_ac", intactIdGenerator.getSequenceName() );
+        assertEquals( "intactIdGenerator.getSequenceName()", "intact.intact_ac", intactIdGenerator.getSequenceName() );
     }
 
 //    public void testConfigure() throws Throwable {
@@ -48,7 +48,7 @@ public class IntactIdGeneratorAgitarTest extends AgitarTestCase {
 
     public void testGetSequenceName() throws Throwable {
         String result = new IntactIdGenerator().getSequenceName();
-        assertEquals( "result", "intact_ac", result );
+        assertEquals( "result", "intact.intact_ac", result );
     }
 
 
