@@ -61,8 +61,7 @@ public class Preference extends IntactObjectImpl {
         this.key = key;
     }
 
-    @Lob
-    @Type(type = "org.hibernate.type.MaterializedClobType")
+    @Type(type = "org.hibernate.type.TextType")
     public String getValue() {
         return value;
     }
