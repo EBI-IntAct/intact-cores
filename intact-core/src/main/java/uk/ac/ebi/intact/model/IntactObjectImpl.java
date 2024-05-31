@@ -6,6 +6,7 @@
 package uk.ac.ebi.intact.model;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -48,10 +49,12 @@ public abstract class IntactObjectImpl extends AbstractAuditable implements Inta
         this.ac = ac;
     }
 
+    @Type(type = "org.hibernate.type.NumericBooleanType")
     public boolean isDeprecated() {
         return deprecated;
     }
 
+    @Type(type = "org.hibernate.type.NumericBooleanType")
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
     }
