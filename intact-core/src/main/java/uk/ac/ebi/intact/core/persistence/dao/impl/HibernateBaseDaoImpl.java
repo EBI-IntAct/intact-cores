@@ -297,7 +297,7 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         Query query;
 
         if (ignoreCase) {
-            query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where lower(" + propertyName + ") = lower(:propValue)");
+            query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where lower(" + propertyName + ") = lower(cast(:propValue as text))");
         } else {
             query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where " + propertyName + " = :propValue");
         }

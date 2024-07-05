@@ -98,7 +98,7 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         Query query;
 
         if (ignoreCase) {
-            query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where lower(shortlabel) = lower(:label)");
+            query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where lower(shortlabel) = lower(cast(:label as text))");
         } else {
             query = getEntityManager().createQuery("from " + getEntityClass().getSimpleName() + " where shortlabel = :label");
         }

@@ -697,7 +697,7 @@ public class DefaultFinder implements Finder {
     }
 
     private String findAcForCvObjectUsingShortLabel( CvObject cvObject, Class cvClass ){
-        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(:label) ");
+        Query query = getEntityManager().createQuery( "select cv.ac from "+cvClass.getName()+" cv where lower(cv.shortLabel) = lower(cast(:label as text)) ");
         query.setParameter( "label", cvObject.getShortLabel() );
 
         return getFirstAcForQuery( query, cvObject );
