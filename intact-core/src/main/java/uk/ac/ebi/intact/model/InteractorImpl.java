@@ -127,15 +127,18 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
             // if the annotations are initialised, we can check if we have a complex or an interaction evidence
             if (Hibernate.isInitialized(getAnnotations())){
-                boolean hasCuratedComplex = false;
+                boolean isComplex = false;
                 for (Annotation annot : getAnnotations()) {
                     if (annot.getCvTopic() != null && annot.getCvTopic().getShortLabel().equalsIgnoreCase(CvTopic.CURATED_COMPLEX)) {
-                        hasCuratedComplex = true;
+                        isComplex = true;
                         break;
                     }
                 }
+                if (!isComplex && this instanceof InteractionImpl) {
+                    isComplex = ((InteractionImpl) this).isPredictedComplex();
+                }
 
-                if (hasCuratedComplex){
+                if (isComplex) {
                     setCategory("complex");
                 }
                 else{

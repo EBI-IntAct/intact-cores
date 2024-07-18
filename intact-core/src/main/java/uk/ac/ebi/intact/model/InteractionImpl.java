@@ -8,6 +8,7 @@ package uk.ac.ebi.intact.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.annotations.Type;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import uk.ac.ebi.intact.annotation.EditorTopic;
@@ -93,6 +94,8 @@ public class InteractionImpl extends InteractorImpl
      * Collection of interaction's parameter (eg. dissociation constant)
      */
     private Collection<InteractionParameter> interactionParameters;
+
+    private Boolean predictedComplex;
 
     public InteractionImpl() {
         //super call sets creation time data
@@ -495,6 +498,18 @@ public class InteractionImpl extends InteractorImpl
 
     public void setCrc(String crc) {
         this.crc = crc;
+    }
+
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Column(name = "predicted_complex")
+    public boolean isPredictedComplex() {
+        return predictedComplex != null && predictedComplex;
+    }
+
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Column(name = "predicted_complex")
+    public void setPredictedComplex(Boolean predictedComplex) {
+        this.predictedComplex = predictedComplex;
     }
 
     /**

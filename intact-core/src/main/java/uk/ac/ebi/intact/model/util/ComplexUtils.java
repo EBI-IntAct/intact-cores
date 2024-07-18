@@ -150,6 +150,6 @@ public final class ComplexUtils {
                 return true;
             }
         }
-        return false;
+        return interaction.isPredictedComplex();
     }
 }

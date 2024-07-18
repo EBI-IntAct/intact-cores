@@ -28,6 +28,8 @@ public class ComplexReader extends JpaPagingItemReader {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        // TODO: review where this ready is used.
+        //  Do we need to remove the annotation check?
         String query = "select i from InteractionImpl i join i.annotations as annot " +
                 "where annot.cvTopic.shortLabel = 'curated-complex' " +
                 "order by i.ac";
