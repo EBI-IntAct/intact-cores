@@ -127,7 +127,7 @@ public class SequenceManager {
      * @param sequenceName The sequence name to query
      * @return The next value for that sequence; null if the sequence does not exist;
      */
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Long getNextValueForSequence(String sequenceName) {
         if (!sequenceExists(sequenceName)) {
             throw new IllegalArgumentException("Sequence does not exist: " + sequenceName +

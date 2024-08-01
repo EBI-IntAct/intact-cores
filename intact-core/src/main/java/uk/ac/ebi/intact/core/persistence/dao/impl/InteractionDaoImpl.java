@@ -335,10 +335,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         if( ! includeNegative ) {
 
             Query query = getEntityManager().createQuery("select count(*) " +
-                                                         "from InteractionImpl " +
-                                                         "where ac not in ( select ni.ac " +
+                                                         "from InteractionImpl i " +
+                                                         "where not exists ( select ni " +
                                                          "                 from InteractionImpl ni join ni.annotations a " +
-                                                         "                 where a.cvTopic.shortLabel = 'negative'" +
+                                                         "                 where ni.ac = i.ac and a.cvTopic.shortLabel = 'negative'" +
                                                          "               )");
 //            query.setParameter("interactionClass", InteractionImpl.class.getName());
             try {
