@@ -80,6 +80,8 @@ public class InteractionImpl extends InteractorImpl
      */
     private CvInteractionType cvInteractionType;
 
+    private CvDatabase cvEvidenceType;
+
     /**
      * CRC of the interaction, that makes it unique and allows to check for redundancy.
      */
@@ -412,6 +414,16 @@ public class InteractionImpl extends InteractorImpl
 
     public void setCvInteractionTypeAc( String ac ) {
         this.cvInteractionTypeAc = ac;
+    }
+
+    @ManyToOne
+    @JoinColumn( name = "evidence_type_ac" )
+    public CvDatabase getCvEvidenceType() {
+        return cvEvidenceType;
+    }
+
+    public void setCvEvidenceType( CvDatabase cvEvidenceType ) {
+        this.cvEvidenceType = cvEvidenceType;
     }
 
     public void setConfidences( Collection<Confidence> someConfidences ) {
