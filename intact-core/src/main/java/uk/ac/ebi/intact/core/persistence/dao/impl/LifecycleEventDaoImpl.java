@@ -2,12 +2,15 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.dao.LifecycleEventDao;
 import uk.ac.ebi.intact.model.LifecycleEvent;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -41,6 +44,10 @@ public class LifecycleEventDaoImpl extends HibernateBaseDaoImpl<LifecycleEvent> 
     // LifecycleEventDao
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<LifecycleEvent> getByPublicationAc( String publicationAc ) {
         final Query query = getEntityManager().createQuery( "select le " +
                 "from LifecycleEvent le inner join le.publication p " +
@@ -60,6 +67,10 @@ public class LifecycleEventDaoImpl extends HibernateBaseDaoImpl<LifecycleEvent> 
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<LifecycleEvent> getAll( int firstResult, int maxResults ) {
         return getSession().createCriteria( getEntityClass() )
                 .addOrder(Order.asc("pk"))

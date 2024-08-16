@@ -20,6 +20,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -27,6 +29,7 @@ import uk.ac.ebi.intact.core.persistence.dao.MineInteractionDao;
 import uk.ac.ebi.intact.model.MineInteraction;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 /**
@@ -60,6 +63,10 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
         return getEntityManager().createQuery( "DELETE from MineInteraction" ).executeUpdate();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public MineInteraction get( String proteinIntactAc1, String proteinIntactAc2 ) {
         return ( MineInteraction ) getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.or(
@@ -74,6 +81,10 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
                 ) ).uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public int countByProteinIntactAc( String proteinIntactAc ) {
         return ( Integer ) getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.or(
@@ -82,6 +93,10 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
                 .setProjection( Projections.rowCount() ).uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<MineInteraction> getByProteinIntactAc( String proteinIntactAc, Integer firstResult, Integer maxResults ) {
         Criteria crit = getSession().createCriteria(getEntityClass())
                 .add(Restrictions.or(
@@ -101,6 +116,10 @@ public class MineInteractionDaoImpl extends HibernateBaseDaoImpl<MineInteraction
 
     @Transactional(readOnly = true)
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<MineInteraction> getAll( int firstResult, int maxResults ) {
         return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o order by o.pk")
                 .setFirstResult( firstResult )

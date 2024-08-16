@@ -9,6 +9,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -19,6 +21,7 @@ import uk.ac.ebi.intact.model.Interaction;
 import uk.ac.ebi.intact.model.InteractionImpl;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.Order;
 import java.util.Date;
 import java.util.Iterator;
@@ -44,6 +47,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         super( Experiment.class, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countInteractionsForExperimentWithAc( String ac ) {
         final Long count = (Long) getSession().createCriteria(InteractionImpl.class)
                 .createAlias("experiments", "exp")
@@ -52,6 +59,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionsForExperimentWithAc( String ac, int firstResult, int maxResults ) {
         return getSession().createCriteria( InteractionImpl.class )
                 .addOrder(org.hibernate.criterion.Order.asc("ac"))
@@ -61,12 +72,20 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
                 .add( Restrictions.idEq( ac ) ).list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Iterator<Interaction> getInteractionsForExperimentWithAcIterator( String ac ) {
         Query query = getSession().createQuery("from InteractionImpl as interaction left join interaction.experiments as exp where exp.ac = :ac");
         query.setParameter("ac", ac);
         return query.iterate();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionsForExperimentWithAcExcluding( String ac, String[] excludedAcs, int firstResult, int maxResults ) {
         Criteria crit = getSession().createCriteria( InteractionImpl.class )
                 .addOrder(org.hibernate.criterion.Order.asc("ac"))
@@ -83,7 +102,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return crit.list();
     }
 
-
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionsForExperimentWithAcExcludingLike( String ac, String[] excludedAcsLike, int firstResult, int maxResults ) {
         Criteria crit = getSession().createCriteria( InteractionImpl.class )
                 .addOrder(org.hibernate.criterion.Order.asc("ac"))
@@ -101,6 +123,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return crit.list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Experiment> getByPubId(String pubId) {
         Query query = getSession()
                 .createQuery("select distinct exp from Experiment exp " +
@@ -111,6 +137,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return query.list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Experiment> getByPubAc(String pubAc) {
         Query query = getSession()
                 .createQuery("select distinct exp from Experiment exp " +
@@ -121,6 +151,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return query.list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Experiment> getByPubIdAndLabelLike(String pubId, String labelLike) {
         Query query = getSession()
                 .createQuery("select distinct exp from Experiment exp " +
@@ -136,6 +170,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Experiment> getByLastImexUpdate( Date fromDate, Date toDate) {
         if ( fromDate == null ) {
             throw new IllegalArgumentException( "You must give a non null fromDate" );
@@ -157,6 +195,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Experiment> getByHostOrganism(String biosourceAc){
 
         return getSession().createCriteria(getEntityClass())
@@ -167,6 +209,10 @@ public class ExperimentDaoImpl extends AnnotatedObjectDaoImpl<Experiment> implem
         /**
      * @InheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Experiment> getByInteractionAc( String interactionAc) {
         javax.persistence.Query query = getEntityManager().createQuery("select e " +
                                                      "from Experiment e join e.interactions i " +

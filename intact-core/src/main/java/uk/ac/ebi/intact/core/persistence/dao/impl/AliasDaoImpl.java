@@ -6,6 +6,8 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -13,6 +15,7 @@ import uk.ac.ebi.intact.core.persistence.dao.AliasDao;
 import uk.ac.ebi.intact.model.Alias;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import java.util.Collection;
 
 /**
@@ -35,14 +38,26 @@ public class AliasDaoImpl<T extends Alias> extends IntactObjectDaoImpl<T> implem
         super(aliasClass, entityManager, intactSession);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByNameLike(String name) {
         return getByPropertyNameLike("name", name);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByParentAc(String parentAc) {
         return getColByPropertyName("parentAc", parentAc);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByParentAc(String parentAc, boolean ignoreCase) {
         return getColByPropertyName("parentAc", parentAc, ignoreCase);
     }

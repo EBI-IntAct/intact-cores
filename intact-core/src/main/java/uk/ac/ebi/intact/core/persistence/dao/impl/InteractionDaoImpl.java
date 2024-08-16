@@ -10,6 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
@@ -21,6 +23,7 @@ import uk.ac.ebi.intact.model.util.XrefUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.*;
 
@@ -53,6 +56,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
      *
      * @return number of distinct interactors
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countInteractorsByInteractionAc( String interactionAc ) {
         if ( log.isDebugEnabled() ) {
             log.debug( "Counting interactors for interaction with ac: " + interactionAc );
@@ -66,6 +73,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countAllComplexes( ) {
         if ( log.isDebugEnabled() ) {
             log.debug( "Counting all complexes" );
@@ -79,6 +90,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<String> getNestedInteractionAcsByInteractionAc( String interactionAc ) {
         if ( log.isDebugEnabled() ) {
             log.debug( "Getting nested interactions for interaction with ac: " + interactionAc );
@@ -92,6 +107,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
                 .setProjection( Projections.distinct( Projections.property( "interactor.ac" ) ) ).list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionByExperimentShortLabel( String[] experimentLabels, Integer firstResult, Integer maxResults ) {
         Criteria criteria = getSession().createCriteria( Interaction.class )
                 .createCriteria( "experiments" )
@@ -109,6 +128,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         return criteria.list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionsByInteractorAc( String interactorAc ) {
         return getSession().createCriteria( Interaction.class )
                 .createAlias( "components", "comp" )
@@ -117,10 +140,18 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     }
 
     @Deprecated
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionsForProtPair( String protAc1, String protAc2 ) {
           return getInteractionsForProtPairAc(protAc1, protAc2);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getInteractionsForProtPairAc( String protAc1, String protAc2 ) {
         // check first if the ACs exist (in the main table or as secondary ACs.
         protAc1 = getAcByPrimaryOrSecondary(protAc1);
@@ -169,6 +200,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         return protAc;
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<Interaction> getSelfBinaryInteractionsByProtAc( String protAc ) {
         List<Interaction> interactions = getInteractionsByInteractorAc( protAc );
 
@@ -188,6 +223,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getByInteractorsPrimaryId(boolean exactComponents, String... primaryIds) {
         if (primaryIds.length > 5) {
             if (exactComponents) {
@@ -274,6 +313,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
      /**
      * @inheritDoc
      */
+     @Retryable(
+             include = PersistenceException.class,
+             maxAttemptsExpression = "${retry.maxAttempts}",
+             backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Interaction getByCrc(String crc) {
         Query query = getEntityManager().createQuery("from InteractionImpl where crc = :crc");
         query.setParameter("crc", crc);
@@ -294,6 +337,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getByLastImexUpdate( Date fromDate, Date toDate) {
         if ( fromDate == null ) {
             throw new IllegalArgumentException( "You must give a non null fromDate" );
@@ -318,6 +365,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     /**
      * @InheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interaction> getByExperimentAc( String experimentAc, int firstResult, int maxResults ) {
         Query query = getEntityManager().createQuery("select i " +
                                                      "from InteractionImpl i join i.experiments e " +
@@ -331,6 +382,10 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public int countAll( boolean includeNegative ) {
         if( ! includeNegative ) {
 

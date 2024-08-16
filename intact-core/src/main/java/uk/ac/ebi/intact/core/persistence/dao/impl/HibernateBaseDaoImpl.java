@@ -13,6 +13,8 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.jpa.HibernateEntityManager;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
@@ -92,6 +94,10 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * @return String the database name, or an empty String if the query fails
      */
     @Transactional(readOnly = true)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public String getDbName() throws SQLException {
         String url = null;
         HibernateEntityManager hFactory = (HibernateEntityManager) getEntityManager();
@@ -108,16 +114,28 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Transactional(readOnly = true)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getAll() {
         return getEntityManager().createQuery("select o from " + getEntityClass().getName() + " o").getResultList();
     }
 
     @Transactional(readOnly = true, propagation = Propagation.MANDATORY)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Iterator<T> getAllIterator() {
         return getSession().createQuery("from " + getEntityClass().getSimpleName()).iterate();
     }
 
     @Transactional(readOnly = true)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getAll(int firstResult, int maxResults) {
         return getEntityManager().createQuery("select o from " + getEntityClass().getName() + " o")
                 .setFirstResult(firstResult)
@@ -125,6 +143,10 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Transactional(readOnly = true)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getAllSorted(int firstResult, int maxResults, String sortProperty, boolean ascendant) {
         String strQuery = "from " + getEntityClass().getSimpleName() + " order by " + sortProperty + " " + ((ascendant) ? "asc" : "desc");
         Query query = getEntityManager().createQuery(strQuery);
@@ -136,6 +158,10 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Transactional(readOnly = true)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public int countAll() {
         final Long count = (Long) getSession()
                 .createCriteria(getEntityClass())
@@ -151,6 +177,10 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
      * @throws SQLException thrown if the metatdata can't be obtained
      */
     @Transactional(readOnly = true)
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public String getDbUserName() throws SQLException {
         String name = null;
         HibernateEntityManager hFactory = (HibernateEntityManager) getEntityManager();
@@ -281,6 +311,10 @@ public abstract class HibernateBaseDaoImpl<T> implements BaseDao<T> {
         return results.iterator().next();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getColByPropertyName(String propertyName, String value) {
         return getColByPropertyName(propertyName, value, false);
     }
