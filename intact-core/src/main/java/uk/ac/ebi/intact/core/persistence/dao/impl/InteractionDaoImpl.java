@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
@@ -83,9 +84,11 @@ public class InteractionDaoImpl extends InteractorDaoImpl<InteractionImpl> imple
         }
 
         final Long count = (Long) getSession().createCriteria(InteractionImpl.class)
-                .createAlias("annotations", "a")
-                .createAlias("a.cvTopic", "cv")
-                .add(Restrictions.eq("cv.shortLabel", "curated-complex"))
+                .createAlias("annotations", "a", JoinType.LEFT_OUTER_JOIN)
+                .createAlias("a.cvTopic", "cv", JoinType.LEFT_OUTER_JOIN)
+                .add(Restrictions.or(
+                        Restrictions.eq("cv.shortLabel", CvTopic.CURATED_COMPLEX),
+                        Restrictions.eq("predictedComplex", true)))
                 .setProjection(Projections.count("ac")).uniqueResult();
         return count.intValue();
     }
