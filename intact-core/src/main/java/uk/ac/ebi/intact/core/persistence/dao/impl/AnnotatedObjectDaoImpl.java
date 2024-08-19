@@ -14,6 +14,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.ejb.HibernateQuery;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -23,6 +25,7 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +57,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         super(entityClass, entityManager, intactSession);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByAc(String ac, boolean prefetchXrefs) {
         Criteria criteria = getSession().createCriteria(getEntityClass())
                 .add(Restrictions.eq("ac", ac));
@@ -65,34 +72,66 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return (T) criteria.uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByShortLabel(String value) {
         return getByShortLabel(value, true);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByShortLabel(String value, boolean ignoreCase) {
         return getByPropertyName("shortLabel", value, ignoreCase);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByShortLabelLike(String value) {
         return getByPropertyNameLike("shortLabel", value);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByShortLabelLike(String value, int firstResult, int maxResults) {
         return getByPropertyNameLike("shortLabel", value, true, firstResult, maxResults);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByShortLabelLike(String value, boolean ignoreCase) {
         return getByPropertyNameLike("shortLabel", value, ignoreCase, -1, -1);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByShortLabelLike(String value, boolean ignoreCase, int firstResult, int maxResults) {
         return getByPropertyNameLike("shortLabel", value, ignoreCase, firstResult, maxResults);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByShortLabelLike(String value, boolean ignoreCase, int firstResult, int maxResults, boolean orderAsc) {
         return getByPropertyNameLike("shortLabel", value, ignoreCase, firstResult, maxResults, orderAsc);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     @Transactional(propagation = Propagation.MANDATORY)
     public Iterator<T> getByShortLabelLikeIterator(String value, boolean ignoreCase) {
         Query query;
@@ -108,6 +147,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return ((HibernateQuery) query).getHibernateQuery().iterate();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByXref(String primaryId) {
         Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getSimpleName() +
                                                      " ao join ao.xrefs as xref " +
@@ -128,6 +171,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByIdentityXref(String primaryId) {
         Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getSimpleName() + " ao join ao.xrefs as xref " +
                 "where xref.cvXrefQualifier.identifier = :identity and xref.primaryId = :primaryId");
@@ -137,6 +184,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXrefLike(String primaryId) {
 
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
@@ -148,6 +199,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXref(CvDatabase database, String primaryId) {
 
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
@@ -162,6 +217,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXrefLike(CvDatabase database, String primaryId) {
 
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
@@ -176,6 +235,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXref(CvDatabase database, CvXrefQualifier qualifier, String primaryId) {
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
                                                      " o inner join o.xrefs as xref " +
@@ -194,6 +257,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         query.setParameter("qualifierMi", (qualifier.getIdentifier() != null ? qualifier.getIdentifier() : CvObjectUtils.getIdentity(qualifier)));
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXrefLike(CvDatabase database, CvXrefQualifier qualifier, String primaryId) {
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
                 " o inner join o.xrefs as xref " +
@@ -206,6 +273,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXref(String databaseMi, String qualifierMi, String primaryId) {
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
                                                      " o inner join o.xrefs as xref " +
@@ -220,6 +291,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByXrefLike(String databaseMi, String qualifierMi, String primaryId) {
         Query query = getEntityManager().createQuery("select distinct(o) from " + getEntityClass().getName() +
                                                      " o inner join o.xrefs as xref " +
@@ -234,6 +309,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public String getPrimaryIdByAc(String ac, String cvDatabaseShortLabel) {
         return (String) getSession().createCriteria(getEntityClass())
                 .add(Restrictions.idEq(ac))
@@ -243,6 +322,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
                 .setProjection(Property.forName("xref.primaryId")).uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByAnnotationAc(String ac) {
         return getSession().createCriteria(getEntityClass())
                 .createAlias("annotations", "annot")
@@ -252,6 +335,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByAnnotationTopicAndDescription(CvTopic topic, String description) {
         return getSession().createCriteria(getEntityClass()).createAlias("annotations", "annot")
                 .add(Restrictions.eq("annot.cvTopic", topic))
@@ -261,6 +348,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getAll(boolean excludeObsolete, boolean excludeHidden) {
 
         Criteria crit = getSession().createCriteria(getEntityClass()).addOrder(Order.asc("shortLabel"));
@@ -297,6 +388,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByShortlabelOrAcLike(String searchString) {
         return getSession().createCriteria(getEntityClass()).addOrder(Order.asc("shortLabel"))
                 .add(Restrictions.or(
@@ -307,6 +402,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<String> getShortLabelsLike(String labelLike) {
         return getSession().createCriteria(getEntityClass())
                 .add(Restrictions.like("shortLabel", labelLike))
@@ -314,6 +413,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByInstitutionAc(String institutionAc, int firstResult, int maxResults) {
         Query query = getEntityManager().createQuery("select ao from " + getEntityClass().getName() + " ao " +
                 "where ao.owner.ac = :ownerAc " +
@@ -326,6 +429,10 @@ public abstract class AnnotatedObjectDaoImpl<T extends AnnotatedObject> extends 
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public long countByInstitutionAc(String institutionAc) {
         verifyOwnable();
 

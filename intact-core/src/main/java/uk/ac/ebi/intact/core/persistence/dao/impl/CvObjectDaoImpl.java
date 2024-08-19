@@ -9,6 +9,8 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.context.annotation.Scope;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.annotation.PotentialThreat;
@@ -22,6 +24,7 @@ import uk.ac.ebi.intact.model.CvXrefQualifier;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +55,10 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
         super( entityClass, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByPsiMiRefCollection( Collection<String> psiMis ) {
         return getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.in( "miIdentifier", psiMis ) ).list();
@@ -62,11 +69,19 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
      * @deprecated use getByIdentifier(id)
      */
     @Deprecated
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByPsiMiRef( String psiMiRef ) {
         return getByIdentifier(psiMiRef);
     }
 
-     public T getByIdentifier( String id ) {
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
+    public T getByIdentifier( String id ) {
         Query query = getEntityManager().createQuery(
                 "select cv from "+getEntityClass().getName()+" cv " +
                 "where identifier = '"+id+"'");
@@ -74,6 +89,10 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
         return uniqueResult(query);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByObjClass( Class[] objClasses ) {
         Criteria criteria = getSession().createCriteria( CvObject.class );
 
@@ -93,21 +112,37 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
     @Deprecated
     @PotentialThreat( description = "Labels are not unique in the database, so you could " +
                                     "get more than one result and this method would fail" )
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByShortLabel( String value ) {
         return super.getByShortLabel( value );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public <T extends CvObject> T getByShortLabel( Class<T> cvType, String label ) {
         return ( T ) getSession().createCriteria( cvType )
                 .add( Restrictions.eq( "shortLabel", label ) ).uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public <T extends CvObject> T getByPrimaryId( Class<T> cvType, String miRef ) {
         return ( T ) getSession().createCriteria( cvType )
                 .createCriteria( "xrefs" )
                 .add( Restrictions.eq( "primaryId", miRef ) ).uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<String> getNucleicAcidMIs() {
          final CvObjectDao<CvInteractorType> itdao = IntactContext.getCurrentInstance().getDataContext()
                     .getDaoFactory().getCvObjectDao( CvInteractorType.class);
@@ -124,6 +159,10 @@ public class CvObjectDaoImpl<T extends CvObject> extends AnnotatedObjectDaoImpl<
         return collectedMIs;
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer getLastCvIdentifierWithPrefix(String prefix) {
         // query that returns all the primaryIds that contain the prefix
         Query query = getEntityManager().createQuery("select xref.primaryId from CvObjectXref xref " +

@@ -14,8 +14,13 @@
 
     <context:component-scan base-package="uk.ac.ebi.intact"/>
 
+    <context:property-placeholder location="classpath*:retry.properties"/>
+
     <!-- Spring specific -->
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+
+    <!-- for String retry -->
+    <bean class="org.springframework.retry.annotation.RetryConfiguration" />
 
     <aop:aspectj-autoproxy/>
 

@@ -9,6 +9,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
 import uk.ac.ebi.intact.core.persistence.util.CgLibUtil;
@@ -16,6 +18,7 @@ import uk.ac.ebi.intact.model.IntactObject;
 import uk.ac.ebi.intact.core.persistence.dao.IntactObjectDao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -50,14 +53,26 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
      *
      * @return the object
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public T getByAc( String ac ) {
         return ( T ) getSession().get( CgLibUtil.removeCglibEnhanced( getEntityClass() ), ac );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByAcLike( String ac ) {
         return getByPropertyNameLike( "ac", ac );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<T> getByAcLike( String ac, boolean ignoreCase ) {
         return getByPropertyNameLike( "ac", ac, ignoreCase );
     }
@@ -70,6 +85,10 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
      *
      * @return the collection of entities with those ACs
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByAc( String[] acs ) {
         if ( acs.length == 0 ) {
             throw new HibernateException( "At least one AC is needed to query by AC." );
@@ -80,6 +99,10 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
                 .addOrder( Order.asc( "ac" ) ).list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByAc( Collection<String> acs ) {
         return getByAc( acs.toArray( new String[acs.size()] ) );
     }
@@ -88,6 +111,10 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
      * @deprecated use getAllIterator() instead. Method might be removed in version 1.6
      */
     @Deprecated
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Iterator<T> iterator() {
         return getAllIterator();
     }
@@ -96,12 +123,20 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
      * @deprecated use getAllIterator() instead. Method might be removed in version 1.6
      */
     @Deprecated
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Iterator<T> iterator( int batchSize ) {
         return getAllIterator();
     }
 
     @Transactional(readOnly = true)
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getAll( int firstResult, int maxResults ) {
         return getEntityManager().createQuery("select o from "+getEntityClass().getName()+" o order by o.ac")
                 .setFirstResult( firstResult )
@@ -133,6 +168,10 @@ public class IntactObjectDaoImpl<T extends IntactObject> extends HibernateBaseDa
 //        return deleteQuery.executeUpdate();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public boolean exists( T obj ) {
         return ( getSession().get( getEntityClass(), obj.getAc() ) != null );
     }

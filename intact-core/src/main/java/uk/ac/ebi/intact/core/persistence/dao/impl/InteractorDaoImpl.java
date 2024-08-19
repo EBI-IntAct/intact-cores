@@ -13,6 +13,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactContext;
@@ -24,6 +26,7 @@ import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.*;
 
@@ -72,6 +75,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         super( entityClass, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countInteractionsForInteractorWithAc( String ac ) {
         final Long count = (Long) getSession().createCriteria(Component.class)
                 .createAlias("interactor", "interactor")
@@ -81,6 +88,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countComponentsForInteractorWithAc( String ac ) {
         final Long count = (Long) getSession().createCriteria(Component.class)
                 .createAlias("interactor", "interactor")
@@ -89,6 +100,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<String> getGeneNamesByInteractorAc( String proteinAc ) {
         //the gene names are obtained from the Aliases for the Protein
         //which are of type 'gene name'...
@@ -108,6 +123,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         return geneNames;
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByBioSourceAc( String ac ) {
         return getSession().createCriteria( getEntityClass() )
                 .createCriteria( "bioSource" )
@@ -116,6 +135,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
                 .list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public int countInteractorInvolvedInInteraction() {
         final Long count = (Long) getSession().createCriteria(InteractorImpl.class)
                 .add(Restrictions.isNotEmpty("activeInstances"))
@@ -123,6 +146,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getInteractorInvolvedInInteraction( Integer firstResult, Integer maxResults ) {
         {
             Criteria crit = getSession().createCriteria( InteractorImpl.class )
@@ -148,6 +175,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
      *
      * @return the number of interactors, excluding the interactions
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public long countAllInteractors() {
         Query query = getEntityManager().createQuery("select count(*) from InteractorImpl  where objClass <> :interactionClass");
         query.setParameter("interactionClass", InteractionImpl.class.getName());
@@ -166,6 +197,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
      * @param maxResults  Number of interactors to fetch
      * @return the interactors in that page
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Interactor> getInteractors(Integer firstResult, Integer maxResults) {
         Query query = getEntityManager().createQuery("select i from InteractorImpl i where i.objClass <> :interactionClass order by i.ac");
         query.setParameter("interactionClass", InteractionImpl.class.getName());
@@ -182,6 +217,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
      *
      * @since 1.8.0
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countPartnersByAc( String ac ) {
         final Long count = (Long) partnersByAcCriteria(ac)
                 .setProjection(Projections.countDistinct("prot.ac")).uniqueResult();
@@ -211,6 +250,10 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
      *
      * @since 1.8.0
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Map<String, List<String>> getPartnersWithInteractionAcsByInteractorAc( String ac ) {
         Criteria crit = partnersByAcCriteria( ac )
                 .setProjection( Projections.projectionList()
@@ -240,10 +283,18 @@ public class InteractorDaoImpl<T extends InteractorImpl> extends AnnotatedObject
         return results;
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByInteractorType(String cvIdentifer, boolean includeChildren) {
         return createGetByInteractorTypeQuery(cvIdentifer, includeChildren, false).getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public long countByInteractorType(String cvIdentifer, boolean includeChildren) {
         try {
             return (Long) createGetByInteractorTypeQuery(cvIdentifer, includeChildren, true).getSingleResult();

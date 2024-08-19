@@ -53,4 +53,8 @@ public interface Interaction extends Interactor, Parameterizable<InteractionPara
     String getCrc();
 
     void setCrc( String crc );
+
+    boolean isPredictedComplex();
+
+    void setPredictedComplex(Boolean predictedComplex);
 }
