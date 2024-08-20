@@ -1,6 +1,8 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -8,6 +10,7 @@ import uk.ac.ebi.intact.core.persistence.dao.AnnotationDao;
 import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +36,10 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
         super( Annotation.class, entityManager, intactSession );
     }
 
-
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Annotation> getByTextLike( String text ) {
         return getSession().createCriteria( getEntityClass() )
                 .add( Restrictions.like( "annotationText", text ) ).list();
@@ -43,6 +49,10 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
      * {@inheritDoc}
      */
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<AnnotatedObject> getParentsWithAnnotationAc(String annotationAc) {
         String[] aoClassNames = {Publication.class.getName(), Experiment.class.getName(),
                 Interactor.class.getName(), Component.class.getName(), BioSource.class.getName(),
@@ -62,6 +72,10 @@ public class AnnotationDaoImpl extends IntactObjectDaoImpl<Annotation> implement
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Collection<Annotation> getByParentAc(Class<? extends AnnotatedObject> parentClass, String parentAc) {
         Query query = getEntityManager().createQuery("select annotations " +
                                                      "from "+parentClass.getSimpleName()+" ao " +

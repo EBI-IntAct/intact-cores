@@ -5,6 +5,8 @@
  */
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -13,6 +15,7 @@ import uk.ac.ebi.intact.model.Publication;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +47,10 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
     /**
      * @inheritDoc
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Publication> getByLastImexUpdate( Date fromDate, Date toDate) {
         if ( fromDate == null ) {
             throw new IllegalArgumentException( "You must give a non null fromDate" );
@@ -65,6 +72,10 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public int countExperimentsForPublicationAc( String ac ) {
 
         Query query = getEntityManager().createQuery("select count( e ) " +
@@ -80,6 +91,10 @@ public class PublicationDaoImpl extends AnnotatedObjectDaoImpl<Publication> impl
         }
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public int countInteractionsForPublicationAc( String ac ) {
 
         Query query = getEntityManager().createQuery("select count( i ) " +

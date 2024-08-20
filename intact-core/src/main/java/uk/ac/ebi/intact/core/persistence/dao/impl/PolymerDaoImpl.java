@@ -19,6 +19,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.context.annotation.Scope;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -27,6 +29,7 @@ import uk.ac.ebi.intact.model.PolymerImpl;
 import uk.ac.ebi.intact.model.SequenceChunk;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -55,6 +58,10 @@ public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> 
         super( entityClass, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public String getSequenceByPolymerAc( String polymerAc ) {
         List<String> seqChunks = getSession().createCriteria( SequenceChunk.class )
                 .createAlias( "parent", "p" )
@@ -72,6 +79,10 @@ public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> 
         return sb.toString();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByCrcAndTaxId(String crc, String taxId) {
         if (crc == null) throw new NullPointerException("crc is null");
         if (taxId == null) throw new NullPointerException("taxId is null");
@@ -85,6 +96,10 @@ public class PolymerDaoImpl<T extends PolymerImpl> extends InteractorDaoImpl<T> 
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<T> getByCrc(String crc) {
         if (crc == null) throw new NullPointerException("crc is null");
 

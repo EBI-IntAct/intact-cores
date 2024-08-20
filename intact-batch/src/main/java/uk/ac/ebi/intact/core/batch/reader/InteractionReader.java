@@ -32,10 +32,14 @@ public class InteractionReader extends JpaPagingItemReader {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String query = "select i from InteractionImpl i " +
+        String query = "select i " +
+                "from InteractionImpl i " +
                 "where not exists " +
-                "(select i2 from InteractionImpl i2 join i2.annotations as a1 " +
-                "where i2.ac = i.ac and a1.cvTopic.shortLabel = 'curated-complex')";
+                "(select i2 " +
+                "from InteractionImpl i2 " +
+                "left join i2.annotations as a1 " +
+                "where i2.ac = i.ac " +
+                "and (a1.cvTopic.shortLabel = 'curated-complex' or i2.predictedComplex is true))";
 
         if (isExcludeNegative()) {
             query = query + " and not exists " +

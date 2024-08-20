@@ -28,8 +28,11 @@ public class ComplexReader extends JpaPagingItemReader {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String query = "select i from InteractionImpl i join i.annotations as annot " +
+        String query = "select i " +
+                "from InteractionImpl i " +
+                "left join i.annotations as annot " +
                 "where annot.cvTopic.shortLabel = 'curated-complex' " +
+                "or i.predictedComplex is true" +
                 "order by i.ac";
 
         setQueryString(query);
