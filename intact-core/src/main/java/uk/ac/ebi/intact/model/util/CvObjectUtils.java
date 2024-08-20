@@ -112,31 +112,31 @@ public final class CvObjectUtils {
         return cv;
     }
 
-    public static boolean isProteinType(CvInteractorType type) {
+    public static boolean isProteinType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.PROTEIN_MI_REF, true);
     }
 
-    public static boolean isGeneType(CvInteractorType type) {
+    public static boolean isGeneType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.GENE_MI_REF, true);
     }
 
-    public static boolean isComplexType(CvInteractorType type) {
+    public static boolean isComplexType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.COMPLEX_MI_REF, true);
     }
 
-    public static boolean isMoleculeSetType(CvInteractorType type) {
+    public static boolean isMoleculeSetType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.MOLECULE_SET_MI_REF, true);
     }
 
-    public static boolean isPeptideType(CvInteractorType type) {
+    public static boolean isPeptideType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.PEPTIDE_MI_REF, true);
     }
 
-    public static boolean isNucleicAcidType(CvInteractorType type) {
+    public static boolean isNucleicAcidType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.NUCLEIC_ACID_MI_REF, true);
     }
 
-    public static boolean isSmallMoleculeType(CvInteractorType type) {
+    public static boolean isSmallMoleculeType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.SMALL_MOLECULE_MI_REF, true);
     }
 
@@ -148,11 +148,11 @@ public final class CvObjectUtils {
         return isChildOfType(type, CvInteractorType.RNA_MI_REF, true);
     }
 
-    public static boolean isInteractionType(CvInteractorType type) {
+    public static boolean isInteractionType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.INTERACTION_MI_REF, false);
     }
 
-    public static boolean isPolysaccharideType(CvInteractorType type) {
+    public static boolean isPolysaccharideType(CvDagObject type) {
         return isChildOfType(type, CvInteractorType.POLYSACCHARIDE_MI_REF, true);
     }
 

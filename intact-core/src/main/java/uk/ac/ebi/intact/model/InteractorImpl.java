@@ -115,15 +115,15 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
     @PrePersist
     @PreUpdate
     protected void correctObjClass() {
-        if (interactorType == null) {
-            throw new IllegalStateException("Interactor without interactor type: " + this);
+        if (getInteractorOrInteractionType() == null) {
+            throw new IllegalStateException("Interactor without interactor or interaction type: " + this);
         }
 
-        if (CvObjectUtils.isProteinType(interactorType)
-                || CvObjectUtils.isPeptideType(interactorType)) {
+        if (CvObjectUtils.isProteinType(getInteractorOrInteractionType())
+                || CvObjectUtils.isPeptideType(getInteractorOrInteractionType())) {
             setObjClass(ProteinImpl.class.getName());
             setCategory("protein");
-        } else if (CvObjectUtils.isInteractionType(interactorType)) {
+        } else if (CvObjectUtils.isInteractionType(getInteractorOrInteractionType())) {
             setObjClass(InteractionImpl.class.getName());
 
             // if the annotations are initialised, we can check if we have a complex or an interaction evidence
@@ -140,23 +140,23 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
                 setCategory("interaction_evidence");
             }
 
-        } else if (CvObjectUtils.isSmallMoleculeType(interactorType)
-                || CvObjectUtils.isPolysaccharideType(interactorType)) {
+        } else if (CvObjectUtils.isSmallMoleculeType(getInteractorOrInteractionType())
+                || CvObjectUtils.isPolysaccharideType(getInteractorOrInteractionType())) {
             setObjClass(SmallMoleculeImpl.class.getName());
             setCategory("bioactive_entity");
-        } else if (CvObjectUtils.isNucleicAcidType(interactorType)) {
+        } else if (CvObjectUtils.isNucleicAcidType(getInteractorOrInteractionType())) {
             setObjClass(NucleicAcidImpl.class.getName());
             setCategory("nucleic_acid");
-        } else if (CvObjectUtils.isGeneType(interactorType)) {
+        } else if (CvObjectUtils.isGeneType(getInteractorOrInteractionType())) {
             setObjClass(InteractorImpl.class.getName());
             setCategory("gene");
-        } else if (CvObjectUtils.isComplexType(interactorType)) {
+        } else if (CvObjectUtils.isComplexType(getInteractorOrInteractionType())) {
             // only set the type to interactorImpl if it is not set and/or is not interactionImpl
             if (this.objClass == null || !this.objClass.equals(InteractionImpl.class.getName())){
                 setObjClass(InteractionImpl.class.getName());
             }
             setCategory("complex");
-        }else if (CvObjectUtils.isMoleculeSetType(interactorType)) {
+        }else if (CvObjectUtils.isMoleculeSetType(getInteractorOrInteractionType())) {
             setObjClass(InteractorImpl.class.getName());
             setCategory("interactor_pool");
         }else if (this instanceof Polymer) {
@@ -361,6 +361,11 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @Transient
+    protected CvDagObject getInteractorOrInteractionType() {
+        return interactorType;
     }
 } // end Interactor
 

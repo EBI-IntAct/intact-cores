@@ -524,6 +524,12 @@ public class InteractionImpl extends InteractorImpl
         this.predictedComplex = predictedComplex;
     }
 
+    @Override
+    @Transient
+    protected CvDagObject getInteractorOrInteractionType() {
+        return cvInteractionType;
+    }
+
     /**
      * Equality for Interactions is currently based on equality for <code>Interactors</code>, CvInteractionType, kD and
      * Components.
