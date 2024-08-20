@@ -168,15 +168,10 @@ public class IntactCore {
      * @since 2.4.0
      */
     public static Collection<Annotation> ensureInitializedAnnotations(AnnotatedObject ao) {
-        Collection<Annotation> annotations;
-
-        if (IntactCore.isInitialized(ao.getAnnotations())) {
-            annotations = ao.getAnnotations();
-        } else {
-            annotations = IntactContext.getCurrentInstance().getDaoFactory().getAnnotationDao().getByParentAc(ao.getClass(), ao.getAc());
+        if (!IntactCore.isInitialized(ao.getAnnotations())) {
+            IntactCore.initialize(ao.getAnnotations());
         }
-
-        return annotations;
+        return ao.getAnnotations();
     }
 
     /**
