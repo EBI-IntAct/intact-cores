@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import uk.ac.ebi.intact.model.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -144,11 +143,14 @@ public final class ComplexUtils {
         return getAnnotationByShortLabel(complex, CvTopic.CURATED_COMPLEX);
     }
 
-    public static boolean isComplex(Interaction interaction) {
+    public static boolean isComplex(Interactor interaction) {
         for (Annotation annot : interaction.getAnnotations()) {
             if (annot.getCvTopic() != null && annot.getCvTopic().getShortLabel().equalsIgnoreCase(CvTopic.CURATED_COMPLEX)) {
                 return true;
             }
+        }
+        if (interaction instanceof Interaction) {
+            return ((Interaction) interaction).isPredictedComplex();
         }
         return false;
     }

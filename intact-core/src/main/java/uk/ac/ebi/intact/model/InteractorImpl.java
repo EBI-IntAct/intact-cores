@@ -9,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DiscriminatorFormula;
+import uk.ac.ebi.intact.model.util.ComplexUtils;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
 import javax.persistence.*;
@@ -127,15 +128,7 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
             // if the annotations are initialised, we can check if we have a complex or an interaction evidence
             if (Hibernate.isInitialized(getAnnotations())){
-                boolean hasCuratedComplex = false;
-                for (Annotation annot : getAnnotations()) {
-                    if (annot.getCvTopic() != null && annot.getCvTopic().getShortLabel().equalsIgnoreCase(CvTopic.CURATED_COMPLEX)) {
-                        hasCuratedComplex = true;
-                        break;
-                    }
-                }
-
-                if (hasCuratedComplex){
+                if (ComplexUtils.isComplex(this)) {
                     setCategory("complex");
                 }
                 else{

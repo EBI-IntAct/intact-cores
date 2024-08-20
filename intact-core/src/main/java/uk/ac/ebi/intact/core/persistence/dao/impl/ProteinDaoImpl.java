@@ -12,6 +12,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.IntactException;
@@ -20,6 +22,7 @@ import uk.ac.ebi.intact.core.persistence.dao.ProteinDao;
 import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.*;
 
@@ -49,6 +52,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         super( ProteinImpl.class, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public String getIdentityXrefByProteinAc( String proteinAc ) {
         Criteria crit = getSession().createCriteria( ProteinImpl.class )
                 .add( Restrictions.idEq( proteinAc ) )
@@ -60,6 +67,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return ( String ) crit.uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public String getUniprotAcByProteinAc( String proteinAc ) {
         Criteria crit = getSession().createCriteria( ProteinImpl.class )
                 .add( Restrictions.idEq( proteinAc ) )
@@ -71,6 +82,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return ( String ) crit.uniqueResult();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<String> getUniprotUrlTemplateByProteinAc( String proteinAc ) {
         if ( proteinAc == null ) {
             throw new NullPointerException( "proteinAc" );
@@ -90,6 +105,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return crit.list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Map<String, Integer> getPartnersCountingInteractionsByProteinAc( String proteinAc ) {
         if ( proteinAc == null ) {
             throw new NullPointerException( "proteinAc" );
@@ -120,12 +139,20 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
     }
 
     @Deprecated
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countPartnersByProteinAc( String proteinAc ) {
         final Long count = (Long) partnersByAcCriteria(proteinAc)
                 .setProjection(Projections.countDistinct("prot.ac")).uniqueResult();
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<ProteinImpl> getUniprotProteins( Integer firstResult, Integer maxResults ) {
         Criteria crit = criteriaForUniprotProteins()
                 .addOrder( Order.asc( "xref.primaryId" ) );
@@ -133,6 +160,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return autosetFirstMax(firstResult, maxResults, crit);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<ProteinImpl> getUniprotProteinsInvolvedInInteractions( Integer firstResult, Integer maxResults ) {
         Criteria crit = criteriaForUniprotProteins()
                 .add( Restrictions.isNotEmpty( "activeInstances" ) )
@@ -154,12 +185,20 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return crit.list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countUniprotProteins() {
         final Long count = (Long) criteriaForUniprotProteins()
                 .setProjection(Projections.rowCount()).uniqueResult();
         return count.intValue();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Integer countUniprotProteinsInvolvedInInteractions() {
         final Long count = (Long) criteriaForUniprotProteins()
                 .add(Restrictions.isNotEmpty("activeInstances"))
@@ -167,7 +206,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return count.intValue();
     }
 
-
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<ProteinImpl> getByUniprotId( String uniprotId ) {
         return getByXrefLike(CvDatabase.UNIPROT_MI_REF, CvXrefQualifier.IDENTITY_MI_REF, uniprotId);
 //                getSession().createCriteria( getEntityClass() )
@@ -185,6 +227,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
      * @deprecated use the method getPartnersWithInteractionAcsByInteractorAc() instead
      */
     @Deprecated
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Map<String, List<String>> getPartnersWithInteractionAcsByProteinAc( String proteinAc ) {
         Criteria crit = partnersByAcCriteria( proteinAc )
                 .setProjection( Projections.projectionList()
@@ -195,6 +241,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return getPartnersWithInteractionAcs(crit);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<String> getPartnersUniprotIdsByProteinAc( String proteinAc ) {
         return partnersByAcCriteria( proteinAc )
                 .createAlias( "prot.xrefs", "xref" )
@@ -236,6 +286,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return query.getResultList();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<ProteinImpl> getSpliceVariants( Protein protein ) {
         /**if ( protein == null ) {
          throw new NullPointerException( "The master protein must not be null." );
@@ -263,6 +317,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return getProteinTranscripts(protein, CvXrefQualifier.ISOFORM_PARENT_MI_REF);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<ProteinImpl> getProteinChains( Protein protein ) {
 
         return getProteinTranscripts(protein, CvXrefQualifier.CHAIN_PARENT_MI_REF);
@@ -292,12 +350,19 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
         return getByAc(masterProtAc);
     }
 
-
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public ProteinImpl getSpliceVariantMasterProtein( Protein spliceVariant ) {
 
         return getProteinTranscriptsMasterProtein(spliceVariant, CvXrefQualifier.ISOFORM_PARENT_MI_REF);
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public ProteinImpl getChainMasterProtein( Protein chain ) {
 
         return getProteinTranscriptsMasterProtein(chain, CvXrefQualifier.CHAIN_PARENT_MI_REF);
@@ -309,6 +374,10 @@ public class ProteinDaoImpl extends PolymerDaoImpl<ProteinImpl> implements Prote
      *
      * @since 1.8.1
      */
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<String> getAllUniprotAcs() {
         Query query = getEntityManager().createQuery("select distinct(xref.primaryId) from InteractorXref xref " +
                 "where xref.cvXrefQualifier.identifier = :qualifierMi " +

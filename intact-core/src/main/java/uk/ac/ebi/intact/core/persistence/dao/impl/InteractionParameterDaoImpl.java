@@ -16,6 +16,8 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -23,6 +25,7 @@ import uk.ac.ebi.intact.core.persistence.dao.InteractionParameterDao;
 import uk.ac.ebi.intact.model.InteractionParameter;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 /**
@@ -44,6 +47,10 @@ public class InteractionParameterDaoImpl extends IntactObjectDaoImpl<Interaction
         super( InteractionParameter.class, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<InteractionParameter> getByInteractionAc( String interactionAc ) {
         return getSession().createCriteria( getEntityClass() )
                 .createCriteria( "interaction" )

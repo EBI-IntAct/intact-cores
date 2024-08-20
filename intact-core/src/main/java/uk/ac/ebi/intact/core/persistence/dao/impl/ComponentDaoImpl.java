@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.core.persistence.dao.impl;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -9,6 +11,7 @@ import uk.ac.ebi.intact.core.persistence.dao.ComponentDao;
 import uk.ac.ebi.intact.model.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -32,19 +35,30 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
         super( Component.class, entityManager, intactSession );
     }
 
-
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Component> getByInteractorAc( String interactorAc ) {
         return getSession().createCriteria( getEntityClass() )
                 .createCriteria( "interactor" )
                 .add( Restrictions.idEq( interactorAc ) ).list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Component> getByInteractionAc( String interactionAc ) {
         return getSession().createCriteria( getEntityClass() )
                 .createCriteria( "interaction" )
                 .add( Restrictions.idEq( interactionAc ) ).list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<Component> getByExpressedIn(String biosourceAc) {
         return getSession().createCriteria(getEntityClass())
                 .createCriteria("expressedIn")
@@ -52,6 +66,10 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<CvExperimentalPreparation> getExperimentalPreparationsForComponentAc( String componentAc) {
         Query query = getEntityManager().createQuery("select e " +
                 "from Component c join c.experimentalPreparations e " +
@@ -62,6 +80,10 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<CvExperimentalRole> getExperimentalRolesForComponentAc(String componentAc) {
         Query query = getEntityManager().createQuery("select e " +
                 "from Component c join c.experimentalRoles e " +
@@ -72,6 +94,10 @@ public class ComponentDaoImpl extends AnnotatedObjectDaoImpl<Component> implemen
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<CvIdentification> getParticipantIdentificationMethodsForComponentAc(String componentAc) {
         Query query = getEntityManager().createQuery("select p " +
                 "from Component c join c.participantDetectionMethods p " +

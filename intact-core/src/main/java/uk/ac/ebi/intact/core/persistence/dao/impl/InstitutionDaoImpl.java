@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.impl;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.IntactSession;
@@ -7,6 +9,7 @@ import uk.ac.ebi.intact.core.persistence.dao.InstitutionDao;
 import uk.ac.ebi.intact.model.Institution;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -30,6 +33,10 @@ public class InstitutionDaoImpl extends AnnotatedObjectDaoImpl<Institution> impl
         super( Institution.class, entityManager, intactSession );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public Institution getByAc( String ac ) {
         Query query = getEntityManager().createQuery("select i from Institution i left join fetch i.xrefs " +
                 "where i.ac = :ac");
