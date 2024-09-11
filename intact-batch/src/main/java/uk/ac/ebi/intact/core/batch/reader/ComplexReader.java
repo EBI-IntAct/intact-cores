@@ -32,7 +32,7 @@ public class ComplexReader extends JpaPagingItemReader {
                 "from InteractionImpl i " +
                 "left join i.annotations as annot " +
                 "where annot.cvTopic.shortLabel = 'curated-complex' " +
-                "or i.predictedComplex is true" +
+                "or i.predictedComplex is true " +
                 "order by i.ac";
 
         setQueryString(query);

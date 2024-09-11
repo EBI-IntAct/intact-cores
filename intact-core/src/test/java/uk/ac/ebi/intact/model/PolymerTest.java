@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.model;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * @since <pre>18-May-2010</pre>
  */
 
-public class PolymerTest {
+public class PolymerTest extends IntactBasicTestCase {
 
     @Test
     public void test_sequence_Polymer() throws Exception {
