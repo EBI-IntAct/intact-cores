@@ -10,32 +10,46 @@
 package agitar.uk.ac.ebi.intact.modelt;
 
 import com.agitar.lib.junit.AgitarTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.intact.core.context.IntactContext;
 import uk.ac.ebi.intact.model.Annotation;
 import uk.ac.ebi.intact.model.CvTopic;
 import uk.ac.ebi.intact.model.Institution;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource(locations="classpath:/retry.properties")
+@ContextConfiguration(locations = {
+        "classpath*:/META-INF/intact.spring.xml",
+        "classpath*:/META-INF/standalone/*-standalone.spring.xml"
+})
 public class InstitutionAgitarTest extends AgitarTestCase {
 
     static Class TARGET_CLASS = Institution.class;
 
+    @Test
     public void testConstructor2() throws Throwable {
         Institution institution = new Institution( "testString" );
         assertEquals( "institution.shortLabel", "testString", institution.getShortLabel() );
     }
 
+    @Test
     public void testEquals() throws Throwable {
         boolean result = new Institution( "testInstLabel" ).equals( Boolean.FALSE );
         assertFalse( "result", result );
     }
 
+    @Test
     public void testEquals1() throws Throwable {
         boolean result = new Institution( "testInstLabel" ).equals( new Institution( "testInstitution2" ) );
         assertFalse( "result", result );
     }
 
+    @Test
     public void testEquals2() throws Throwable {
         Institution institution = new Institution( "testString" );
         institution.setFullName( "testInstitutionFullName" );
@@ -43,6 +57,7 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertFalse( "result", result );
     }
 
+    @Test
     public void testEquals3() throws Throwable {
         Institution o = new Institution( "testString" );
         o.setFullName( "testInstitutionFullName" );
@@ -50,6 +65,7 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertFalse( "result", result );
     }
 
+    @Test
     public void testEquals4() throws Throwable {
         Institution institution = new Institution( "testString" );
         institution.setFullName( "testString" );
@@ -59,23 +75,27 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertTrue( "result", result );
     }
 
+    @Test
     public void testEquals5() throws Throwable {
         Institution o = new Institution( "testString" );
         boolean result = new Institution( "testString" ).equals( o );
         assertTrue( "result", result );
     }
 
+    @Test
     public void testEquals6() throws Throwable {
         Institution o = new Institution( "testInstLabel" );
         boolean result = o.equals( o );
         assertTrue( "result", result );
     }
 
+    @Test
     public void testGetFullName() throws Throwable {
         String result = new Institution( "testInstLabel" ).getFullName();
         assertNull( "result", result );
     }
 
+    @Test
     public void testGetFullName1() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.setFullName( "testInstitutionFullName" );
@@ -83,6 +103,7 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertEquals( "result", "testInstitutionFullName", result );
     }
 
+    @Test
     public void testGetPostalAddress() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.getAnnotations().add(new Annotation(new CvTopic("postaladdress"), "testInstitutionPostalAddress"));
@@ -90,16 +111,19 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertEquals( "result", "testInstitutionPostalAddress", result );
     }
 
+    @Test
     public void testGetPostalAddress1() throws Throwable {
         String result = new Institution( "testInstLabel" ).getPostalAddress();
         assertNull( "result", result );
     }
 
+    @Test
     public void testGetShortLabel() throws Throwable {
         String result = new Institution( "testInstLabel" ).getShortLabel();
         assertEquals( "result", "testInstLabel", result );
     }
 
+    @Test
     public void testGetUrl() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.getAnnotations().add(new Annotation(CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(),
@@ -108,29 +132,34 @@ public class InstitutionAgitarTest extends AgitarTestCase {
         assertEquals( "result", "testInstitutionUrl", result );
     }
 
+    @Test
     public void testGetUrl1() throws Throwable {
         String result = new Institution( "testInstLabel" ).getUrl();
         assertNull( "result", result );
     }
 
+    @Test
     public void testSetFullName() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.setFullName( "testInstitutionFullName" );
         assertEquals( "institution.fullName", "testInstitutionFullName", institution.getFullName());
     }
 
+    @Test
     public void testSetPostalAddress() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.getAnnotations().add(new Annotation(new CvTopic("postaladdress"), "testInstitutionPostalAddress"));
         assertEquals( "institution.postalAddress", "testInstitutionPostalAddress", institution.getPostalAddress() );
     }
 
+    @Test
     public void testSetShortLabel() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.setShortLabel( "testInstLabel" );
         assertEquals( "institution.shortLabel", "testInstLabel", institution.getShortLabel() );
     }
 
+    @Test
     public void testSetUrl() throws Throwable {
         Institution institution = new Institution( "testInstLabel" );
         institution.getAnnotations().add(new Annotation(CvObjectUtils.createCvObject(IntactContext.getCurrentInstance().getInstitution(),

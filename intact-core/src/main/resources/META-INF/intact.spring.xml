@@ -14,8 +14,6 @@
 
     <context:component-scan base-package="uk.ac.ebi.intact"/>
 
-    <context:property-placeholder location="classpath*:retry.properties"/>
-
     <!-- Spring specific -->
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 

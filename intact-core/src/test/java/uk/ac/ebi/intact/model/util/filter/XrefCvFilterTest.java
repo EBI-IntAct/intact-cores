@@ -17,7 +17,7 @@ package uk.ac.ebi.intact.model.util.filter;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 
 /**
@@ -26,7 +26,7 @@ import uk.ac.ebi.intact.model.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class XrefCvFilterTest {
+public class XrefCvFilterTest extends IntactBasicTestCase {
 
     @Test
     public void accept_inclusionsAndExclusions() {
@@ -100,7 +100,7 @@ public class XrefCvFilterTest {
         Assert.assertTrue(xrefFilter.accept(xref));
      }
 
-    private IntactMockBuilder getMockBuilder() {
-        return new IntactMockBuilder(new Institution("testInstitution"));
-    }
+//    private IntactMockBuilder getMockBuilder() {
+//        return new IntactMockBuilder(new Institution("testInstitution"));
+//    }
 }
