@@ -127,7 +127,7 @@ public class SequenceManager {
      * @param sequenceName The sequence name to query
      * @return The next value for that sequence; null if the sequence does not exist;
      */
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Long getNextValueForSequence(String sequenceName) {
         if (!sequenceExists(sequenceName)) {
             throw new IllegalArgumentException("Sequence does not exist: " + sequenceName +
@@ -161,7 +161,7 @@ public class SequenceManager {
      * @return SQL query to fetch only the sequence names
      */
     private String getQuerySequenceNamesFromQuerySequences(String dialectQuerySequencesString) {
-        return String.format("select sequence_name from (%s)", dialectQuerySequencesString);
+        return String.format("select sequence_schema || '.' || sequence_name from (%s) all_sequences", dialectQuerySequencesString);
     }
 
 }

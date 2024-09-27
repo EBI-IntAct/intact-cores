@@ -17,7 +17,7 @@ package uk.ac.ebi.intact.model.util;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.intact.core.unit.IntactMockBuilder;
+import uk.ac.ebi.intact.core.unit.IntactBasicTestCase;
 import uk.ac.ebi.intact.model.*;
 import uk.ac.ebi.intact.model.clone.IntactCloner;
 import uk.ac.ebi.intact.model.util.filter.CvObjectFilterGroup;
@@ -31,7 +31,7 @@ import java.util.Collection;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class AnnotatedObjectUtilsTest {
+public class AnnotatedObjectUtilsTest extends IntactBasicTestCase {
 
     @Test
     public void searchXrefsByDatabase() throws Exception {
@@ -246,10 +246,6 @@ public class AnnotatedObjectUtilsTest {
 
         xrefs = AnnotatedObjectUtils.searchXrefsByDatabase(e, CvDatabase.UNIPROT_MI_REF);
         Assert.assertEquals(0, xrefs.size());
-    }
-
-    private IntactMockBuilder getMockBuilder() {
-        return new IntactMockBuilder(new Institution("testInstitution"));
     }
     
     @Test

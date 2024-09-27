@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.core.persistence.dao.meta.impl;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.core.persistence.dao.impl.IntactObjectDaoImpl;
 import uk.ac.ebi.intact.core.persistence.dao.meta.ApplicationPropertyDao;
@@ -7,6 +9,7 @@ import uk.ac.ebi.intact.core.persistence.dao.user.PreferenceDao;
 import uk.ac.ebi.intact.model.meta.ApplicationProperty;
 import uk.ac.ebi.intact.model.user.Preference;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +29,10 @@ public class ApplicationPropertyDaoImpl extends IntactObjectDaoImpl<ApplicationP
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<ApplicationProperty> getByApplicationAc(String ac) {
         Query query = getEntityManager().createQuery("select ap from ApplicationProperty ap where ap.application.ac = :ac");
         query.setParameter("ac", ac);

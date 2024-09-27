@@ -17,6 +17,9 @@
     <!-- Spring specific -->
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
+    <!-- for String retry -->
+    <bean class="org.springframework.retry.annotation.RetryConfiguration" />
+
     <aop:aspectj-autoproxy/>
 
     <!-- this switches on the load-time weaving -->

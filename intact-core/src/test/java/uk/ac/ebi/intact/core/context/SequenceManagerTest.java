@@ -35,26 +35,26 @@ public class SequenceManagerTest extends IntactBasicTestCase {
     @Test
     public void createSequenceIfNotExists() throws Exception {
 
-        Assert.assertFalse(seqManager.sequenceExists("lala_seq"));
+        Assert.assertFalse(seqManager.sequenceExists("public.lala_seq"));
 
-        seqManager.createSequenceIfNotExists("lala_seq");
+        seqManager.createSequenceIfNotExists("public.lala_seq");
 
-        Assert.assertTrue(seqManager.sequenceExists("lala_seq"));
+        Assert.assertTrue(seqManager.sequenceExists("public.lala_seq"));
     }
 
     @Test
     public void getNextValueForSequence() throws Exception {
 
 //        beginTransaction();
-        seqManager.createSequenceIfNotExists("test2_seq", 5);
+        seqManager.createSequenceIfNotExists("public.test2_seq", 5);
 //        commitTransaction();
 
-        Assert.assertEquals(5L, seqManager.getNextValueForSequence("test2_seq").longValue());
-        Assert.assertEquals(6L, seqManager.getNextValueForSequence("test2_seq").longValue());
-        Assert.assertEquals(7L, seqManager.getNextValueForSequence("test2_seq").longValue());
-        Assert.assertEquals(8L, seqManager.getNextValueForSequence("test2_seq").longValue());
-        Assert.assertEquals(9L, seqManager.getNextValueForSequence("test2_seq").longValue());
-        Assert.assertEquals(10L, seqManager.getNextValueForSequence("test2_seq").longValue());
+        Assert.assertEquals(5L, seqManager.getNextValueForSequence("public.test2_seq").longValue());
+        Assert.assertEquals(6L, seqManager.getNextValueForSequence("public.test2_seq").longValue());
+        Assert.assertEquals(7L, seqManager.getNextValueForSequence("public.test2_seq").longValue());
+        Assert.assertEquals(8L, seqManager.getNextValueForSequence("public.test2_seq").longValue());
+        Assert.assertEquals(9L, seqManager.getNextValueForSequence("public.test2_seq").longValue());
+        Assert.assertEquals(10L, seqManager.getNextValueForSequence("public.test2_seq").longValue());
 
 
     }

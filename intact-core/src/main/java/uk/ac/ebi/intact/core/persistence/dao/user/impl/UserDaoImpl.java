@@ -1,11 +1,14 @@
 package uk.ac.ebi.intact.core.persistence.dao.user.impl;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.intact.core.persistence.dao.impl.IntactObjectDaoImpl;
 import uk.ac.ebi.intact.core.persistence.dao.user.UserDao;
 import uk.ac.ebi.intact.model.user.Role;
 import uk.ac.ebi.intact.model.user.User;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -24,6 +27,10 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
         super( User.class );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public User getByLogin( String login ) {
         final Query query = getEntityManager().createQuery( "select u from User as u where lower(u.login) = :login" );
         query.setParameter( "login", login.toLowerCase() );
@@ -34,6 +41,10 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
         return users.get( 0 );
     }
 
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public User getByEmail( String email ) {
         final Query query = getEntityManager().createQuery( "select u from User as u where lower(u.email) = :email" );
         query.setParameter( "email", email.toLowerCase() );
@@ -45,6 +56,10 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<User> getByRole(String roleName) {
         final Query query = getEntityManager().createQuery("select u from User as u join u.roles as role where role.name = :roleName");
         query.setParameter("roleName", roleName);
@@ -53,16 +68,28 @@ public class UserDaoImpl extends IntactObjectDaoImpl<User> implements UserDao {
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<User> getCurators() {
         return getByRole(Role.ROLE_CURATOR);
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<User> getReviewers() {
         return getByRole(Role.ROLE_REVIEWER);
     }
 
     @Override
+    @Retryable(
+            include = PersistenceException.class,
+            maxAttemptsExpression = "${retry.maxAttempts}",
+            backoff = @Backoff(delayExpression = "${retry.maxDelay}", multiplierExpression = "${retry.multiplier}"))
     public List<User> getAdmins() {
         return getByRole(Role.ROLE_ADMIN);
     }

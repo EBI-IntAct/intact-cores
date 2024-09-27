@@ -251,13 +251,34 @@ public class InteractionDaoTest extends IntactBasicTestCase {
     }
 
     @Test
-    public void test_count_complexes() throws Exception {
+    public void test_count_curated_complexes() throws Exception {
         Interaction mockInteraction = getMockBuilder().createInteractionRandomBinary();
         mockInteraction.getAnnotations().add(new Annotation(new CvTopic("curated-complex")));
         getCorePersister().saveOrUpdate(mockInteraction);
 
         Assert.assertTrue(1 == getDaoFactory().getInteractionDao().countAllComplexes());
+    }
 
+    @Test
+    public void test_count_predicted_complexes() throws Exception {
+        Interaction mockInteraction = getMockBuilder().createInteractionRandomBinary();
+        mockInteraction.setPredictedComplex(true);
+        getCorePersister().saveOrUpdate(mockInteraction);
 
+        Assert.assertTrue(1 == getDaoFactory().getInteractionDao().countAllComplexes());
+    }
+
+    @Test
+    public void test_count_complexes() throws Exception {
+        Interaction mockInteraction = getMockBuilder().createInteractionRandomBinary();
+        getCorePersister().saveOrUpdate(mockInteraction);
+        Interaction mockCuratedComplex = getMockBuilder().createInteractionRandomBinary();
+        mockCuratedComplex.getAnnotations().add(new Annotation(new CvTopic("curated-complex")));
+        getCorePersister().saveOrUpdate(mockCuratedComplex);
+        Interaction mockPredictedComplex = getMockBuilder().createInteractionRandomBinary();
+        mockPredictedComplex.setPredictedComplex(true);
+        getCorePersister().saveOrUpdate(mockPredictedComplex);
+
+        Assert.assertTrue(2 == getDaoFactory().getInteractionDao().countAllComplexes());
     }
 }

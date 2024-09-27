@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.intact.core.context.DataContext;
@@ -48,6 +49,7 @@ import javax.persistence.PersistenceUnit;
         "classpath*:/META-INF/intact.spring.xml",
         "classpath*:/META-INF/standalone/*-standalone.spring.xml"
 })
+@TestPropertySource(locations="classpath:/retry.properties")
 @Transactional("transactionManager")
 @DirtiesContext
 public abstract class IntactBasicTestCase {
