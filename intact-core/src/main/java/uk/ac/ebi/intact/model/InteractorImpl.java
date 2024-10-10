@@ -11,7 +11,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DiscriminatorFormula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Target;
 import uk.ac.ebi.intact.model.util.ComplexUtils;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -370,14 +369,13 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         this.category = category;
     }
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToMany(targetEntity = InteractorImpl.class, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(
             name="ia_pool2interactor",
             joinColumns=@JoinColumn(name="interactor_pool_ac"),
             inverseJoinColumns=@JoinColumn(name="interactor_ac")
     )
     @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
-    @Target(InteractorImpl.class)
     @LazyCollection(LazyCollectionOption.FALSE)
     public Collection<Interactor> getInteractors() {
         if (interactors == null){
@@ -385,6 +383,11 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
         }
         return interactors;
     }
+
+    public void setInteractors(Collection<Interactor> interactors) {
+        this.interactors = interactors;
+    }
+
 } // end Interactor
 
 
