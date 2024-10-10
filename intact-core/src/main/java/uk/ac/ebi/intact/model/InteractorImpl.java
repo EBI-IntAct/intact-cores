@@ -9,6 +9,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DiscriminatorFormula;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Target;
 import uk.ac.ebi.intact.model.util.ComplexUtils;
 import uk.ac.ebi.intact.model.util.CvObjectUtils;
 
@@ -67,6 +70,10 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
      */
     private String category;
 
+    /**
+     * The interactors property has been created for compatibility with intact-jami for molecule sets
+     */
+    private Collection<Interactor> interactors;
 
     /**
      * no-arg constructor provided for compatibility with subclasses that have no-arg constructors.
@@ -361,6 +368,22 @@ public class InteractorImpl extends OwnedAnnotatedObject<InteractorXref, Interac
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinTable(
+            name="ia_pool2interactor",
+            joinColumns=@JoinColumn(name="interactor_pool_ac"),
+            inverseJoinColumns=@JoinColumn(name="interactor_ac")
+    )
+    @Cascade( value = {org.hibernate.annotations.CascadeType.SAVE_UPDATE} )
+    @Target(InteractorImpl.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    public Collection<Interactor> getInteractors() {
+        if (interactors == null){
+            interactors = new ArrayList<>();
+        }
+        return interactors;
     }
 } // end Interactor
 
